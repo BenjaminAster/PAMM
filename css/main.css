@@ -1,0 +1,47 @@
+
+body {
+	font-family: system-ui;
+	box-sizing: border-box;
+	margin: 0;
+	padding: .5rem;
+	min-block-size: 100vh;
+
+	display: grid;
+	grid-template: 1fr 1fr / 1fr 1fr;
+	grid-template-areas: 
+		"📄 🌳"
+		"🧮 🌳";
+	gap: 1rem;
+}
+
+.📄 {
+	font-size: 1.4rem;
+	resize: vertical;
+	grid-area: 📄;
+}
+
+.🌳 {
+	tab-size: 3;
+	margin-block: 0;
+	grid-area: 🌳;
+	max-block-size: calc(100vb - 1rem);
+	overflow: auto;
+}
+
+.🧮 {
+	grid-area: 🧮;
+	text-align: center;
+}
+
+@media print {
+	.📄, .🌳 {
+		display: none;
+	}
+
+	body {
+		grid-template-areas:
+			"🧮 🧮"
+			"🧮 🧮";
+	}
+}
+
