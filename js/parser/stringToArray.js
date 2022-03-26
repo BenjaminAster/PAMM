@@ -9,6 +9,7 @@ export const categories = new class {
 	operator = "operator";
 	anyOpeningBracket = "anyOpeningBracket";
 	anyClosingBracket = "anyClosingBracket";
+	anyBracket = "anyBracket";
 	whitespace = "whitespace";
 };
 
@@ -66,40 +67,42 @@ const operatorSyntaxes = [
 ];
 
 export const allBrackets = new class {
-	openingParenthesis = "openingParenthesis";
-	closingParenthesis = "closingParenthesis";
-	openingBracket = "openingBracket";
-	closingBracket = "closingBracket";
-	openingBrace = "openingBrace";
-	closingBrace = "closingBrace";
-	openingGroup = "openingGroup";
-	closingGroup = "closingGroup";
+	parenthesis = "parenthesis";
+	bracket = "bracket";
+	brace = "brace";
+	group = "group";
 };
 
-const allBracketsSyntaxes = [
+export const allBracketsSyntaxes = [
 	{
 		syntax: "(",
-		name: allBrackets.openingParenthesis,
+		type: categories.anyOpeningBracket,
+		name: allBrackets.parenthesis,
 	},
 	{
 		syntax: ")",
-		name: allBrackets.closingParenthesis,
+		type: categories.anyClosingBracket,
+		name: allBrackets.parenthesis,
 	},
 	{
 		syntax: "[",
-		name: allBrackets.openingBracket,
+		type: categories.anyOpeningBracket,
+		name: allBrackets.bracket,
 	},
 	{
 		syntax: "]",
-		name: allBrackets.closingBracket,
+		type: categories.anyClosingBracket,
+		name: allBrackets.bracket,
 	},
 	{
 		syntax: "{",
-		name: allBrackets.openingBrace,
+		type: categories.anyOpeningBracket,
+		name: allBrackets.brace,
 	},
 	{
 		syntax: "}",
-		name: allBrackets.closingBrace,
+		type: categories.anyClosingBracket,
+		name: allBrackets.brace,
 	},
 ];
 
@@ -182,81 +185,6 @@ export default (/** @type {string} */ mathString) => {
 				groupsNotMatched: true,
 			});
 
-			// if (![operators.power, operators.root].includes(operator)) {
-			// 	while (groupParenthesesDepths.at(-1) <= 0) {
-			// 		groupParenthesesDepths.pop();
-			// 		mathArray.push({
-			// 			category: categories.anyClosingBracket,
-			// 			name: allBrackets.closingGroup,
-			// 		});
-			// 	}
-			// }
-
-			// if (operator === operators.root) {
-			// 	if ([characterCategories.anyOpeningBracket, characterCategories.symbols, characterCategories.whitespace].includes(categorizedArray[index - 1]?.characterCategory)) {
-			// 		mathArray.push({
-			// 			category: categories.operator,
-			// 			name: operators.squareRoot,
-			// 		});
-			// 	} else {
-			// 		let rootParenthesisDepth = 0;
-			// 		let i = index;
-
-			// 		do {
-			// 			i--;
-
-			// 			if (categorizedArray[i].characterCategory === characterCategories.anyClosingBracket) {
-			// 				rootParenthesisDepth++;
-			// 			} else if (categorizedArray[i].characterCategory === characterCategories.anyOpeningBracket) {
-			// 				rootParenthesisDepth--;
-			// 			}
-			// 		} while (
-			// 			i >= 0
-			// 			&&
-			// 			(
-			// 				rootParenthesisDepth > 0
-			// 				||
-			// 				[characterCategories.anyClosingBracket, characterCategories.number, characterCategories.letters].includes(categorizedArray[i].characterCategory)
-			// 			)
-			// 		);
-
-			// 		mathArray.splice(i, 0, {
-			// 			category: characterCategories.anyOpeningBracket,
-			// 			name: allBrackets.openingGroup,
-			// 		});
-
-			// 		mathArray.push({
-			// 			category: categories.anyClosingBracket,
-			// 			name: allBrackets.closingGroup,
-			// 		});
-
-			// 		mathArray.push({
-			// 			category: categories.operator,
-			// 			name: operators.root,
-			// 		});
-			// 	}
-
-			// 	mathArray.push({
-			// 		category: categories.anyOpeningBracket,
-			// 		name: allBrackets.openingGroup,
-			// 	});
-			// 	groupParenthesesDepths.push(0);
-
-			// } else {
-			// 	mathArray.push({
-			// 		category: categories.operator,
-			// 		name: operator,
-			// 	});
-			// }
-
-			// if (operator === operators.power) {
-			// 	mathArray.push({
-			// 		category: categories.anyOpeningBracket,
-			// 		name: allBrackets.openingGroup,
-			// 	});
-			// 	groupParenthesesDepths.push(0);
-			// }
-
 		} else if (characterCategory === characterCategories.anyOpeningBracket) {
 
 			const bracket = allBracketsSyntaxes.find(({ syntax }) => string === syntax).name;
@@ -267,22 +195,6 @@ export default (/** @type {string} */ mathString) => {
 					name: operators.invisibleTimes,
 				});
 			}
-
-			// while (groupParenthesesDepths.at(-1) <= 0) {
-			// 	groupParenthesesDepths.pop();
-			// 	mathArray.push({
-			// 		category: categories.anyClosingBracket,
-			// 		name: allBrackets.closingGroup,
-			// 	});
-			// }
-
-			// if (groupParenthesesDepths.length > 0) {
-			// 	if (bracket === allBrackets.openingParenthesis) {
-			// 		groupParenthesesDepths[groupParenthesesDepths.length - 1]++;
-			// 	} else if (bracket === allBrackets.closingParenthesis) {
-			// 		groupParenthesesDepths[groupParenthesesDepths.length - 1]--;
-			// 	}
-			// }
 
 			mathArray.push({
 				category: categories.anyOpeningBracket,
@@ -304,14 +216,6 @@ export default (/** @type {string} */ mathString) => {
 				category: categories.whitespace,
 			});
 
-			// while (groupParenthesesDepths.at(-1) <= 0) {
-			// 	groupParenthesesDepths.pop();
-			// 	mathArray.push({
-			// 		category: categories.anyClosingBracket,
-			// 		name: allBrackets.closingGroup,
-			// 	});
-			// }
-
 			if (
 				[categorizedArray[index - 1], categorizedArray[index + 1]].every(({ characterCategory, string } = {}, i) => (
 					[characterCategories.number, characterCategories.letters].includes(characterCategory)
@@ -328,9 +232,10 @@ export default (/** @type {string} */ mathString) => {
 	}
 
 	{
-		const matchGroup = (/** @type {{ index: number, direction: "forwards" | "backwards", disallowedOperators?: string[]}} */ {
+		const matchGroup = (/** @type {{ index: number, direction: "forwards" | "backwards", removeRedundantParentheses?: boolean, disallowedOperators?: string[]}} */ {
 			index: startIndex,
 			direction: directionString,
+			removeRedundantParentheses = true,
 			disallowedOperators = [],
 		}) => {
 			let parenthesesDepth = 0;
@@ -343,11 +248,7 @@ export default (/** @type {string} */ mathString) => {
 			let index = startIndex;
 			let parenthesizedExpression = true;
 
-			// index += direction;
-
 			do {
-				// index += direction;
-
 				index += direction;
 
 				if (mathArray[index]?.category === categories.anyOpeningBracket) {
@@ -377,7 +278,15 @@ export default (/** @type {string} */ mathString) => {
 				)
 			)
 
-			if (parenthesizedExpression && Math.abs(index - startIndex) > 2 && [categories.anyOpeningBracket, categories.anyClosingBracket].includes(mathArray[index - direction]?.category)) {
+			if (
+				removeRedundantParentheses
+				&&
+				parenthesizedExpression
+				&&
+				Math.abs(index - startIndex) > 2
+				&&
+				[categories.anyOpeningBracket, categories.anyClosingBracket].includes(mathArray[index - direction]?.category)
+			) {
 				if (directionString === "forwards") {
 					mathArray.splice(index - 1, 1);
 					mathArray.splice(startIndex + 1, 1);
@@ -392,20 +301,20 @@ export default (/** @type {string} */ mathString) => {
 			if (directionString === "forwards") {
 				mathArray.splice(index, 0, {
 					category: categories.anyClosingBracket,
-					name: allBrackets.closingGroup,
+					name: allBrackets.group,
 				});
 				mathArray.splice(startIndex + 1, 0, {
 					category: categories.anyOpeningBracket,
-					name: allBrackets.openingGroup,
+					name: allBrackets.group,
 				});
 			} else {
 				mathArray.splice(startIndex, 0, {
 					category: categories.anyClosingBracket,
-					name: allBrackets.closingGroup,
+					name: allBrackets.group,
 				});
 				mathArray.splice(index + 1, 0, {
 					category: categories.anyOpeningBracket,
-					name: allBrackets.openingGroup,
+					name: allBrackets.group,
 				});
 			}
 		}
@@ -441,6 +350,7 @@ export default (/** @type {string} */ mathString) => {
 					matchGroup({
 						index: index,
 						direction: "backwards",
+						removeRedundantParentheses: false,
 						disallowedOperators: [
 							operators.plus,
 							operators.minus,
@@ -465,11 +375,14 @@ export default (/** @type {string} */ mathString) => {
 							direction: "forwards",
 						});
 
-						if (mathArray[index + 1]?.category === characterCategories.whitespace) {
-							mathArray.splice(index, 0, {
-								category: categories.operator,
-								name: operators.invisibleTimes,
-							});
+						if (mathArray[index - 1]?.category === characterCategories.whitespace) {
+							if ([categories.anyClosingBracket, categories.keyword, categories.variable, categories.number].includes(mathArray[index - 2]?.category)) {
+
+								mathArray.splice(index, 0, {
+									category: categories.operator,
+									name: operators.invisibleTimes,
+								});
+							}
 						}
 
 					} else {
@@ -510,6 +423,8 @@ export default (/** @type {string} */ mathString) => {
 	}
 
 	mathArray = mathArray.filter(({ category }) => category !== categories.whitespace);
+
+	console.log(mathArray);
 
 	return mathArray;
 };

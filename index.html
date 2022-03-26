@@ -16,22 +16,24 @@
 	<link rel="stylesheet" href="./css/main.css" />
 
 	<script type="module" src="./js/main.js"></script>
+	<link rel="modulepreload" href="./js/mathml/renderMathML.js" />
+	<link rel="modulepreload" href="./js/parser/arrayToTree.js" />
+	<link rel="modulepreload" href="./js/parser/categorizeArray.js" />
+	<link rel="modulepreload" href="./js/parser/matchGroups.js" />
+	<link rel="modulepreload" href="./js/parser/parseString.js" />
+	<link rel="modulepreload" href="./js/parser/stringToArray.js" />
 </head>
 
 <body>
 	<noscript>
-		Please enable JavaScript to view this site.
+		<dialog open>
+			Please enable JavaScript to view this site.
+		</dialog>
 	</noscript>
 
 	<textarea class="📄" spellcheck="false" aria-label="math formula input"></textarea>
 
-	<pre class="🌳"></pre>
-
-	<math class="🧮">
-		<mn>2</mn>
-		<mo>&InvisibleTimes;</mo>
-		<mi>&pi;</mi>
-	</math>
+	<math class="🧮"></math>
 </body>
 
 </html>
