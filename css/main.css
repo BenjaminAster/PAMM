@@ -8,7 +8,7 @@ body {
 
 	display: grid;
 	grid-template: 1fr 1fr / 1fr 1fr;
-	grid-template-areas: 
+	grid-template-areas:
 		"📄 🌳"
 		"🧮 🌳";
 	gap: 1rem;
@@ -24,7 +24,7 @@ body {
 	tab-size: 3;
 	margin-block: 0;
 	grid-area: 🌳;
-	max-block-size: calc(100vb - 1rem);
+	max-block-size: calc(100vh - 1rem);
 	overflow: auto;
 }
 

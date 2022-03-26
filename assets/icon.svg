@@ -1,0 +1,11 @@
+<svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" style="color-scheme: dark light">
+	<style>
+		text {
+			dominant-baseline: central;
+			text-anchor: middle;
+			font: 25rem system-ui;
+		}
+	</style>
+
+	<text x="240" y="240">🧮</text>
+</svg>
