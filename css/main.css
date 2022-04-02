@@ -1,3 +1,4 @@
+@charset "UTF-8";
 
 :root {
 	scrollbar-color: #8888 transparent;
@@ -9,45 +10,15 @@ body {
 	margin: 0;
 	padding: .5rem;
 	min-block-size: 100vh;
-
 	display: grid;
-	grid-template: 1fr / 1fr 1fr;
+	grid-template: 1fr / 1fr;
 	grid-template-areas:
-		"📄 🧮";
-	gap: 1rem;
+		"🧮";
 }
 
 noscript {
 	position: absolute;
 	inset: 0;
 	display: grid;
-	place-items: center;
+	place-content: center;
 }
-
-.📄 {
-	font-size: 1.4rem;
-	resize: none;
-	grid-area: 📄;
-	border: none;
-	border-radius: 1rem;
-	padding: .8rem 1rem;
-	background-color: #8885;
-}
-
-.🧮 {
-	font-size: 1.4rem;
-	grid-area: 🧮;
-	padding-block: 1rem;
-}
-
-@media print {
-	.📄 {
-		display: none;
-	}
-
-	body {
-		grid-template-areas:
-			"🧮 🧮";
-	}
-}
-

@@ -1,0 +1,41 @@
+<textarea class="📝" spellcheck="false" aria-label="math formula input"></textarea>
+
+<math class="🔢"></math>
+
+<style>
+	@import url("./css/global.css");
+
+	:host {
+		display: grid;
+		grid-template: 1fr 1fr / 1fr;
+		grid-template-areas:
+			"📝"
+			"🔢";
+		gap: 1rem;
+		grid-area: 🧮;
+	}
+
+	.📝 {
+		font-size: 1.4rem;
+		resize: none;
+		grid-area: 📝;
+		border: none;
+		border-radius: .4rem;
+		padding: .8rem 1rem;
+		background-color: #8883;
+	}
+
+	.📝:focus-visible {
+		outline: 1px solid #8887;
+		outline-offset: 2px;
+		background-color: #8885;
+	}
+
+	.🔢 {
+		font-size: 1.4rem;
+		text-align: center;
+		grid-area: 🔢;
+		padding-block: 1rem;
+	}
+
+</style>

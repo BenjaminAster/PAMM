@@ -1,0 +1,36 @@
+
+<section aria-label="MathML not supported">
+	<dialog open>
+		<h2>MathML not supported!</h2>
+
+		<p>
+			Please enable the
+			<a href="about://flags/#enable-experimental-web-platform-features">"Experimental Web Platform features" flag in about://flags</a>
+			or use Firefox or Safari.
+		</p>
+	</dialog>
+</section>
+
+<style>
+	@import url("./css/global.css");
+
+	section {
+		position: fixed;
+		inset: 0;
+		display: grid;
+		place-content: center;
+		background-color: #0005;
+	}
+
+	dialog {
+		position: fixed;
+		inset: 0;
+		border: none;
+		border-radius: .4rem;
+		padding: .8rem 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+</style>

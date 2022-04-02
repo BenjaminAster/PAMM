@@ -14,14 +14,18 @@
 	<link rel="icon" href="./assets/icon.svg" />
 
 	<link rel="stylesheet" href="./css/main.css" />
+	<link rel="stylesheet" href="./css/global.css" />
 
 	<script type="module" src="./js/main.js"></script>
+	<link rel="modulepreload" href="./js/utils.js" />
 	<link rel="modulepreload" href="./js/mathml/renderMathML.js" />
 	<link rel="modulepreload" href="./js/parser/arrayToTree.js" />
 	<link rel="modulepreload" href="./js/parser/categorizeArray.js" />
 	<link rel="modulepreload" href="./js/parser/matchGroups.js" />
 	<link rel="modulepreload" href="./js/parser/parseString.js" />
 	<link rel="modulepreload" href="./js/parser/stringToArray.js" />
+
+	<link rel="preload" as="fetch" crossorigin href="./html/Math.c.html" />
 </head>
 
 <body>
@@ -31,9 +35,7 @@
 		</dialog>
 	</noscript>
 
-	<textarea class="📄" spellcheck="false" aria-label="math formula input"></textarea>
-
-	<math class="🧮"></math>
+	<Math- class="🧮"></Math->
 </body>
 
 </html>

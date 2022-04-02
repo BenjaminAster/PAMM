@@ -424,7 +424,5 @@ export default (/** @type {string} */ mathString) => {
 
 	mathArray = mathArray.filter(({ category }) => category !== categories.whitespace);
 
-	console.log(mathArray);
-
 	return mathArray;
 };
