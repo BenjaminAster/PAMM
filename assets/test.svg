@@ -1,0 +1,42 @@
+<svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
+	<style>
+		:root {
+			color-scheme: dark light;
+		}
+
+		foreignObject {
+			inline-size: 100%;
+			block-size: 100%;
+		}
+
+		math {
+			text-align: center;
+			inline-size: 100%;
+			block-size: 100%;
+			display: grid;
+			place-content: center;
+		}
+
+	</style>
+
+	<foreignObject>
+		<math xmlns="http://www.w3.org/1998/Math/MathML">
+			<mrow>
+				<mi>p</mi>
+				<mo>=</mo>
+				<mfrac>
+					<mrow>
+						<mn>1</mn>
+						<mo>+</mo>
+						<msqrt>
+							<mn>5</mn>
+						</msqrt>
+					</mrow>
+					<mn>
+						2
+					</mn>
+				</mfrac>
+			</mrow>
+		</math>
+	</foreignObject>
+</svg>

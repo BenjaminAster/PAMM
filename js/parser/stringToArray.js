@@ -106,7 +106,7 @@ export const allBracketsSyntaxes = [
 	},
 ];
 
-const keywordNames = new class {
+export const keywordNames = new class {
 	sine = "sine";
 	cosine = "cosine";
 	pi = "pi";

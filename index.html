@@ -6,18 +6,24 @@
 	<meta name="viewport" content="width=device-width" />
 	<meta name="color-scheme" content="dark light" />
 	<meta name="robots" content="all" />
-	<meta name="theme-color" content="black" />
+	<meta name="author" content="Benjamin Aster" />
 	<meta name="description" content="A math formula editor" />
+	<meta name="repository" content="https://github.com/BenjaminAster/PAMM" />
 
-	<title>Math formula editor</title>
+	<title>Pretty Awesome Math Markup</title>
+
+	<base href="./" />
 
 	<link rel="icon" href="./assets/icon.svg" />
+	<link rel="canonical" href="https://benjaminaster.com/pamm/" />
 
 	<link rel="stylesheet" href="./css/main.css" />
-	<link rel="stylesheet" href="./css/global.css" />
+	<link rel="preload" as="style" href="./css/global.css" />
 
 	<script type="module" src="./js/main.js"></script>
 	<link rel="modulepreload" href="./js/utils.js" />
+	<link rel="modulepreload" href="./js/files.js" />
+	<link rel="modulepreload" href="./js/customElements.js" />
 	<link rel="modulepreload" href="./js/mathml/renderMathML.js" />
 	<link rel="modulepreload" href="./js/parser/arrayToTree.js" />
 	<link rel="modulepreload" href="./js/parser/categorizeArray.js" />
@@ -25,7 +31,9 @@
 	<link rel="modulepreload" href="./js/parser/parseString.js" />
 	<link rel="modulepreload" href="./js/parser/stringToArray.js" />
 
-	<link rel="preload" as="fetch" crossorigin href="./html/Math.c.html" />
+	<link rel="preload" as="fetch" crossorigin href="./html/math.c.html" />
+	<link rel="preload" as="fetch" crossorigin href="./html/header.c.html" />
+	<link rel="preload" as="fetch" crossorigin href="./html/my-files.c.html" />
 </head>
 
 <body>
@@ -35,7 +43,13 @@
 		</dialog>
 	</noscript>
 
-	<Math- class="🧮"></Math->
+	<header>
+		<c-header></c-header>
+	</header>
+
+	<main>
+		<c-my-files></c-my-files>
+	</main>
 </body>
 
 </html>

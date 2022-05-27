@@ -1,0 +1,44 @@
+
+<input type="text" class="file-name" title="File name" />
+
+<button class="save">Save</button>
+
+<button class="new-disk-file">New file on disk</button>
+
+<button class="new-browser-file">New file in browser</button>
+
+<button class="my-files">My files</button>
+
+<style>
+	@import url("./css/global.css") layer(global);
+
+	:host {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: .8rem;
+		padding: .5rem .6rem;
+		background-color: blueViolet;
+	}
+
+	input.file-name {
+		margin-inline-end: auto;
+		background: none;
+		border: 1px solid #fff4;
+		border-radius: .4rem;
+		padding: .5rem .6rem;
+		outline: none;
+	}
+
+	input.file-name:focus-visible {
+		background-color: #0002;
+	}
+
+	button {
+		/* border: 2px solid #0002; */
+		padding: .4rem .8rem;
+		border-radius: .4rem;
+		background-color: #0002;
+	}
+
+</style>

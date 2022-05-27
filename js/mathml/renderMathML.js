@@ -1,5 +1,5 @@
 
-import { categories, operators, allBracketsSyntaxes } from "../parser/stringToArray.js";
+import { categories, operators, allBracketsSyntaxes, keywordNames } from "../parser/stringToArray.js";
 
 export default (/** @type {any[]} */ mathTree) => {
 
@@ -60,13 +60,13 @@ export default (/** @type {any[]} */ mathTree) => {
 				} else if (item.name === operators.plus) {
 
 					const element = document.createElement("mo");
-					element.textContent = "+";
+					element.innerHTML = "&plus;";
 					elementArray.push(element);
 
 				} else if (item.name === operators.minus) {
 
 					const element = document.createElement("mo");
-					element.textContent = "-";
+					element.innerHTML = "&minus;";
 					elementArray.push(element);
 
 				} else if (item.name === operators.times) {
@@ -78,7 +78,7 @@ export default (/** @type {any[]} */ mathTree) => {
 				} else if (item.name === operators.divide) {
 
 					const element = document.createElement("mo");
-					element.textContent = "/";
+					element.innerHTML = "&divide;";
 					elementArray.push(element);
 
 				} else if (item.name === operators.invisibleTimes) {
@@ -94,12 +94,15 @@ export default (/** @type {any[]} */ mathTree) => {
 					elementArray.push(element);
 
 				}
+
 			} else if (item.category === categories.keyword) {
 
-				const element = document.createElement("mi");
-				element.textContent = item.string;
+				if (item.name === keywordNames.pi) {
+					const element = document.createElement("mi");
+					element.innerHTML = "&pi;";
 
-				elementArray.push(element);
+					elementArray.push(element);
+				}
 
 			} else if (item.category === categories.variable) {
 

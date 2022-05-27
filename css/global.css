@@ -1,4 +1,67 @@
+@charset "UTF-8";
 
-:where(p, h1, h2, h3, h4, h5, h6) {
+p, h1, h2, h3, h4, h5, h6 {
 	margin-block: 0;
 }
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: 600;
+}
+
+math {
+	/* font-family:
+		"Cambria Math",
+		"DejaVu Math TeX Gyre",
+
+		"Asana Math",
+		"Stix Two Math",
+		"Latin Modern Math",
+		"Libertinus Math",
+		"Lucida Bright Math",
+		"Minion Math",
+		"STIX Math",
+		"TeX Gyre Bonum Math",
+		"TeX Gyre Pagella Math",
+		"TeX Gyre Schola Math",
+		"TeX Gyre Termes Math",
+		"XITS Math",
+		"Garamond Math",
+		"Fira Math",
+		"GFS Neohellenic Math",
+		"Asana",
+		"STIX",
+		math,
+		serif; */
+}
+
+label, button, summary, select, option {
+	cursor: pointer;
+}
+
+button, input, textarea, select, option {
+	font-size: unset;
+	font-family: unset;
+	font-weight: unset;
+	background: unset;
+	color: unset;
+	border: unset;
+	padding: unset;
+}
+
+ul {
+	margin-block: 0;
+	padding-inline-start: 0;
+	list-style: none;
+}
+
+a {
+	color: unset;
+	text-decoration: none;
+}
+
+@media (hover: none) {
+	:any-link, button, summary, label {
+		-webkit-tap-highlight-color: transparent;
+	}
+}
+

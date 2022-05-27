@@ -1,11 +1,87 @@
 <svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" style="color-scheme: dark light">
 	<style>
-		text {
-			dominant-baseline: central;
-			text-anchor: middle;
-			font: 25rem system-ui;
+		:root {
+			--wood: peru;
+			--rod: sandyBrown;
 		}
+
+		.frame {
+			fill: var(--wood);
+		}
+
+		.rod {
+			fill: var(--rod);
+		}
+
 	</style>
 
-	<text x="240" y="240">🧮</text>
+	<!-- wooden frame -->
+	<g>
+		<symbol id="frame">
+			<path class="frame" d="
+				M 0 30
+				a 30 30 0 0 1 60 0
+				v 450
+				h -60
+				Z
+			" />
+		</symbol>
+
+		<use href="#frame" x="0" y="0" />
+		<use href="#frame" x="420" y="0" />
+	</g>
+
+	<!-- metal rods -->
+	<g>
+		<symbol id="rod">
+			<path class="rod" d="
+				M 0 0
+				h 360
+				v 30
+				h -360
+				Z
+			" />
+		</symbol>
+
+		<use href="#rod" x="60" y="60" />
+		<use href="#rod" x="60" y="210" />
+		<use href="#rod" x="60" y="360" />
+	</g>
+
+	<!-- beads -->
+	<g>
+		<symbol id="bead">
+			<path class="bead" d="
+				M 0 30
+				a 30 30 0 0 1 60 0
+				v 60
+				a 30 30 0 0 1 -60 0
+				Z
+			" />
+		</symbol>
+
+		<g fill="limeGreen">
+			<use href="#bead" x="60" y="15" />
+
+			<use href="#bead" x="240" y="15" />
+			<use href="#bead" x="300" y="15" />
+			<use href="#bead" x="360" y="15" />
+		</g>
+
+		<g fill="deepSkyBlue">
+			<use href="#bead" x="60" y="165" />
+			<use href="#bead" x="120" y="165" />
+			<use href="#bead" x="180" y="165" />
+
+			<use href="#bead" x="360" y="165" />
+		</g>
+
+		<g fill="crimson">
+			<use href="#bead" x="60" y="315" />
+			<use href="#bead" x="120" y="315" />
+			
+			<use href="#bead" x="300" y="315" />
+			<use href="#bead" x="360" y="315" />
+		</g>
+	</g>
 </svg>
