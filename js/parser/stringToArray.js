@@ -239,7 +239,7 @@ export default (/** @type {string} */ mathString) => {
 			disallowedOperators = [],
 		}) => {
 			let parenthesesDepth = 0;
-			const direction = directionString === "forwards" ? 1 : -1;
+			const direction = (directionString === "forwards") ? 1 : -1;
 
 			if (mathArray[startIndex + direction].category === categories.whitespace) {
 				startIndex += direction;
@@ -251,10 +251,14 @@ export default (/** @type {string} */ mathString) => {
 			do {
 				index += direction;
 
+				if (mathArray[index]?.category === {
+					"forwards": categories.anyOpeningBracket,
+					"backwards": categories.anyClosingBracket,
+				}[directionString] && index !== startIndex + direction && parenthesesDepth <= 0) {
+					parenthesizedExpression = false;
+				}
+
 				if (mathArray[index]?.category === categories.anyOpeningBracket) {
-					if (index !== startIndex + direction && parenthesesDepth <= 0) {
-						parenthesizedExpression = false;
-					}
 					parenthesesDepth += direction;
 				} else if (mathArray[index]?.category === categories.anyClosingBracket) {
 					parenthesesDepth -= direction;
@@ -276,7 +280,7 @@ export default (/** @type {string} */ mathString) => {
 						!(mathArray[index].category === categories.operator && disallowedOperators.includes(mathArray[index].name))
 					)
 				)
-			)
+			);
 
 			if (
 				removeRedundantParentheses

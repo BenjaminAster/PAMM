@@ -1,5 +1,8 @@
 
 import { categories, operators, allBracketsSyntaxes, keywordNames } from "../parser/stringToArray.js";
+import { mathmlSupported } from "../utils.js";
+
+const createMathElement = (/** @type {string} */ name) => document.createElement("m" + name);
 
 export default (/** @type {any[]} */ mathTree) => {
 
@@ -14,7 +17,7 @@ export default (/** @type {any[]} */ mathTree) => {
 					const numerator = recursiveRender(item.numerator);
 					const denominator = recursiveRender(item.denominator);
 
-					const element = document.createElement("mfrac");
+					const element = createMathElement("frac");
 					element.appendChild(numerator);
 					element.appendChild(denominator);
 					elementArray.push(element);
@@ -24,7 +27,7 @@ export default (/** @type {any[]} */ mathTree) => {
 					const base = recursiveRender(item.base);
 					const exponent = recursiveRender(item.exponent);
 
-					const element = document.createElement("msup");
+					const element = createMathElement("sup");
 					element.appendChild(base);
 					element.appendChild(exponent);
 					elementArray.push(element);
@@ -34,7 +37,7 @@ export default (/** @type {any[]} */ mathTree) => {
 					const base = recursiveRender(item.base);
 					const index = recursiveRender(item.index);
 
-					const element = document.createElement("msub");
+					const element = createMathElement("sub");
 					element.appendChild(base);
 					element.appendChild(index);
 					elementArray.push(element);
@@ -44,7 +47,7 @@ export default (/** @type {any[]} */ mathTree) => {
 					const degree = recursiveRender(item.degree);
 					const radicand = recursiveRender(item.radicand);
 
-					const element = document.createElement("mroot");
+					const element = createMathElement("root");
 					element.appendChild(radicand);
 					element.appendChild(degree);
 					elementArray.push(element);
@@ -53,43 +56,44 @@ export default (/** @type {any[]} */ mathTree) => {
 
 					const radicand = recursiveRender(item.radicand);
 
-					const element = document.createElement("msqrt");
+					const element = createMathElement("sqrt");
 					element.appendChild(radicand);
 					elementArray.push(element);
 
 				} else if (item.name === operators.plus) {
 
-					const element = document.createElement("mo");
+					const element = createMathElement("o");
 					element.innerHTML = "&plus;";
 					elementArray.push(element);
 
 				} else if (item.name === operators.minus) {
 
-					const element = document.createElement("mo");
-					element.innerHTML = "&minus;";
+					const element = createMathElement("o");
+					// element.innerHTML = "&minus;";
+					element.innerHTML = mathmlSupported ? "&minus;" : "&ndash;";
 					elementArray.push(element);
 
 				} else if (item.name === operators.times) {
 
-					const element = document.createElement("mo");
+					const element = createMathElement("o");
 					element.innerHTML = "&sdot;";
 					elementArray.push(element);
 
 				} else if (item.name === operators.divide) {
 
-					const element = document.createElement("mo");
+					const element = createMathElement("o");
 					element.innerHTML = "&divide;";
 					elementArray.push(element);
 
 				} else if (item.name === operators.invisibleTimes) {
 
-					const element = document.createElement("mo");
+					const element = createMathElement("o");
 					element.innerHTML = "&InvisibleTimes;";
 					elementArray.push(element);
 
 				} else if (item.name === operators.equals) {
 
-					const element = document.createElement("mo");
+					const element = createMathElement("o");
 					element.innerHTML = "=";
 					elementArray.push(element);
 
@@ -98,7 +102,7 @@ export default (/** @type {any[]} */ mathTree) => {
 			} else if (item.category === categories.keyword) {
 
 				if (item.name === keywordNames.pi) {
-					const element = document.createElement("mi");
+					const element = createMathElement("i");
 					element.innerHTML = "&pi;";
 
 					elementArray.push(element);
@@ -106,24 +110,24 @@ export default (/** @type {any[]} */ mathTree) => {
 
 			} else if (item.category === categories.variable) {
 
-				const element = document.createElement("mi");
+				const element = createMathElement("i");
 				element.textContent = item.string;
 
 				elementArray.push(element);
 
 			} else if (item.category === categories.number) {
 
-				const element = document.createElement("mn");
+				const element = createMathElement("n");
 				element.textContent = item.string;
 
 				elementArray.push(element);
 
 			} else if (item.category === categories.anyBracket) {
 
-				const openingBracket = document.createElement("mo");
+				const openingBracket = createMathElement("o");
 				openingBracket.textContent = allBracketsSyntaxes.find(({ name, type }) => type === categories.anyOpeningBracket && name == item.name).syntax;
 
-				const closingBracket = document.createElement("mo");
+				const closingBracket = createMathElement("o");
 				closingBracket.textContent = allBracketsSyntaxes.find(({ name, type }) => type === categories.anyClosingBracket && name == item.name).syntax;
 
 				elementArray.push(openingBracket, recursiveRender(item.content), closingBracket);
@@ -133,7 +137,7 @@ export default (/** @type {any[]} */ mathTree) => {
 
 		const fragment = new DocumentFragment();
 		fragment.append(...elementArray);
-		const mathRow = document.createElement("mrow");
+		const mathRow = createMathElement("row");
 		mathRow.appendChild(fragment);
 		return mathRow;
 	};

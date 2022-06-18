@@ -4,10 +4,18 @@
 
 :root {
 	scrollbar-color: #8888 transparent;
+
+	--background: #1b1b1e;
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--background: white;
+	}
 }
 
 body {
-	font-family: system-ui;
+	font-family: system-ui, sans-serif;
 	box-sizing: border-box;
 	margin: 0;
 	min-block-size: 100vh;
@@ -17,6 +25,10 @@ body {
 	grid-template-areas:
 		"titlebar"
 		"main";
+	background-color: var(--background);
+	-moz-text-size-adjust: none;
+	-webkit-text-size-adjust: none;
+	text-size-adjust: none;
 }
 
 header {
@@ -34,6 +46,23 @@ noscript {
 	inset: 0;
 	display: grid;
 	place-content: center;
+}
+
+/* Arabic (ar), Hebrew (iw), Pashto (ps), Persian (fa), Sindhi (sd), Urdu (ur), Uyghur (ug), Yiddish (yi) */
+:root:is(:lang(ar), :lang(iw), :lang(ps), :lang(fa), :lang(sd), :lang(ur), :lang(ug), :lang(yi)) {
+	direction: rtl;
+}
+
+@media (hover) {
+	body {
+		min-block-size: 100vb;
+	}
+}
+
+@media (hover: none) and ((display-mode: fullscreen) or (display-mode: standalone)) {
+	body {
+		overscroll-behavior-y: none;
+	}
 }
 
 @media print {

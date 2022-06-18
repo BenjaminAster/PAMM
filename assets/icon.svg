@@ -2,7 +2,6 @@
 	<style>
 		:root {
 			--wood: peru;
-			--rod: sandyBrown;
 		}
 
 		.frame {
@@ -10,7 +9,7 @@
 		}
 
 		.rod {
-			fill: var(--rod);
+			fill: var(--wood);
 		}
 
 	</style>
@@ -76,7 +75,7 @@
 			<use href="#bead" x="360" y="165" />
 		</g>
 
-		<g fill="crimson">
+		<g fill="tomato">
 			<use href="#bead" x="60" y="315" />
 			<use href="#bead" x="120" y="315" />
 			

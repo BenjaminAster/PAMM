@@ -7,7 +7,7 @@ export default (/** @type {any[]} */ mathArray) => {
 		content: [],
 	}];
 
-	for (const [index, item] of mathArray.entries()) {
+	for (const item of mathArray) {
 		if (item.category === categories.anyOpeningBracket) {
 			groupsTree.push({
 				type: item.name,

@@ -1,0 +1,47 @@
+{
+	"name": "Pretty Awesome Math Markup",
+	"short_name": "PAMM",
+	"description": "A user-friendly LaTeX alternative with a live editor.",
+	"start_url": "./",
+	"scope": "./",
+	"display": "standalone",
+	"display_override": ["window-controls-overlay"],
+	"categories": ["education"],
+	"lang": "en",
+	"theme_color": "blueViolet",
+	"background_color": "#1b1b1e",
+	"icons": [
+		{
+			"src": "./assets/icon.png",
+			"type": "image/png",
+			"sizes": "256x256",
+			"purpose": "any monochrome"
+		},
+		{
+			"src": "./assets/maskable.png",
+			"type": "image/png",
+			"sizes": "512x512",
+			"purpose": "maskable"
+		}
+	],
+	"file_handlers": [{
+		"action": "./",
+		"accept": {
+			"text/pretty-awesome-math-markup": [".pamm"]
+		},
+		"icons": [
+			{
+				"src": "./assets/icon.png",
+				"type": "image/png",
+				"sizes": "256x256"
+			}
+		],
+		"launch_type": "multiple-clients"
+	}],
+	"screenshots": [{
+		"src": "./assets/icon.png",
+		"sizes": "256x256",
+		"type": "image/png",
+		"label": "icon of Pretty Awesome Math Markup"
+	}]
+}
