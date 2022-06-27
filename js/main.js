@@ -2,27 +2,18 @@
 /// <reference path="../../non-standards/index.d.ts" />
 /// <reference path="./global.d.ts" />
 
-import parseString from "./parser/parseString.js";
-import generateMathML from "./mathml/renderMathML.js";
-
 import { $, mathmlSupported } from "./utils.js";
+
 import "./app.js";
 import { keyDown } from "./files.js";
 
-navigator.serviceWorker.register("./service-worker.js", { scope: "./", updateViaCache: "all" });
+import parseString from "./parser/parseString.js";
+import generateMathML from "./mathml/renderMathML.js";
 
 export const startRendering = () => {
-	const textarea = /** @type {HTMLInputElement} */ ($(".text-input", $("c-math").shadowRoot));
+	const textarea = /** @type {HTMLInputElement} */ ($("c-math .text-input"));
 
-	let mathElement = $(".mathml-output", $("c-math").shadowRoot);
-
-	// if (!MathMLSupported) {
-	// 	mathElement.remove();
-	// 	mathElement = /** @type {HTMLElement} */ (new DOMParser().parseFromString(
-	// 		mathElement.outerHTML.replace(/^<math /, "<math-ml ").replace(/<\/math>$/, "</math-ml>"), "text/html"
-	// 	).body.firstElementChild);
-	// 	$("c-math").shadowRoot.appendChild(mathElement);
-	// }
+	let mathElement = $("c-math .mathml-output");
 
 	textarea.addEventListener("input", function (/** @type {InputEvent} */ { data }) {
 		const { value, selectionStart, selectionEnd } = this;

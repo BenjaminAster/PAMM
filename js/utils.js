@@ -27,9 +27,9 @@ openRequest.addEventListener("upgradeneeded", async () => {
 	const folderStore = openRequest.result.createObjectStore("folders", { keyPath: "id" });
 	const fileStore = openRequest.result.createObjectStore("files", { keyPath: "id" });
 
-	folderStore.put({
-		id: "root",
-		name: "home",
+	folderStore.add({
+		id: "home",
+		name: "Home",
 		parentFolder: null,
 		folders: [
 			{ id: "11111111-1111-1111-1111-111111111111" },
@@ -39,13 +39,14 @@ openRequest.addEventListener("upgradeneeded", async () => {
 			{ id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" },
 			{ id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
 			{ id: "cccccccc-cccc-cccc-cccc-cccccccccccc" },
+			...[..."hijklmnopqrstuvwxyz"].map((letter) => ({ id: "$$$$$$$$-$$$$-$$$$-$$$$-$$$$$$$$$$$$".replaceAll("$", letter) })),
 		],
 	});
 
-	folderStore.put({
+	folderStore.add({
 		id: "11111111-1111-1111-1111-111111111111",
 		name: "1111",
-		parentFolder: { id: "root" },
+		parentFolder: { id: "home" },
 		folders: [
 			{ id: "33333333-3333-3333-3333-333333333333" }
 		],
@@ -55,17 +56,17 @@ openRequest.addEventListener("upgradeneeded", async () => {
 		],
 	});
 
-	folderStore.put({
+	folderStore.add({
 		id: "22222222-2222-2222-2222-222222222222",
 		name: "2222",
-		parentFolder: { id: "root" },
+		parentFolder: { id: "home" },
 		folders: [],
 		files: [
 			{ id: "ffffffff-ffff-ffff-ffff-ffffffffffff" },
 		],
 	});
 
-	folderStore.put({
+	folderStore.add({
 		id: "33333333-3333-3333-3333-333333333333",
 		name: "3333",
 		parentFolder: { id: "11111111-1111-1111-1111-111111111111" },
@@ -75,47 +76,63 @@ openRequest.addEventListener("upgradeneeded", async () => {
 		],
 	});
 
-	fileStore.put({
+	fileStore.add({
 		id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 		name: "aaaa",
 		content: "aaaa",
+		parentFolder: { id: "home" },
 	});
 
-	fileStore.put({
+	fileStore.add({
 		id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
 		name: "bbbb",
 		content: "bbbb",
+		parentFolder: { id: "home" },
 	});
 
-	fileStore.put({
+	fileStore.add({
 		id: "cccccccc-cccc-cccc-cccc-cccccccccccc",
 		name: "cccc",
 		content: "cccc",
+		parentFolder: { id: "home" },
 	});
 
-	fileStore.put({
+	fileStore.add({
 		id: "dddddddd-dddd-dddd-dddd-dddddddddddd",
 		name: "dddd",
 		content: "dddd",
+		parentFolder: { id: "11111111-1111-1111-1111-111111111111" },
 	});
 
-	fileStore.put({
+	fileStore.add({
 		id: "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
 		name: "eeee",
 		content: "eeee",
+		parentFolder: { id: "11111111-1111-1111-1111-111111111111" },
 	});
 
-	fileStore.put({
+	fileStore.add({
 		id: "ffffffff-ffff-ffff-ffff-ffffffffffff",
 		name: "ffff",
 		content: "ffff",
+		parentFolder: { id: "22222222-2222-2222-2222-222222222222" },
 	});
 
-	fileStore.put({
+	fileStore.add({
 		id: "gggggggg-gggg-gggg-gggg-gggggggggggg",
 		name: "gggg",
 		content: "gggg",
+		parentFolder: { id: "33333333-3333-3333-3333-333333333333" },
 	});
+
+	for (const letter of "hijklmnopqrstuvwxyz") {
+		fileStore.add({
+			id: "$$$$$$$$-$$$$-$$$$-$$$$-$$$$$$$$$$$$".replaceAll("$", letter),
+			name: letter.repeat(4),
+			content: letter.repeat(4),
+			parentFolder: { id: "home" },
+		});
+	}
 }, { once: true });
 
 openRequest.addEventListener("error", () => console.error(openRequest.error));
@@ -172,35 +189,3 @@ export const database = new class {
 		});
 	};
 };
-
-{
-	// console.time();
-	// await Promise.all([
-	// 	"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-	// 	"bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-	// 	"cccccccc-cccc-cccc-cccc-cccccccccccc",
-	// 	"dddddddd-dddd-dddd-dddd-dddddddddddd",
-	// 	"eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
-	// 	"ffffffff-ffff-ffff-ffff-ffffffffffff",
-	// 	"gggggggg-gggg-gggg-gggg-gggggggggggg",
-	// ].map(async (id) => {
-	// 	const file = await database.get({ store: "files", id });
-	// 	console.timeLog();
-	// }));
-	// console.timeEnd();
-
-	// console.time();
-	// for (const id of [
-	// 	"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-	// 	"bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-	// 	"cccccccc-cccc-cccc-cccc-cccccccccccc",
-	// 	"dddddddd-dddd-dddd-dddd-dddddddddddd",
-	// 	"eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
-	// 	"ffffffff-ffff-ffff-ffff-ffffffffffff",
-	// 	"gggggggg-gggg-gggg-gggg-gggggggggggg",
-	// ]) {
-	// 	const file = await database.get({ store: "files", id });
-	// 	console.timeLog();
-	// };
-	// console.timeEnd();
-}

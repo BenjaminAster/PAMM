@@ -3,29 +3,29 @@ import { $, appMeta, database, fileSystemAccessSupported, isApple, mathmlSupport
 import "./app.js";
 import { startRendering } from "./main.js";
 
-const shadows = new class {
-	get files() { return $("c-files").shadowRoot };
-	get math() { return $("c-math").shadowRoot };
-	get header() { return $("c-header").shadowRoot };
-};
+/* TODO:
+ - replace native dialogs with custom ones
+ - prevent folders from being dropped into containing or contained folder
+ - don't re-render all breadcrumb elements every time
+*/
 
 const elements = new class {
-	get textInput() { return /** @type {HTMLTextAreaElement} */ ($(".text-input", shadows.math)) };
-	get myFilesButton() { return /** @type {HTMLButtonElement} */ ($("[data-action=my-files]", shadows.header)) };
-	get saveButton() { return /** @type {HTMLButtonElement} */ ($("[data-action=save]", shadows.header)) };
-	get downloadButton() { return /** @type {HTMLButtonElement} */ ($("[data-action=download]", shadows.header)) };
-	get openButton() { return /** @type {HTMLButtonElement} */ ($("[data-action=open]", shadows.header)) };
-	get uploadButton() { return /** @type {HTMLButtonElement} */ ($("[data-action=upload]", shadows.header)) };
-	get newFolderButton() { return /** @type {HTMLButtonElement} */ ($("[data-action=new-folder]", shadows.files)) };
-	get newBrowserFileButton() { return /** @type {HTMLButtonElement} */ ($("[data-action=new-browser-file]", shadows.files)) };
-	get newDiskFileButton() { return /** @type {HTMLButtonElement} */ ($("[data-action=new-disk-file]", shadows.files)) };
-	get foldersUL() { return /** @type {HTMLUListElement} */ ($(".folders", shadows.files)) };
-	get filesUL() { return /** @type {HTMLUListElement} */ ($(".files", shadows.files)) };
-	get breadcrumbUL() { return /** @type {HTMLUListElement} */ ($("nav.breadcrumb ul", shadows.files)) };
+	get textInput() { return /** @type {HTMLTextAreaElement} */ ($("c-math .text-input")) };
+	get myFilesButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=my-files]")) };
+	get saveButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=save]")) };
+	get downloadButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=download]")) };
+	get openButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=open]")) };
+	get uploadButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=upload]")) };
+	get newFolderButton() { return /** @type {HTMLButtonElement} */ ($("c-files [data-action=new-folder]")) };
+	get newBrowserFileButton() { return /** @type {HTMLButtonElement} */ ($("c-files [data-action=new-browser-file]")) };
+	get newDiskFileButton() { return /** @type {HTMLButtonElement} */ ($("c-files [data-action=new-disk-file]")) };
+	get foldersUL() { return /** @type {HTMLUListElement} */ ($("c-files .folders")) };
+	get filesUL() { return /** @type {HTMLUListElement} */ ($("c-files .files")) };
+	get breadcrumbUL() { return /** @type {HTMLUListElement} */ ($("c-files nav.breadcrumb ul")) };
 };
 
 let currentFolder = {
-	id: "root",
+	id: "home",
 	name: "home",
 	parentFolder: /** @type {{ id: string }} */ (null),
 	folders: [],
@@ -110,6 +110,43 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 		async ([items, store]) => await Promise.all(items.map(async ({ id }) => await database.get({ store, id })))
 	));
 
+	const onDragStart = (/** @type {{ type: itemType, id: string }} */ { type, id }) => async (/** @type {DragEvent} */ event) => {
+		event.dataTransfer.effectAllowed = "move";
+		event.dataTransfer.setData("text/plain", JSON.stringify({ type, id }));
+	};
+
+	const onDrop = (/** @type {{ folder: any }} */ { folder }) => async (/** @type {DragEvent} */ event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		const data = (() => {
+			try {
+				return JSON.parse(event.dataTransfer.getData("text/plain") ?? null);
+			} catch { }
+		})();
+		if (!data) return;
+		const /** @type {string} */ droppedItemStore = {
+			folder: "folders",
+			file: "files",
+		}[data.type];
+
+		console.log(data);
+
+		const droppedItem = await database.get({ store: droppedItemStore, id: data.id });
+		folder[droppedItemStore].push({ id: droppedItem.id });
+		await database.put({ store: "folders", data: folder });
+
+		console.log(droppedItem);
+
+		const droppedItemParentfolder = await database.get({ store: "folders", id: droppedItem.parentFolder.id });
+		droppedItemParentfolder[droppedItemStore] = droppedItemParentfolder[droppedItemStore].filter(({ id }) => id !== droppedItem.id);
+		await database.put({ store: "folders", data: droppedItemParentfolder });
+
+		droppedItem.parentFolder = { id: folder.id };
+		await database.put({ store: droppedItemStore, data: droppedItem });
+
+		await displayFolder({ id: currentFolder.id });
+	};
+
 	for (const [items, UL, type, store] of [[folders, elements.foldersUL, "folder", "folders"], [files, elements.filesUL, "file", "files"]]) {
 
 		for (const item of [...UL.children].filter(({ classList }) => classList.contains("item"))) item.remove();
@@ -122,6 +159,11 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 			// @ts-ignore
 			$("a", clone).href = $("[data-action=permalink]", clone).href = `?${type}=${item.id}`;
 			$("a", clone).addEventListener("click", itemClickHandler({ type, id: item.id }));
+			$("a", clone).addEventListener("dragstart", onDragStart({ type, id: item.id }));
+			if (type === "folder") {
+				clone.addEventListener("dragover", (event) => event.preventDefault());
+				clone.addEventListener("drop", onDrop({ folder: item }));
+			}
 			$("[data-action=rename]", clone).addEventListener("click", async () => {
 				await 0;
 				const newName = window.prompt(`Rename ${type}`, item.name)?.trim(); // TODO: use a selfmade dialog
@@ -159,9 +201,20 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 				}
 			});
 			if (type === "file") {
-				$("[data-action=download", clone).addEventListener("click", async () => {
+				$("[data-action=download]", clone).addEventListener("click", async () => {
 					const { content } = await database.get({ store: "files", id: item.id });
 					fileUtils.downloadFile({ name: item.name + appMeta.fileExtension, content });
+				});
+				$("[data-action=share]", clone).addEventListener("click", async () => {
+					await 0;
+					const shareObject = {
+						files: [new File([new Blob([item.content], { type: "text/plain" })], `${item.name}.txt`, { type: "text/plain" })],
+					};
+					if (navigator.canShare?.(shareObject)) {
+						await navigator.share?.(shareObject);
+					} else {
+						window.alert("Your browser does not support sharing files. Please download the file and share it manually."); // TODO: use a selfmade dialog
+					}
 				});
 			}
 			$("[data-action=permalink]", clone).addEventListener("click", itemClickHandler({ type, id: item.id, changeURL: true }));
@@ -179,11 +232,14 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 		let folder = currentFolder;
 
 		do {
-			const clone = /** @type {DocumentFragment} */ (template.content.cloneNode(true));
+			const /** @type {HTMLElement} */ clone = /** @type {any} */ (template.content.cloneNode(true)).firstElementChild;
 			$(".name", clone).textContent = folder.name;
 			$("a", clone).setAttribute("href", `?folder=${folder.id}`);
 			$("a", clone).addEventListener("click", itemClickHandler({ type: "folder", id: folder.id }));
-			fragment.insertBefore(clone.firstElementChild, fragment.firstElementChild);
+			$("a", clone).addEventListener("dragstart", onDragStart({ type: "folder", id: folder.id }));
+			clone.addEventListener("dragover", (event) => event.preventDefault());
+			clone.addEventListener("drop", onDrop({ folder }));
+			fragment.insertBefore(clone, fragment.firstElementChild);
 		} while (folder.parentFolder && (folder = await database.get({ store: "folders", id: folder.parentFolder.id })));
 
 		breadcrumbUL.appendChild(fragment);
@@ -241,7 +297,7 @@ const fileUtils = new class {
 		} else {
 			// TODO: use a selfmade dialog:
 			window.alert(
-				'Your browser does not support interacting with local files ("File System Access API"). '
+				'Your browser does not support interacting with local files (File System Access API). '
 				+ 'Please use a Chromium-based browser like Google Chrome or Microsoft Edge.'
 			);
 		}
@@ -297,7 +353,7 @@ const fileUtils = new class {
 		} else {
 			// TODO: use a selfmade dialog:
 			window.alert(
-				'Your browser does not support interacting with local files ("File System Access API"). '
+				'Your browser does not support interacting with local files (File System Access API). '
 				+ 'Please use a Chromium-based browser like Google Chrome or Microsoft Edge.'
 			);
 		}
@@ -370,7 +426,7 @@ window.addEventListener("popstate", async (event) => {
 		await renderFile({ storageType: "indexeddb", id: history.state.fileId });
 	} else {
 		if (!(currentFolder.id = history.state?.folderId)) {
-			currentFolder.id = "root";
+			currentFolder.id = "home";
 			history.replaceState({ folderId: currentFolder.id }, "");
 		}
 		toggleView({ filesView: true });

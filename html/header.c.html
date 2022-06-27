@@ -1,146 +1,163 @@
 
+<a href="https://github.com/BenjaminAster/PAMM" class="github icon:github" title="View on GitHub"></a>
 <img src="./assets/icon.svg" class="icon" alt="icon of PAMM" />
 <input type="text" class="file-name math-only" title="File name" />
 
 <h1 class="title">Pretty Awesome Math Markup</h1>
 
-<button data-action="save" class="math-only icon:device-floppy" title="Save"><span class="text">Save</span></button>
+<button data-action="save" class="math-only icon:device-floppy" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
 <button data-action="download" class="math-only icon:download" title="Download"><span class="text">Download</span></button>
 <button data-action="my-files" class="math-only icon:view-grid" title="My files"><span class="text">My files</span></button>
 
 <button data-action="open" class="files-only icon:folder-open" title="Open"><span class="text">Open</span></button>
 <button data-action="upload" class="files-only icon:upload" title="Upload"><span class="text">Upload</span></button>
 
+<button data-action="install" class="icon:install-desktop" title="Install app" hidden><span class="text">Install app</span></button>
+
 <style>
-	@import url("./css/global.css") layer(global);
-
-	:host {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: .5rem;
-		--padding-inline: .5rem;
-		--padding-block: .5rem;
-		padding: var(--padding-block) var(--padding-inline);
-		background-color: blueViolet;
-		color-scheme: dark;
-		color: white;
-		app-region: drag;
-		border-radius: .7rem;
-		margin: .7rem;
-		margin-block-end: 0;
-		transition: var(--no-transition, padding-inline .5s);
-		box-sizing: border-box;
-	}
-
-	:host([data-view=files]) .math-only {
-		display: none;
-	}
-
-	:host([data-view=math]) .files-only {
-		display: none;
-	}
-
-	@media (display-mode: standalone) {
+	@layer elements {
 		:host {
-			margin: 0;
-			--radius: .35rem;
-			border-radius: 0 0 var(--radius) var(--radius);
-			padding-block-start: 0;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: .5rem;
+			--padding-inline: .5rem;
+			--padding-block: .5rem;
+			padding: var(--padding-block) var(--padding-inline);
+			background-color: blueViolet;
+			color-scheme: dark;
+			color: white;
+			app-region: drag;
+			border-radius: .7rem;
+			margin: .7rem;
+			margin-block-end: 0;
+			transition: padding-inline .5s;
+			box-sizing: border-box;
 		}
-	}
 
-	:host-context(.window-controls-overlay) {
-		min-block-size: env(titlebar-area-height, 0);
-		inline-size: 100vw;
-		padding-block-start: calc(env(titlebar-area-y, 0) + var(--padding-block));
-		padding-left: max(env(titlebar-area-x, 0), var(--padding-inline));
-		padding-right: max(100vw - env(titlebar-area-x, 0) - env(titlebar-area-width, 0), var(--padding-inline));
-		animation: var(--no-wco-animation, test .5s);
-	}
-
-	@keyframes test {
-		0% {
-			padding-block-start: calc(env(titlebar-area-height, 0));
-			padding-inline: var(--padding-inline);
+		:host[data-view=files] .math-only {
+			display: none;
 		}
-		40% {
-			padding-block-start: calc(env(titlebar-area-height, 0));
+
+		:host[data-view=math] .files-only {
+			display: none;
 		}
-		60% {
-			inline-size: 100vw;
-			padding-left: max(env(titlebar-area-x), var(--padding-inline));
-			padding-right: max(100vw - env(titlebar-area-x) - env(titlebar-area-width, 0), var(--padding-inline));
+
+		@media (display-mode: standalone) {
+			:host {
+				margin: 0;
+				--radius: .4em;
+				border-radius: 0 0 var(--radius) var(--radius);
+				padding-block-start: 0;
+			}
 		}
-		100% {
-			padding-block-start: calc(env(titlebar-area-y, 0) + var(--padding-block));
-			min-block-size: env(titlebar-area-height, 0);
+
+		body.window-controls-overlay :host {
+			min-block-size: var(--titlebar-area-block-size);
+			padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding-block));
+			padding-inline-start: max(var(--titlebar-area-inline-start), var(--padding-inline));
+			padding-inline-end: max(var(--titlebar-area-inline-end), var(--padding-inline));
+			animation: var(--no-wco-animation, collapse .5s);
 		}
-	}
 
-	img.icon {
-		height: 1.5rem;
-		aspect-ratio: 1;
-		margin-inline: .3rem;
-	}
+		@keyframes collapse {
+			0% {
+				padding-block-start: calc(var(--titlebar-area-block-start) + var(--titlebar-area-block-size));
+				padding-inline: var(--padding-inline);
+			}
+			40% {
+				padding-block-start: calc(var(--titlebar-area-block-start) + var(--titlebar-area-block-size));
+			}
+			60% {
+				inline-size: 100vw;
+				padding-inline-start: max(var(--titlebar-area-inline-start), var(--padding-inline));
+				padding-inline-end: max(var(--titlebar-area-inline-end), var(--padding-inline));
+			}
+			100% {
+				padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding-block));
+				min-block-size: var(--titlebar-area-block-size);
+			}
+		}
 
-	input.file-name {
-		background: none;
-		border: 1px solid #fff4;
-		border-radius: .4rem;
-		padding: .3rem .4rem;
-		outline: none;
-		app-region: no-drag;
-		flex-grow: 1;
-		flex-basis: 0;
-		min-inline-size: 5rem;
-		max-inline-size: 15rem;
-	}
+		img.icon {
+			--size: 1.5rem;
+			block-size: var(--size);
+			inline-size: var(--size);
+			margin-inline: .3rem;
+		}
 
-	input.file-name:focus-visible {
-		background-color: #0002;
-	}
+		input.file-name {
+			background: none;
+			border: 1px solid #fff4;
+			border-radius: .4rem;
+			padding: .3rem .4rem;
+			outline: none;
+			app-region: no-drag;
+			flex-grow: 1;
+			flex-basis: 0;
+			min-inline-size: 5rem;
+			max-inline-size: 15rem;
+		}
 
-	button:is([data-action=save], [data-action=open]) {
-		margin-inline-start: auto;
-	}
+		input.file-name:focus-visible {
+			background-color: #0002;
+		}
 
-	h1.title {
-		font-size: 1.1rem;
-		font-weight: normal;
-		margin-inline-start: auto;
-	}
+		button:is([data-action=save], [data-action=open]) {
+			margin-inline-start: auto;
+		}
 
-	button {
-		padding: .4rem .7em;
-		border-radius: .4rem;
-		background-color: #0002;
-		display: flex;
-		align-items: center;
-		gap: .5rem;
-		app-region: no-drag;
-		--icon-size: 1.125rem;
-		transition: background-color .2s;
-	}
-
-	button:hover {
-		background-color: #0004;
-	}
-
-	@media (max-width: 70rem) {
 		h1.title {
-			display: none;
+			font-size: 1.1rem;
+			font-weight: normal;
+			margin-inline-start: auto;
+			padding-inline: .5rem;
+		}
+
+		button {
+			padding: .4rem .7em;
+			border-radius: .4rem;
+			background-color: #0002;
+			display: flex;
+			align-items: center;
+			gap: .5rem;
+			app-region: no-drag;
+			--icon-size: 1.125rem;
+			transition: background-color .2s;
+		}
+
+		button:hover {
+			background-color: #0004;
+		}
+
+		a.github {
+			app-region: no-drag;
+			--icon-size: 1.5rem;
+			margin-inline-start: .3rem;
+		}
+
+		@media (max-width: 70rem) {
+			h1.title {
+				display: none;
+			}
+		}
+
+		@media (max-width: 60rem) {
+			button .text {
+				display: none;
+			}
+		}
+
+		@media (max-width: 40rem) {
+			body.window-controls-overlay :host[data-view=math] :is(img.icon, a.github) {
+				display: none;
+			}
+		}
+
+		@media (max-width: 25rem) {
+			:host[data-view=math] :is(img.icon, a.github) {
+				display: none;
+			}
 		}
 	}
-
-	@media (max-width: 50rem) {
-		button .text {
-			display: none;
-		}
-
-		:host([data-view=math]) img.icon {
-			display: none;
-		}
-	}
-
 </style>

@@ -1,81 +1,100 @@
 @charset "UTF-8";
 
+@layer global, main, elements, important;
+
 @import url("./global.css") layer(global);
 
-:root {
-	scrollbar-color: #8888 transparent;
-
-	--background: #1b1b1e;
-}
-
-@media (prefers-color-scheme: light) {
-	:root {
-		--background: white;
-	}
-}
-
-body {
-	font-family: system-ui, sans-serif;
-	box-sizing: border-box;
-	margin: 0;
-	min-block-size: 100vh;
-	min-block-size: 100dvb;
-	display: grid;
-	grid-template: auto 1fr / 1fr;
-	grid-template-areas:
-		"titlebar"
-		"main";
-	background-color: var(--background);
-	-moz-text-size-adjust: none;
-	-webkit-text-size-adjust: none;
-	text-size-adjust: none;
-}
-
-header {
-	grid-area: titlebar;
-}
-
-main {
-	grid-area: main;
-	display: flex;
-	flex-direction: column;
-}
-
-noscript {
-	position: absolute;
-	inset: 0;
-	display: grid;
-	place-content: center;
-}
-
-/* Arabic (ar), Hebrew (iw), Pashto (ps), Persian (fa), Sindhi (sd), Urdu (ur), Uyghur (ug), Yiddish (yi) */
-:root:is(:lang(ar), :lang(iw), :lang(ps), :lang(fa), :lang(sd), :lang(ur), :lang(ug), :lang(yi)) {
-	direction: rtl;
-}
-
-@media (hover) {
-	body {
-		min-block-size: 100vb;
-	}
-}
-
-@media (hover: none) and ((display-mode: fullscreen) or (display-mode: standalone)) {
-	body {
-		overscroll-behavior-y: none;
-	}
-}
-
-@media print {
-	body {
-		grid-template-areas: "main" "main";
-		padding: 2rem;
+@layer important {
+	body.loading * {
+		transition: none;
+		animation: none;
 	}
 
-	header {
+	[hidden] {
 		display: none;
 	}
 }
 
-@page {
-	margin: 0;
+@layer main {
+	:root {
+		--background: #1b1b1e;
+
+		--titlebar-area-inline-start: env(titlebar-area-x, 0);
+		--titlebar-area-inline-size: env(titlebar-area-width, 0);
+		--titlebar-area-inline-end: calc(100vw - env(titlebar-area-x, 0) - env(titlebar-area-width, 0));
+
+		--titlebar-area-block-start: env(titlebar-area-y, 0);
+		--titlebar-area-block-size: env(titlebar-area-height, 0);
+		--titlebar-area-block-end: calc(100vh - env(titlebar-area-y, 0) - env(titlebar-area-height, 0));
+	}
+
+	@media (prefers-color-scheme: light) {
+		:root {
+			--background: white;
+		}
+	}
+
+	body {
+		font-family: system-ui, sans-serif;
+		box-sizing: border-box;
+		margin: 0;
+		block-size: 100vh;
+		block-size: 100dvb;
+		overflow-y: hidden;
+		display: grid;
+		grid-template: auto 1fr / 1fr;
+		grid-template-areas:
+			"titlebar"
+			"main";
+		background-color: var(--background);
+		-moz-text-size-adjust: none;
+		-webkit-text-size-adjust: none;
+		text-size-adjust: none;
+	}
+
+	header {
+		grid-area: titlebar;
+	}
+
+	main {
+		grid-area: main;
+		display: flex;
+		flex-direction: column;
+		overflow-y: hidden;
+	}
+
+	/* Arabic (ar), Hebrew (iw), Pashto (ps), Persian (fa), Sindhi (sd), Urdu (ur), Uyghur (ug), Yiddish (yi) */
+	:root:is(.translated-rtl, :lang(ar), :lang(iw), :lang(ps), :lang(fa), :lang(sd), :lang(ur), :lang(ug), :lang(yi)) {
+		direction: rtl;
+
+		--titlebar-area-inline-start: calc(100vw - env(titlebar-area-x, 0) - env(titlebar-area-width, 0));
+		--titlebar-area-inline-end: env(titlebar-area-x, 0);
+	}
+
+	@media (hover) {
+		body {
+			block-size: 100vb;
+		}
+	}
+
+	@media (hover: none) and (not (display-mode: browser)) {
+		body {
+			overscroll-behavior-block: none;
+		}
+	}
+
+	@media print {
+		body {
+			grid-template-areas: "main" "main";
+			padding: 2rem;
+		}
+
+		header {
+			display: none;
+		}
+	}
+
+	@page {
+		margin: 0;
+	}
 }

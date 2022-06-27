@@ -4,54 +4,55 @@
 <math class="mathml-output"></math>
 
 <style>
-	@import url("./css/global.css") layer(global);
-
-	:host {
-		block-size: 100%;
-		display: grid;
-		grid-template: 1fr 1fr / 1fr;
-		grid-template-areas:
-			"text-input"
-			"mathml-output";
-	}
-
-	.text-input {
-		font-family: monospace;
-		/* margin: .5rem; */
-		font-size: 1.4rem;
-		resize: none;
-		grid-area: text-input;
-		border: none;
-		/* border-radius: .4rem; */
-		padding: .8rem 1rem;
-		background-color: #8882;
-		border-radius: .7rem;
-		margin: .7rem;
-	}
-
-	.text-input:focus-visible {
-		/* outline: 1px solid #8887; */
-		/* outline-offset: -1px; */
-		outline: none;
-		background-color: #8884;
-	}
-
-	.mathml-output {
-		font-size: 1.4rem;
-		text-align: center;
-		grid-area: mathml-output;
-		padding: 1rem;
-		padding-block-start: 1.5rem;
-	}
-
-	@media print {
+	@layer elements {
 		:host {
-			grid-template-areas: "mathml-output" "mathml-output";
+			block-size: 100%;
+			display: grid;
+			grid-template: 1fr 1fr / 1fr;
+			grid-template-areas:
+				"text-input"
+				"mathml-output";
 		}
 
 		.text-input {
-			display: none;
+			font-family: monospace;
+			/* margin: .5rem; */
+			font-size: 1.4rem;
+			resize: none;
+			grid-area: text-input;
+			border: none;
+			/* border-radius: .4rem; */
+			padding: .8rem 1rem;
+			background-color: #8882;
+			border-radius: .7rem;
+			margin: .7rem;
+			cursor: auto;
+		}
+
+		.text-input:focus-visible {
+			/* outline: 1px solid #8887; */
+			/* outline-offset: -1px; */
+			outline: none;
+			background-color: #8884;
+		}
+
+		.mathml-output {
+			font-size: 1.4rem;
+			text-align: center;
+			grid-area: mathml-output;
+			padding: 1rem;
+			padding-block-start: 1.5rem;
+			overflow-y: auto;
+		}
+
+		@media print {
+			:host {
+				grid-template-areas: "mathml-output" "mathml-output";
+			}
+
+			.text-input {
+				display: none;
+			}
 		}
 	}
-
 </style>

@@ -3,7 +3,7 @@
 @import url("./icons.css") layer(icons);
 
 :root {
-	color-scheme: dark light;
+	scrollbar-color: blueViolet transparent;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -40,9 +40,46 @@ a {
 	text-decoration: unset;
 }
 
+dialog {
+	inset: 0;
+	margin: auto;
+	border: none;
+	border-radius: .5rem;
+}
+
+::selection {
+	background-color: mediumSpringGreen;
+	color: black;
+}
+
 @media (hover: none) {
 	:any-link, button, summary, label {
 		-webkit-tap-highlight-color: transparent;
 	}
+
+	::-webkit-scrollbar {
+		display: none;
+	}
 }
 
+::-webkit-scrollbar {
+	inline-size: 1rem;
+	block-size: 1rem;
+}
+
+::-webkit-scrollbar-button:start:increment, ::-webkit-scrollbar-button:end:decrement {
+	display: none;
+}
+
+::-webkit-scrollbar-thumb, ::-webkit-scrollbar-button {
+	background-color: blueViolet;
+	inline-size: 1rem;
+	block-size: 1rem;
+	border: .25rem solid transparent;
+	border-radius: .5rem;
+	background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+	background: none;
+}
