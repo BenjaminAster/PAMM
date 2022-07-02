@@ -7,8 +7,6 @@ export const $$ = (/** @type {string} */ selector, /** @type {HTMLElement | Docu
 	(/** @type {HTMLElement[]} */ ([...root.querySelectorAll(selector)]))
 );
 
-export const mathmlSupported = !!window.MathMLElement;
-
 export const fileSystemAccessSupported = !!(window.showSaveFilePicker && window.showOpenFilePicker);
 
 export const isApple = navigator.userAgentData?.platform ? ["macOS", "iOS"].includes(navigator.userAgentData.platform) : /^(Mac|iP)/.test(navigator.platform);

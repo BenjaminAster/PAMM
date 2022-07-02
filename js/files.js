@@ -1,28 +1,17 @@
 
-import { $, appMeta, database, fileSystemAccessSupported, isApple, mathmlSupported, trace } from "./utils.js";
-import "./app.js";
+import { $, appMeta, database, fileSystemAccessSupported, isApple, trace } from "./utils.js";
+import { elements } from "./app.js";
 import { startRendering } from "./main.js";
 
 /* TODO:
  - replace native dialogs with custom ones
  - prevent folders from being dropped into containing or contained folder
  - don't re-render all breadcrumb elements every time
+ - keyboard shortcuts for navigating, rename, delete, permalink, cut, paste
+ - recently opened file system files & ids in history.state
+ - make "My files" an anchor
 */
 
-const elements = new class {
-	get textInput() { return /** @type {HTMLTextAreaElement} */ ($("c-math .text-input")) };
-	get myFilesButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=my-files]")) };
-	get saveButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=save]")) };
-	get downloadButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=download]")) };
-	get openButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=open]")) };
-	get uploadButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=upload]")) };
-	get newFolderButton() { return /** @type {HTMLButtonElement} */ ($("c-files [data-action=new-folder]")) };
-	get newBrowserFileButton() { return /** @type {HTMLButtonElement} */ ($("c-files [data-action=new-browser-file]")) };
-	get newDiskFileButton() { return /** @type {HTMLButtonElement} */ ($("c-files [data-action=new-disk-file]")) };
-	get foldersUL() { return /** @type {HTMLUListElement} */ ($("c-files .folders")) };
-	get filesUL() { return /** @type {HTMLUListElement} */ ($("c-files .files")) };
-	get breadcrumbUL() { return /** @type {HTMLUListElement} */ ($("c-files nav.breadcrumb ul")) };
-};
 
 let currentFolder = {
 	id: "home",
@@ -205,17 +194,6 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 					const { content } = await database.get({ store: "files", id: item.id });
 					fileUtils.downloadFile({ name: item.name + appMeta.fileExtension, content });
 				});
-				$("[data-action=share]", clone).addEventListener("click", async () => {
-					await 0;
-					const shareObject = {
-						files: [new File([new Blob([item.content], { type: "text/plain" })], `${item.name}.txt`, { type: "text/plain" })],
-					};
-					if (navigator.canShare?.(shareObject)) {
-						await navigator.share?.(shareObject);
-					} else {
-						window.alert("Your browser does not support sharing files. Please download the file and share it manually."); // TODO: use a selfmade dialog
-					}
-				});
 			}
 			$("[data-action=permalink]", clone).addEventListener("click", itemClickHandler({ type, id: item.id, changeURL: true }));
 			UL.insertBefore(clone, $(":scope > :not(.item)", UL));
@@ -281,12 +259,16 @@ const fileUtils = new class {
 				break;
 			}
 		}
+		document.body.classList.remove("file-dirty");
 	};
 	downloadFile(/** @type {{ name?: string, content?: string }} */ { name, content } = {}) {
 		const anchor = document.createElement("a");
 		anchor.href = "data:text/pretty-awesome-math-markup;charset=utf-8," + window.encodeURIComponent(content ?? elements.textInput.value);
 		anchor.download = name ?? currentFile.fileHandle?.name ?? (currentFile.databaseData?.name + appMeta.fileExtension);
 		anchor.click();
+	};
+	printFile() {
+		window.print();
 	};
 	async openFile() {
 		if (fileSystemAccessSupported) {
@@ -363,9 +345,11 @@ const fileUtils = new class {
 {
 	elements.saveButton.addEventListener("click", () => fileUtils.saveFile());
 	elements.downloadButton.addEventListener("click", () => fileUtils.downloadFile());
+	elements.printButton.addEventListener("click", () => fileUtils.printFile());
 
 	elements.openButton.addEventListener("click", () => fileUtils.openFile());
 	elements.uploadButton.addEventListener("click", () => fileUtils.uploadFile());
+
 
 	initButtonListeners = () => {
 		elements.newFolderButton.addEventListener("click", async () => {

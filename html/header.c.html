@@ -5,8 +5,9 @@
 
 <h1 class="title">Pretty Awesome Math Markup</h1>
 
-<button data-action="save" class="math-only icon:device-floppy" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
+<button data-action="save" class="math-only icon:save-fill" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
 <button data-action="download" class="math-only icon:download" title="Download"><span class="text">Download</span></button>
+<button data-action="print" class="math-only icon:file-earmark-pdf" title="Export PDF or print"><span class="text">Export PDF / print</span></button>
 <button data-action="my-files" class="math-only icon:view-grid" title="My files"><span class="text">My files</span></button>
 
 <button data-action="open" class="files-only icon:folder-open" title="Open"><span class="text">Open</span></button>
@@ -105,6 +106,19 @@
 
 		button:is([data-action=save], [data-action=open]) {
 			margin-inline-start: auto;
+		}
+
+		button[data-action=print]::after {
+			content: "";
+			--icon: var(--icon-printer);
+		}
+
+		body.file-dirty :host button[data-action=save] .saved-d {
+			display: none;
+		}
+
+		body.file-dirty :host button[data-action=save] {
+			--icon: var(--icon-save-outline);
 		}
 
 		h1.title {
