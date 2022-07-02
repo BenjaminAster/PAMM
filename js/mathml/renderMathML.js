@@ -1,6 +1,5 @@
 
 import { categories, operators, allBracketsSyntaxes, keywordNames } from "../parser/stringToArray.js";
-import { mathmlSupported } from "../utils.js";
 
 const createMathElement = (/** @type {string} */ name) => document.createElement("m" + name);
 
@@ -70,7 +69,7 @@ export default (/** @type {any[]} */ mathTree) => {
 
 					const element = createMathElement("o");
 					// element.innerHTML = "&minus;";
-					element.innerHTML = mathmlSupported ? "&minus;" : "&ndash;";
+					element.innerHTML = "&minus;";
 					elementArray.push(element);
 
 				} else if (item.name === operators.times) {
