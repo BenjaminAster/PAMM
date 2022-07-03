@@ -3,22 +3,21 @@ import { $ } from "./utils.js";
 
 navigator.serviceWorker?.register("./service-worker.js", { scope: "./", updateViaCache: "all" });
 
-export const elements = new class {
-	get textInput() { return /** @type {HTMLTextAreaElement} */ ($("c-math .text-input textarea")) };
-	get myFilesButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=my-files]")) };
-	get saveButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=save]")) };
-	get downloadButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=download]")) };
-	get printButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=print]")) };
-	get openButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=open]")) };
-	get uploadButton() { return /** @type {HTMLButtonElement} */ ($("c-header [data-action=upload]")) };
-	get newFolderButton() { return /** @type {HTMLButtonElement} */ ($("c-files [data-action=new-folder]")) };
-	get newBrowserFileButton() { return /** @type {HTMLButtonElement} */ ($("c-files [data-action=new-browser-file]")) };
-	get newDiskFileButton() { return /** @type {HTMLButtonElement} */ ($("c-files [data-action=new-disk-file]")) };
-	get foldersUL() { return /** @type {HTMLUListElement} */ ($("c-files .folders")) };
-	get filesUL() { return /** @type {HTMLUListElement} */ ($("c-files .files")) };
-	get breadcrumbUL() { return /** @type {HTMLUListElement} */ ($("c-files nav.breadcrumb ul")) };
+export const elements = {
+	get textInput() { return /** @type {HTMLTextAreaElement} */ ($("c-math .text-input textarea")) },
+	get myFilesButton() { return $("c-header [data-action=my-files]") },
+	get saveButton() { return $("c-header [data-action=save]") },
+	get downloadButton() { return $("c-header [data-action=download]") },
+	get printButton() { return $("c-header [data-action=print]") },
+	get openButton() { return $("c-header [data-action=open]") },
+	get uploadButton() { return $("c-header [data-action=upload]") },
+	get newFolderButton() { return $("c-files [data-action=new-folder]") },
+	get newBrowserFileButton() { return $("c-files [data-action=new-browser-file]") },
+	get newDiskFileButton() { return $("c-files [data-action=new-disk-file]") },
+	get foldersUL() { return $("c-files .folders") },
+	get filesUL() { return $("c-files .files") },
+	get breadcrumbUL() { return $("c-files nav.breadcrumb ul") },
 };
-
 
 const customElementNames = [
 	"math",
@@ -91,7 +90,7 @@ if (!window.MathMLElement) {
 	}));
 }
 
-{
+if (navigator.windowControlsOverlay) {
 	let prevVisible = false;
 	const toggleWCO = ({ visible, manuallyToggled = true }) => {
 		document.body.classList.toggle("window-controls-overlay", visible);
@@ -99,8 +98,8 @@ if (!window.MathMLElement) {
 		else $("c-header").style.setProperty("--no-wco-animation", "none");
 		prevVisible = visible;
 	};
-	if (navigator.windowControlsOverlay?.visible) toggleWCO({ visible: true, manuallyToggled: false });
-	navigator.windowControlsOverlay?.addEventListener("geometrychange", toggleWCO);
+	if (navigator.windowControlsOverlay.visible) toggleWCO({ visible: true, manuallyToggled: false });
+	navigator.windowControlsOverlay.addEventListener("geometrychange", toggleWCO);
 }
 
 {
@@ -118,9 +117,7 @@ if (!window.MathMLElement) {
 {
 	const checkReadyState = async () => {
 		if (document.readyState === "complete") {
-			for (let i = 0; i < 2; i++) {
-				await new Promise((resolve) => window.requestAnimationFrame(resolve));
-			}
+			for (let i = 0; i < 2; i++) await new Promise((resolve) => window.requestAnimationFrame(resolve));
 			document.body.classList.remove("loading");
 		}
 	};

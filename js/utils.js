@@ -19,6 +19,9 @@ export const appMeta = {
 
 export const /** @type {any} */ trace = (/** @type {any[]} */ ...args) => console.trace(...args);
 
+// const mathElement = new DOMParser().parseFromString("<math></math>", "text/html").body.firstElementChild;
+// export const createMathElement = () => /** @type {MathMLElement} */(mathElement.cloneNode(true));
+
 const openRequest = window.indexedDB.open(new URL(document.baseURI).pathname, 1);
 
 openRequest.addEventListener("upgradeneeded", async () => {

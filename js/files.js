@@ -3,16 +3,6 @@ import { $, appMeta, database, fileSystemAccessSupported, isApple, trace } from 
 import { elements } from "./app.js";
 import { startRendering } from "./main.js";
 
-/* TODO:
- - replace native dialogs with custom ones
- - prevent folders from being dropped into containing or contained folder
- - don't re-render all breadcrumb elements every time
- - keyboard shortcuts for navigating, rename, delete, permalink, cut, paste
- - recently opened file system files & ids in history.state
- - make "My files" an anchor
-*/
-
-
 let currentFolder = {
 	id: "home",
 	name: "home",
@@ -93,11 +83,15 @@ const itemClickHandler = (/** @type {{ type: itemType, id: string, changeURL?: b
 
 const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 
+	currentFile = null;
+
 	let { folders, files, parentFolder, name: folderName } = currentFolder = await database.get({ store: "folders", id });
 
 	[folders, files] = await Promise.all([[folders, "folders"], [files, "files"]].map(
 		async ([items, store]) => await Promise.all(items.map(async ({ id }) => await database.get({ store, id })))
 	));
+
+	if (currentFile?.fileHandle) return;
 
 	const onDragStart = (/** @type {{ type: itemType, id: string }} */ { type, id }) => async (/** @type {DragEvent} */ event) => {
 		event.dataTransfer.effectAllowed = "move";
@@ -386,7 +380,7 @@ const fileUtils = new class {
 
 	if (!history.state?.fileId && !history.state?.folderId) {
 		window.launchQueue?.setConsumer(async ({ files: [fileHandle] = [] }) => {
-			await new Promise((resolve) => setTimeout(resolve));
+			// await new Promise((resolve) => setTimeout(resolve, 1_000));
 			const file = await fileHandle?.getFile();
 			if (!file?.name.endsWith(appMeta.fileExtension)) return;
 			history.replaceState({ fileHandle: true }, "");

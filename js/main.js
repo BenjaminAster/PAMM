@@ -1,20 +1,34 @@
 
-/// <reference path="../../non-standards/index.d.ts" />
 /// <reference path="./global.d.ts" />
+
+
+/* TODO:
+ - replace native dialogs with custom ones
+ - prevent folders from being dropped into containing or contained folder
+ - don't re-render all breadcrumb elements every time
+ - make breadcrumb elements draggable
+ - keyboard shortcuts for navigating, rename, delete, permalink, cut, paste
+ - recently opened file system files & ids in history.state
+ - make "My files" an anchor
+ - File name textbox: renaming and showing file name
+ - remove redundant leftover stuff from shadow DOM implementation
+ - "Export" menu instead of separate download and print/PDF buttons
+ - export HTML option in export menu
+*/
+
 
 import { $ } from "./utils.js";
 
 import { elements } from "./app.js";
 
-import parseString from "./parser/parseString.js";
-import generateMathML from "./mathml/renderMathML.js";
+import parseDocument from "./parseDocument/parseDocument.js";
 
 import { keyDown } from "./files.js";
 
 export const startRendering = () => {
 	const textarea = /** @type {HTMLInputElement} */ ($("c-math .text-input textarea"));
 
-	let mathElement = $("c-math .mathml-output math");
+	let htmlOutput = $("c-math .html-output");
 
 	textarea.addEventListener("input", function (/** @type {InputEvent} */ { data }) {
 		const { value, selectionStart, selectionEnd } = this;
@@ -33,9 +47,9 @@ export const startRendering = () => {
 			}
 		}
 
-		const tree = parseString(value);
-		const mathRow = generateMathML(tree);
-		mathElement.innerHTML = mathRow.outerHTML;
+		htmlOutput.innerHTML = "";
+		htmlOutput.append(parseDocument(value));
+		htmlOutput.innerHTML = htmlOutput.innerHTML;
 	});
 
 	textarea.dispatchEvent(new Event("input"));

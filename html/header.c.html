@@ -3,8 +3,6 @@
 <img src="./assets/icon.svg" class="icon" alt="icon of PAMM" />
 <input type="text" class="file-name math-only" title="File name" />
 
-<h1 class="title">Pretty Awesome Math Markup</h1>
-
 <button data-action="save" class="math-only icon:save-fill" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
 <button data-action="download" class="math-only icon:download" title="Download"><span class="text">Download</span></button>
 <button data-action="print" class="math-only icon:file-earmark-pdf" title="Export PDF or print"><span class="text">Export PDF / print</span></button>
@@ -121,15 +119,9 @@
 			--icon: var(--icon-save-outline);
 		}
 
-		h1.title {
-			font-size: 1.1rem;
-			font-weight: normal;
-			margin-inline-start: auto;
-			padding-inline: .5rem;
-		}
-
 		button {
-			padding: .4rem .7em;
+			padding: .3rem .7em;
+			min-block-size: 2.2rem;
 			border-radius: .4rem;
 			background-color: #0002;
 			display: flex;
@@ -148,12 +140,6 @@
 			app-region: no-drag;
 			--icon-size: 1.5rem;
 			margin-inline-start: .3rem;
-		}
-
-		@media (max-width: 70rem) {
-			h1.title {
-				display: none;
-			}
 		}
 
 		@media (max-width: 60rem) {

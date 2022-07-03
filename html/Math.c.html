@@ -1,13 +1,10 @@
 
-<section aria-label="text input" class="text-input">
+<section class="text-input" aria-label="text input">
 	<textarea spellcheck="false" aria-label="math formula input"></textarea>
 </section>
 
-<section aria-label="live preview of mathematical document" class="mathml-output">
-	<div>
-		<h1>Testtest</h1>
-		<math></math>
-	</div>
+<section class="html-output" aria-label="live preview of mathematical document">
+
 </section>
 
 <style>
@@ -18,7 +15,7 @@
 			grid-template: 1fr 1fr / 1fr;
 			grid-template-areas:
 				"text-input"
-				"mathml-output";
+				"html-output";
 		}
 
 		.text-input {
@@ -29,7 +26,7 @@
 
 		.text-input textarea {
 			font-family: monospace;
-			font-size: 1.4rem;
+			font-size: 1.1rem;
 			resize: none;
 			padding: .8rem 1rem;
 			margin: .7rem;
@@ -44,18 +41,22 @@
 			background-color: #8884;
 		}
 
-		.mathml-output {
-			font-size: 1.4rem;
-			/* text-align: center; */
-			grid-area: mathml-output;
+		.html-output {
+			font-size: 1.1rem;
+			font-family: ui-serif, serif;
+			grid-area: html-output;
 			padding: 1rem;
 			padding-block-start: 1.5rem;
 			overflow-y: auto;
 		}
 
+		.html-output math {
+			/* math-style: normal; */
+		}
+
 		@media print {
 			:host {
-				grid-template-areas: "mathml-output" "mathml-output";
+				grid-template-areas: "html-output" "html-output";
 			}
 
 			.text-input {

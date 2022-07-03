@@ -12,12 +12,11 @@
 	<meta name="repository" content="https://github.com/BenjaminAster/PAMM" />
 	<meta name="theme-color" content="blueViolet" />
 
-	<title>Pretty Awesome Math Markup</title>
+	<title>Pretty Awesome Math Markup [BETA]</title>
 	<base href="./" />
 
 	<link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
 	<link rel="icon" href="./assets/icon.png" type="image/png" sizes="any" />
-	<link rel="apple-touch-icon" href="./assets/icon.png" />
 	<link rel="manifest" href="./app.webmanifest" />
 	<link rel="canonical" href="https://benjaminaster.com/pamm/" />
 
@@ -29,12 +28,13 @@
 	<link rel="modulepreload" href="./js/utils.js" />
 	<link rel="modulepreload" href="./js/files.js" />
 	<link rel="modulepreload" href="./js/app.js" />
-	<link rel="modulepreload" href="./js/mathml/renderMathML.js" />
-	<link rel="modulepreload" href="./js/parser/arrayToTree.js" />
-	<link rel="modulepreload" href="./js/parser/categorizeArray.js" />
-	<link rel="modulepreload" href="./js/parser/matchGroups.js" />
-	<link rel="modulepreload" href="./js/parser/parseString.js" />
-	<link rel="modulepreload" href="./js/parser/stringToArray.js" />
+	<link rel="modulepreload" href="./js/parseDocument/parseDocument.js" />
+	<link rel="modulepreload" href="./js/parseDocument/math/mathml/renderMathML.js" />
+	<link rel="modulepreload" href="./js/parseDocument/math/arrayToTree.js" />
+	<link rel="modulepreload" href="./js/parseDocument/math/categorizeArray.js" />
+	<link rel="modulepreload" href="./js/parseDocument/math/matchGroups.js" />
+	<link rel="modulepreload" href="./js/parseDocument/math/parseMath.js" />
+	<link rel="modulepreload" href="./js/parseDocument/math/stringToArray.js" />
 
 	<link rel="preload" as="fetch" crossorigin href="./html/math.c.html" />
 	<link rel="preload" as="fetch" crossorigin href="./html/header.c.html" />

@@ -2,29 +2,29 @@
 
 import categorizeArray, { characterCategories } from "./categorizeArray.js";
 
-export const categories = new class {
-	number = "number";
-	variable = "variable";
-	keyword = "keyword";
-	operator = "operator";
-	anyOpeningBracket = "anyOpeningBracket";
-	anyClosingBracket = "anyClosingBracket";
-	anyBracket = "anyBracket";
-	whitespace = "whitespace";
+export const categories = {
+	number: "number",
+	variable: "variable",
+	keyword: "keyword",
+	operator: "operator",
+	anyOpeningBracket: "anyOpeningBracket",
+	anyClosingBracket: "anyClosingBracket",
+	anyBracket: "anyBracket",
+	whitespace: "whitespace",
 };
 
-export const operators = new class {
-	plus = "plus";
-	minus = "minus";
-	times = "times";
-	fraction = "fraction";
-	divide = "divide";
-	power = "power";
-	root = "root";
-	squareRoot = "squareRoot";
-	invisibleTimes = "invisibleTimes";
-	index = "index";
-	equals = "equals";
+export const operators = {
+	plus: "plus",
+	minus: "minus",
+	times: "times",
+	fraction: "fraction",
+	divide: "divide",
+	power: "power",
+	root: "root",
+	squareRoot: "squareRoot",
+	invisibleTimes: "invisibleTimes",
+	index: "index",
+	equals: "equals",
 };
 
 const operatorSyntaxes = [
@@ -66,11 +66,11 @@ const operatorSyntaxes = [
 	},
 ];
 
-export const allBrackets = new class {
-	parenthesis = "parenthesis";
-	bracket = "bracket";
-	brace = "brace";
-	group = "group";
+export const allBrackets = {
+	parenthesis: "parenthesis",
+	bracket: "bracket",
+	brace: "brace",
+	group: "group",
 };
 
 export const allBracketsSyntaxes = [
@@ -106,10 +106,10 @@ export const allBracketsSyntaxes = [
 	},
 ];
 
-export const keywordNames = new class {
-	sine = "sine";
-	cosine = "cosine";
-	pi = "pi";
+export const keywordNames = {
+	sine: "sine",
+	cosine: "cosine",
+	pi: "pi",
 };
 
 const keywords = [
