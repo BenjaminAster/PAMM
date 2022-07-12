@@ -1,133 +1,8 @@
 
+import arrayToTree from "./arrayToTree.js";
+import categorizeArray, { categories, characterCategories, keywords, operators, operatorSyntaxes, allBracketsSyntaxes, allBrackets } from "./categorizeArray.js";
 
-import categorizeArray, { characterCategories } from "./categorizeArray.js";
-
-export const categories = {
-	number: "number",
-	variable: "variable",
-	keyword: "keyword",
-	operator: "operator",
-	anyOpeningBracket: "anyOpeningBracket",
-	anyClosingBracket: "anyClosingBracket",
-	anyBracket: "anyBracket",
-	whitespace: "whitespace",
-};
-
-export const operators = {
-	plus: "plus",
-	minus: "minus",
-	times: "times",
-	fraction: "fraction",
-	divide: "divide",
-	power: "power",
-	root: "root",
-	squareRoot: "squareRoot",
-	invisibleTimes: "invisibleTimes",
-	index: "index",
-	equals: "equals",
-};
-
-const operatorSyntaxes = [
-	{
-		syntax: "+",
-		name: operators.plus,
-	},
-	{
-		syntax: "-",
-		name: operators.minus,
-	},
-	{
-		syntax: "*",
-		name: operators.times,
-	},
-	{
-		syntax: "/",
-		name: operators.fraction,
-	},
-	{
-		syntax: "//",
-		name: operators.divide,
-	},
-	{
-		syntax: "**",
-		name: operators.power,
-	},
-	{
-		syntax: "#",
-		name: operators.root,
-	},
-	{
-		syntax: "_",
-		name: operators.index,
-	},
-	{
-		syntax: "=",
-		name: operators.equals,
-	},
-];
-
-export const allBrackets = {
-	parenthesis: "parenthesis",
-	bracket: "bracket",
-	brace: "brace",
-	group: "group",
-};
-
-export const allBracketsSyntaxes = [
-	{
-		syntax: "(",
-		type: categories.anyOpeningBracket,
-		name: allBrackets.parenthesis,
-	},
-	{
-		syntax: ")",
-		type: categories.anyClosingBracket,
-		name: allBrackets.parenthesis,
-	},
-	{
-		syntax: "[",
-		type: categories.anyOpeningBracket,
-		name: allBrackets.bracket,
-	},
-	{
-		syntax: "]",
-		type: categories.anyClosingBracket,
-		name: allBrackets.bracket,
-	},
-	{
-		syntax: "{",
-		type: categories.anyOpeningBracket,
-		name: allBrackets.brace,
-	},
-	{
-		syntax: "}",
-		type: categories.anyClosingBracket,
-		name: allBrackets.brace,
-	},
-];
-
-export const keywordNames = {
-	sine: "sine",
-	cosine: "cosine",
-	pi: "pi",
-};
-
-const keywords = [
-	{
-		keyword: "sin",
-		name: keywordNames.sine,
-	},
-	{
-		keyword: "cos",
-		name: keywordNames.cosine,
-	},
-	{
-		keyword: "pi",
-		name: keywordNames.pi,
-	},
-];
-
-export default (/** @type {string} */ mathString) => {
+const stringToArray = (/** @type {string} */ mathString) => {
 	const categorizedArray = categorizeArray(mathString);
 
 	let /** @type {any[]} */ mathArray = [];
@@ -429,4 +304,11 @@ export default (/** @type {string} */ mathString) => {
 	mathArray = mathArray.filter(({ category }) => category !== categories.whitespace);
 
 	return mathArray;
+};
+
+
+export default (/** @type {string} */ mathString) => {
+	const array = stringToArray(mathString);
+	const tree = arrayToTree(array);
+	return tree;
 };

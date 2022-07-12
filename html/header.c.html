@@ -34,11 +34,11 @@
 			box-sizing: border-box;
 		}
 
-		:host[data-view=files] .math-only {
+		body[data-view=files] :host .math-only {
 			display: none;
 		}
 
-		:host[data-view=math] .files-only {
+		body[data-view=math] :host .files-only {
 			display: none;
 		}
 
@@ -56,7 +56,10 @@
 			padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding-block));
 			padding-inline-start: max(var(--titlebar-area-inline-start), var(--padding-inline));
 			padding-inline-end: max(var(--titlebar-area-inline-end), var(--padding-inline));
-			animation: var(--no-wco-animation, collapse .5s);
+		}
+
+		body.window-controls-overlay:not(.no-wco-animation) :host {
+			animation: collapse .5s;
 		}
 
 		@keyframes collapse {
@@ -149,13 +152,13 @@
 		}
 
 		@media (max-width: 40rem) {
-			body.window-controls-overlay :host[data-view=math] :is(img.icon, a.github) {
+			body[data-view=math].window-controls-overlay :host :is(img.icon, a.github) {
 				display: none;
 			}
 		}
 
 		@media (max-width: 25rem) {
-			:host[data-view=math] :is(img.icon, a.github) {
+			body[data-view=math] :host :is(img.icon, a.github) {
 				display: none;
 			}
 		}

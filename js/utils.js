@@ -19,8 +19,7 @@ export const appMeta = {
 
 export const /** @type {any} */ trace = (/** @type {any[]} */ ...args) => console.trace(...args);
 
-// const mathElement = new DOMParser().parseFromString("<math></math>", "text/html").body.firstElementChild;
-// export const createMathElement = () => /** @type {MathMLElement} */(mathElement.cloneNode(true));
+export const createMathElement = (/** @type {string} */ name) => /** @type {MathMLElement} */ (document.createElementNS("http://www.w3.org/1998/Math/MathML", name));
 
 const openRequest = window.indexedDB.open(new URL(document.baseURI).pathname, 1);
 

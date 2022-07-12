@@ -1,7 +1,5 @@
 
-<section class="text-input" aria-label="text input">
-	<textarea spellcheck="false" aria-label="math formula input"></textarea>
-</section>
+<textarea class="text-input" spellcheck="false" aria-label="math formula input"></textarea>
 
 <section class="html-output" aria-label="live preview of mathematical document">
 
@@ -20,12 +18,7 @@
 
 		.text-input {
 			grid-area: text-input;
-			display: flex;
-			flex-direction: column;
-		}
-
-		.text-input textarea {
-			font-family: monospace;
+			font-family: ui-monospace, monospace;
 			font-size: 1.1rem;
 			resize: none;
 			padding: .8rem 1rem;
@@ -33,34 +26,37 @@
 			background-color: #8882;
 			border-radius: .7rem;
 			cursor: auto;
-			flex-grow: 1;
 		}
 
-		.text-input textarea:focus-visible {
+		.text-input:focus-visible {
 			outline: none;
 			background-color: #8884;
 		}
 
 		.html-output {
-			font-size: 1.1rem;
 			font-family: ui-serif, serif;
 			grid-area: html-output;
 			padding: 1rem;
-			padding-block-start: 1.5rem;
+			padding-block-start: 0;
 			overflow-y: auto;
 		}
 
-		.html-output math {
-			/* math-style: normal; */
+		:host :is(p, h1, h2, h3, h4, h5, h6) {
+			margin-block: .6em;
 		}
 
 		@media print {
 			:host {
-				grid-template-areas: "html-output" "html-output";
+				display: block;
 			}
 
 			.text-input {
 				display: none;
+			}
+
+			.html-output {
+				overflow: unset;
+				padding: 0;
 			}
 		}
 	}

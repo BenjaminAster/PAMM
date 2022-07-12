@@ -18,10 +18,12 @@ p, h1, h2, h3, h4, h5, h6 {
 	margin: unset;
 }
 
+h1 {
+	font-size: 1.8em;
+}
+
 button, input, textarea, select, option {
-	font-size: unset;
-	font-family: unset;
-	font-weight: unset;
+	font: unset;
 	background: unset;
 	color: unset;
 	margin: unset;
@@ -62,9 +64,10 @@ dialog {
 	}
 }
 
-::-webkit-scrollbar {
+::-webkit-scrollbar, ::-webkit-scrollbar-corner {
 	inline-size: 1rem;
 	block-size: 1rem;
+	background: none;
 }
 
 ::-webkit-scrollbar-button:start:increment, ::-webkit-scrollbar-button:end:decrement {
@@ -78,8 +81,4 @@ dialog {
 	border: .25rem solid transparent;
 	border-radius: .5rem;
 	background-clip: padding-box;
-}
-
-::-webkit-scrollbar-corner {
-	background: none;
 }

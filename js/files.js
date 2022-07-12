@@ -47,7 +47,7 @@ const toggleView = (() => {
 	return (/** @type {{ filesView?: boolean }} */ { filesView: newFilesView = !filesView } = {}) => {
 		if (newFilesView !== filesView) {
 			filesView = newFilesView;
-			$("c-header").dataset.view = filesView ? "files" : "math";
+			document.body.dataset.view = filesView ? "files" : "math";
 			if (filesView) {
 				const element = document.createElement("c-files");
 				$("c-math").replaceWith(element);
@@ -261,7 +261,8 @@ const fileUtils = new class {
 		anchor.download = name ?? currentFile.fileHandle?.name ?? (currentFile.databaseData?.name + appMeta.fileExtension);
 		anchor.click();
 	};
-	printFile() {
+	async printFile() {
+		await 0;
 		window.print();
 	};
 	async openFile() {

@@ -1,7 +1,5 @@
 
-import matchGroups from "./matchGroups.js";
-
-import { allBrackets, categories, operators } from "./stringToArray.js";
+import { categories, operators } from "./categorizeArray.js";
 
 const operatorsWithItemBefore = [
 	operators.fraction,
@@ -13,6 +11,34 @@ const operatorsWithItemBefore = [
 const operatorsWithItemAfter = [
 	operators.squareRoot,
 ];
+
+const matchGroups = (/** @type {any[]} */ mathArray) => {
+	const stack = [{
+		type: "base",
+		content: [],
+	}];
+
+	for (const item of mathArray) {
+		if (item.category === categories.anyOpeningBracket) {
+			stack.push({
+				type: item.name,
+				content: [],
+			});
+		} else if (item.category === categories.anyClosingBracket) {
+			const lastGroup = stack.pop();
+			if (lastGroup.type === item.name) {
+				stack.at(-1).content.push(lastGroup);
+			}
+		} else {
+			stack.at(-1).content.push({
+				...item,
+				type: "item",
+			});
+		}
+	}
+
+	return stack[0].content;
+};
 
 export default (/** @type {any[]} */ mathArray) => {
 	const groupsTree = matchGroups(mathArray);

@@ -4,7 +4,7 @@ import { $ } from "./utils.js";
 navigator.serviceWorker?.register("./service-worker.js", { scope: "./", updateViaCache: "all" });
 
 export const elements = {
-	get textInput() { return /** @type {HTMLTextAreaElement} */ ($("c-math .text-input textarea")) },
+	get textInput() { return /** @type {HTMLTextAreaElement} */ ($("c-math .text-input")) },
 	get myFilesButton() { return $("c-header [data-action=my-files]") },
 	get saveButton() { return $("c-header [data-action=save]") },
 	get downloadButton() { return $("c-header [data-action=download]") },
@@ -27,7 +27,7 @@ const customElementNames = [
 
 if (!window.MathMLElement) {
 	customElementNames.push("no-mathml");
-	document.body.appendChild(document.createElement("c-no-mathml"));
+	document.body.insertAdjacentElement("afterbegin", Object.assign(document.createElement("c-no-mathml"), { id: "hide-mathml-warning" }));
 }
 
 {
@@ -94,8 +94,8 @@ if (navigator.windowControlsOverlay) {
 	let prevVisible = false;
 	const toggleWCO = ({ visible, manuallyToggled = true }) => {
 		document.body.classList.toggle("window-controls-overlay", visible);
-		if (manuallyToggled && prevVisible === false) $("c-header").style.removeProperty("--no-wco-animation");
-		else $("c-header").style.setProperty("--no-wco-animation", "none");
+		if (manuallyToggled && prevVisible === false) document.body.classList.remove("no-wco-animation");
+		else document.body.classList.add("no-wco-animation");
 		prevVisible = visible;
 	};
 	if (navigator.windowControlsOverlay.visible) toggleWCO({ visible: true, manuallyToggled: false });
@@ -105,7 +105,7 @@ if (navigator.windowControlsOverlay) {
 {
 	let /** @type {BeforeInstallPromptEvent} */ beforeInstallPromptEvent;
 	const button = $("button[data-action=install]");
-	window.addEventListener("beforeinstallprompt", (/** @type {BeforeInstallPromptEvent} */ event) => {
+	window.addEventListener("beforeinstallprompt", (event) => {
 		beforeInstallPromptEvent = event;
 		button.hidden = false;
 	});

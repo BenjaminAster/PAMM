@@ -8,11 +8,17 @@
 			<a href="about:flags#enable-experimental-web-platform-features">"Experimental Web Platform features" flag in about:flags</a>
 			or use Firefox or Safari.
 		</p>
+
+		<a href="#hide-mathml-warning">Hide</a>
 	</dialog>
 </section>
 
 <style>
 	@layer elements {
+		:host {
+			z-index: 1;
+		}
+
 		section {
 			position: fixed;
 			inset: 0;
@@ -37,6 +43,10 @@
 		a {
 			color: revert;
 			text-decoration: revert;
+		}
+
+		:host:target {
+			display: none;
 		}
 	}
 </style>

@@ -1,6 +1,9 @@
 
 /// <reference lib="WebWorker" />
 
-self.addEventListener("fetch", (event) => {
+const /** @type {ServiceWorkerGlobalScope} */ _self = /** @type {any} */ (self);
+
+_self.addEventListener("fetch", (event) => {
 
 });
+

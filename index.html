@@ -3,16 +3,15 @@
 
 <head>
 	<meta charset="UTF-8" />
-
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta name="color-scheme" content="dark light" />
 	<meta name="robots" content="all" />
 	<meta name="author" content="Benjamin Aster" />
-	<meta name="description" content="A user-friendly LaTeX alternative with a live editor." />
+	<meta name="description" content="Pretty Awesome Math Markup – A user-friendly LaTeX alternative with a live editor." />
 	<meta name="repository" content="https://github.com/BenjaminAster/PAMM" />
 	<meta name="theme-color" content="blueViolet" />
 
-	<title>Pretty Awesome Math Markup [BETA]</title>
+	<title>PAMM [BETA]</title>
 	<base href="./" />
 
 	<link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
@@ -28,13 +27,12 @@
 	<link rel="modulepreload" href="./js/utils.js" />
 	<link rel="modulepreload" href="./js/files.js" />
 	<link rel="modulepreload" href="./js/app.js" />
-	<link rel="modulepreload" href="./js/parseDocument/parseDocument.js" />
-	<link rel="modulepreload" href="./js/parseDocument/math/mathml/renderMathML.js" />
-	<link rel="modulepreload" href="./js/parseDocument/math/arrayToTree.js" />
-	<link rel="modulepreload" href="./js/parseDocument/math/categorizeArray.js" />
-	<link rel="modulepreload" href="./js/parseDocument/math/matchGroups.js" />
-	<link rel="modulepreload" href="./js/parseDocument/math/parseMath.js" />
-	<link rel="modulepreload" href="./js/parseDocument/math/stringToArray.js" />
+	<link rel="modulepreload" href="./js/parse/document/parseDocument.js" />
+	<link rel="modulepreload" href="./js/parse/math/arrayToTree.js" />
+	<link rel="modulepreload" href="./js/parse/math/categorizeArray.js" />
+	<link rel="modulepreload" href="./js/parse/math/parseMath.js" />
+	<link rel="modulepreload" href="./js/render/document/renderDocument.js" />
+	<link rel="modulepreload" href="./js/render/math/renderMath.js" />
 
 	<link rel="preload" as="fetch" crossorigin href="./html/math.c.html" />
 	<link rel="preload" as="fetch" crossorigin href="./html/header.c.html" />
@@ -47,7 +45,7 @@
 	</script>
 </head>
 
-<body class="loading">
+<body class="loading" data-view="files">
 	<noscript>
 		<dialog open>
 			Please enable JavaScript to view this site.
@@ -55,7 +53,7 @@
 	</noscript>
 
 	<header>
-		<c-header data-view="files"></c-header>
+		<c-header></c-header>
 	</header>
 
 	<main>

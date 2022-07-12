@@ -1,7 +1,7 @@
 {
-	"name": "Pretty Awesome Math Markup",
+	"name": "PAMM",
 	"short_name": "PAMM",
-	"description": "A user-friendly LaTeX alternative with a live editor.",
+	"description": "Pretty Awesome Math Markup – A user-friendly LaTeX alternative with a live editor.",
 	"start_url": "./",
 	"scope": "./",
 	"display": "standalone",

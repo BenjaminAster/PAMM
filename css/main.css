@@ -22,7 +22,6 @@
 		--titlebar-area-inline-start: env(titlebar-area-x, 0);
 		--titlebar-area-inline-size: env(titlebar-area-width, 0);
 		--titlebar-area-inline-end: calc(100vw - env(titlebar-area-x, 0) - env(titlebar-area-width, 0));
-
 		--titlebar-area-block-start: env(titlebar-area-y, 0);
 		--titlebar-area-block-size: env(titlebar-area-height, 0);
 		--titlebar-area-block-end: calc(100vh - env(titlebar-area-y, 0) - env(titlebar-area-height, 0));
@@ -77,24 +76,38 @@
 		}
 	}
 
-	@media (hover: none) and (not (display-mode: browser)) {
-		body {
-			overscroll-behavior-block: none;
+	@media (hover: none) {
+		@media not all and (display-mode: browser) {
+			body {
+				overscroll-behavior-block: none;
+			}
 		}
 	}
 
 	@media print {
+		:root {
+			-webkit-print-color-adjust: exact;
+			print-color-adjust: exact;
+		}
+
 		body {
-			grid-template-areas: "main" "main";
-			padding: 2rem;
+			display: block;
+			block-size: unset;
+			overflow: unset;
+		}
+
+		main {
+			display: block;
+			overflow: unset;
 		}
 
 		header {
 			display: none;
 		}
 	}
-
+	
 	@page {
-		margin: 0;
+		size: A4 portrait;
+		margin: 3rem;
 	}
 }
