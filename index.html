@@ -10,6 +10,7 @@
 	<meta name="description" content="Pretty Awesome Math Markup – A user-friendly LaTeX alternative with a live editor." />
 	<meta name="repository" content="https://github.com/BenjaminAster/PAMM" />
 	<meta name="theme-color" content="blueViolet" />
+	<meta property="og:image" content="https://benjaminaster.com/pamm/assets/icon.png" />
 
 	<title>PAMM [BETA]</title>
 	<base href="./" />
@@ -39,8 +40,8 @@
 	<link rel="preload" as="fetch" crossorigin href="./html/files.c.html" />
 
 	<script type="module">
-		if (!CSS.supports("color", "revert-layer")) {
-			window.alert("You are using an outdated version of your browser. Please update it to the newest version.");
+		if (!CSS.supports("color: revert-layer")) {
+			window.open("/update-your-browser/?" + location.pathname, "_self");
 		}
 	</script>
 </head>

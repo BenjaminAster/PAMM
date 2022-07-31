@@ -76,11 +76,9 @@
 		}
 	}
 
-	@media (hover: none) {
-		@media not all and (display-mode: browser) {
-			body {
-				overscroll-behavior-block: none;
-			}
+	@media not all and (display-mode: browser) {
+		body {
+			overscroll-behavior-block: none;
 		}
 	}
 
@@ -104,10 +102,10 @@
 		header {
 			display: none;
 		}
-	}
-	
-	@page {
-		size: A4 portrait;
-		margin: 3rem;
+
+		@page {
+			size: A4 portrait;
+			margin: 0;
+		}
 	}
 }

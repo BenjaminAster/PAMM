@@ -2,12 +2,18 @@
 import arrayToTree from "./arrayToTree.js";
 import categorizeArray, { categories, characterCategories, keywords, operators, operatorSyntaxes, allBracketsSyntaxes, allBrackets } from "./categorizeArray.js";
 
-const stringToArray = (/** @type {string} */ mathString) => {
+
+export default (/** @type {string} */ mathString) => {
+
+	// console.time("parseMath");
+
 	const categorizedArray = categorizeArray(mathString);
+
+	// console.timeLog("parseMath");
 
 	let /** @type {any[]} */ mathArray = [];
 
-	for (const [index, { characterCategory, string }] of categorizedArray.entries()) {
+	for (const [index, { characterCategory, string, ...itemProperties }] of categorizedArray.entries()) {
 		if (characterCategory === characterCategories.number) {
 
 			mathArray.push({
@@ -52,11 +58,23 @@ const stringToArray = (/** @type {string} */ mathString) => {
 
 		} else if (characterCategory === characterCategories.symbols) {
 
-			const operator = operatorSyntaxes.find(({ syntax }) => string === syntax).name;
+			// const operator = operatorSyntaxes.find(({ syntax }) => string === syntax).name;
+
+			// mathArray.push({
+			// 	category: categories.operator,
+			// 	name: operator,
+			// 	groupsNotMatched: true,
+			// });
+
+			// mathArray.push(...categorizeSymbols(string).map(({ operator }) => ({
+			// 	category: categories.operator,
+			// 	name: operator,
+			// 	groupsNotMatched: true,
+			// })));
 
 			mathArray.push({
 				category: categories.operator,
-				name: operator,
+				name: itemProperties.operator,
 				groupsNotMatched: true,
 			});
 
@@ -243,9 +261,44 @@ const stringToArray = (/** @type {string} */ mathString) => {
 						],
 					});
 
+				} else if (operator === operators.square) {
+
+					matchGroup({
+						index: index,
+						direction: "backwards",
+						removeRedundantParentheses: false,
+						disallowedOperators: [
+							operators.plus,
+							operators.minus,
+							operators.times,
+							operators.fraction,
+							operators.divide,
+							operators.power,
+							operators.root,
+							operators.squareRoot,
+							operators.invisibleTimes,
+						],
+					});
+
+				} else if (operator === operators.factorial) {
+
+					matchGroup({
+						index: index,
+						direction: "backwards",
+						removeRedundantParentheses: false,
+						disallowedOperators: [
+							operators.plus,
+							operators.minus,
+							operators.times,
+							operators.divide,
+							operators.power,
+							operators.invisibleTimes,
+						],
+					});
+
 				} else if (operator === operators.root) {
 
-					if ([characterCategories.anyOpeningBracket, characterCategories.symbols, characterCategories.whitespace].includes(mathArray[index - 1]?.category)) {
+					if ([categories.anyOpeningBracket, categories.operator, categories.whitespace].includes(mathArray[index - 1]?.category)) {
 
 						mathArray[index].name = operators.squareRoot;
 
@@ -303,12 +356,7 @@ const stringToArray = (/** @type {string} */ mathString) => {
 
 	mathArray = mathArray.filter(({ category }) => category !== categories.whitespace);
 
-	return mathArray;
-};
+	const tree = arrayToTree(mathArray);
 
-
-export default (/** @type {string} */ mathString) => {
-	const array = stringToArray(mathString);
-	const tree = arrayToTree(array);
 	return tree;
 };

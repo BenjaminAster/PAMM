@@ -50,8 +50,8 @@ dialog {
 }
 
 ::selection {
-	background-color: mediumSpringGreen;
-	color: black;
+	background-color: CanvasText;
+	color: Canvas;
 }
 
 @media (hover: none) {

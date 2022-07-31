@@ -1,3 +1,4 @@
+@charset "UTF-8";
 
 :where([class^="icon:"], [class*=" icon:"])::before {
 	content: "";

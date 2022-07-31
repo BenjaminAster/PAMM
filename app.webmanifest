@@ -29,13 +29,11 @@
 		"accept": {
 			"text/pretty-awesome-math-markup": [".pamm"]
 		},
-		"icons": [
-			{
-				"src": "./assets/icon.png",
-				"type": "image/png",
-				"sizes": "256x256"
-			}
-		],
+		"icons": [{
+			"src": "./assets/icon.png",
+			"type": "image/png",
+			"sizes": "256x256"
+		}],
 		"launch_type": "multiple-clients"
 	}],
 	"screenshots": [{

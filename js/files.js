@@ -112,13 +112,9 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 			file: "files",
 		}[data.type];
 
-		console.log(data);
-
 		const droppedItem = await database.get({ store: droppedItemStore, id: data.id });
 		folder[droppedItemStore].push({ id: droppedItem.id });
 		await database.put({ store: "folders", data: folder });
-
-		console.log(droppedItem);
 
 		const droppedItemParentfolder = await database.get({ store: "folders", id: droppedItem.parentFolder.id });
 		droppedItemParentfolder[droppedItemStore] = droppedItemParentfolder[droppedItemStore].filter(({ id }) => id !== droppedItem.id);
@@ -221,9 +217,9 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 {
 	const searchParams = new URLSearchParams(location.search);
 	if (searchParams.get("folder")) {
-		history.replaceState({ folderId: searchParams.get("folder") }, "", location.pathname);
+		history.replaceState({ folderId: searchParams.get("folder") }, "", "./");
 	} else if (searchParams.get("file")) {
-		history.replaceState({ fileId: searchParams.get("file") }, "", location.pathname);
+		history.replaceState({ fileId: searchParams.get("file") }, "", "./");
 	}
 }
 
@@ -241,14 +237,14 @@ const fileUtils = new class {
 	async saveFile() {
 		switch (currentFile.storageType) {
 			case ("indexeddb"): {
-				currentFile.databaseData.content = elements.textInput.value;
+				currentFile.databaseData.content = elements.textInput.value.normalize();
 				await database.put({ store: "files", data: currentFile.databaseData });
 				break;
 			}
 			case ("file-system"): {
 				const writable = await currentFile.fileHandle.createWritable().catch(trace);
 				if (!writable) return;
-				await writable.write(elements.textInput.value);
+				await writable.write(elements.textInput.value.normalize());
 				await writable.close();
 				break;
 			}
@@ -257,9 +253,10 @@ const fileUtils = new class {
 	};
 	downloadFile(/** @type {{ name?: string, content?: string }} */ { name, content } = {}) {
 		const anchor = document.createElement("a");
-		anchor.href = "data:text/pretty-awesome-math-markup;charset=utf-8," + window.encodeURIComponent(content ?? elements.textInput.value);
+		anchor.href = URL.createObjectURL(new Blob([content ?? elements.textInput.value]));
 		anchor.download = name ?? currentFile.fileHandle?.name ?? (currentFile.databaseData?.name + appMeta.fileExtension);
 		anchor.click();
+		URL.revokeObjectURL(anchor.href);
 	};
 	async printFile() {
 		await 0;

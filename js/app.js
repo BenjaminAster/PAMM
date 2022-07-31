@@ -1,4 +1,6 @@
 
+/// <reference path="../../nonstandards/index.d.ts" />
+
 import { $ } from "./utils.js";
 
 navigator.serviceWorker?.register("./service-worker.js", { scope: "./", updateViaCache: "all" });
@@ -91,12 +93,12 @@ if (!window.MathMLElement) {
 }
 
 if (navigator.windowControlsOverlay) {
-	let prevVisible = false;
+	let previousVisible = false;
 	const toggleWCO = ({ visible, manuallyToggled = true }) => {
 		document.body.classList.toggle("window-controls-overlay", visible);
-		if (manuallyToggled && prevVisible === false) document.body.classList.remove("no-wco-animation");
+		if (manuallyToggled && previousVisible === false) document.body.classList.remove("no-wco-animation");
 		else document.body.classList.add("no-wco-animation");
-		prevVisible = visible;
+		previousVisible = visible;
 	};
 	if (navigator.windowControlsOverlay.visible) toggleWCO({ visible: true, manuallyToggled: false });
 	navigator.windowControlsOverlay.addEventListener("geometrychange", toggleWCO);
@@ -124,5 +126,4 @@ if (navigator.windowControlsOverlay) {
 	checkReadyState();
 	document.addEventListener("readystatechange", checkReadyState);
 }
-
 

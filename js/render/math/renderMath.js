@@ -30,6 +30,28 @@ export default (/** @type {any[]} */ mathTree) => {
 					element.appendChild(exponent);
 					elementArray.push(element);
 
+				} else if (item.name === operators.square) {
+
+					const base = recursiveRender(item.base);
+					const exponent = Object.assign(createMathElement("mn"), {
+						textContent: "2",
+					});
+
+					const element = createMathElement("msup");
+					element.appendChild(base);
+					element.appendChild(exponent);
+					elementArray.push(element);
+
+				} else if (item.name === operators.factorial) {
+
+					const expression = recursiveRender(item.expression);
+					const exclamationMark = Object.assign(createMathElement("mo"), {
+						textContent: "!",
+					});
+
+					elementArray.push(expression);
+					elementArray.push(exclamationMark);
+
 				} else if (item.name === operators.index) {
 
 					const base = recursiveRender(item.base);
@@ -64,6 +86,12 @@ export default (/** @type {any[]} */ mathTree) => {
 					element.innerHTML = "&plus;";
 					elementArray.push(element);
 
+				} else if (item.name === operators.plusMinus) {
+
+					const element = createMathElement("mo");
+					element.innerHTML = "&PlusMinus;";
+					elementArray.push(element);
+
 				} else if (item.name === operators.minus) {
 
 					const element = createMathElement("mo");
@@ -92,6 +120,48 @@ export default (/** @type {any[]} */ mathTree) => {
 
 					const element = createMathElement("mo");
 					element.innerHTML = "=";
+					elementArray.push(element);
+
+				} else if (item.name === operators.lessThan) {
+
+					const element = createMathElement("mo");
+					element.innerHTML = "<";
+					elementArray.push(element);
+
+				} else if (item.name === operators.greaterThan) {
+
+					const element = createMathElement("mo");
+					element.innerHTML = ">";
+					elementArray.push(element);
+
+				} else if (item.name === operators.lessThanOrEqual) {
+
+					const element = createMathElement("mo");
+					element.innerHTML = "&le;";
+					elementArray.push(element);
+
+				} else if (item.name === operators.greaterThanOrEqual) {
+
+					const element = createMathElement("mo");
+					element.innerHTML = "&ge;";
+					elementArray.push(element);
+
+				} else if (item.name === operators.doubleLeftArrow) {
+
+					const element = createMathElement("mo");
+					element.innerHTML = "&DoubleLongLeftArrow;";
+					elementArray.push(element);
+
+				} else if (item.name === operators.doubleRightArrow) {
+
+					const element = createMathElement("mo");
+					element.innerHTML = "&DoubleLongRightArrow;";
+					elementArray.push(element);
+
+				} else if (item.name === operators.doubleLeftRightArrow) {
+
+					const element = createMathElement("mo");
+					element.innerHTML = "&DoubleLongLeftRightArrow;";
 					elementArray.push(element);
 
 				}
