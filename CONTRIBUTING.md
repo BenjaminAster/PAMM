@@ -1,7 +1,7 @@
 
 ## TODO:
 
- - [ ] replace native dialogs with custom ones
+ - [x] replace native dialogs with custom ones
  - [ ] prevent folders from being dropped into containing or contained folder
  - [ ] don't re-render all breadcrumb elements every time
  - [ ] make breadcrumb elements draggable
@@ -14,11 +14,16 @@
  - [ ] update title for files
  - [ ] choose custom font with Local Font Access API
  - [ ] horizontal/vertical layout switching
- - [ ] refresh all file lists after drag-&-drop (including other tabs)
+ - [ ] refresh all file lists after drag-&-drop & file create/rename/delete (including other tabs)
  - [ ] warn user before closing an unsaved file (beforeunload event)
  - [ ] new display-mode: window-controls-overlay
  - [ ] custom print dialog before native dialog with info & size option
  - [ ] color theme toggler
+ - [ ] make header responsive using container queries
+ - [ ] implement shared element transitions
+ - [ ] renaming files from recently opened (including file system files (with .move()))
+ - [ ] open file location for browser files in recently opened
+ - [ ] sort files by name / last modified / ...
 
 
 ## VSCode settings:
@@ -42,7 +47,7 @@
 ```
 
 ```jsonc
-	// Personal recommendations
+	// Personal recommendations:
 	"editor.cursorSmoothCaretAnimation": true,
 	"editor.cursorBlinking": "smooth",
 	"editor.smoothScrolling": true,

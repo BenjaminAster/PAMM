@@ -18,6 +18,13 @@
 @layer main {
 	:root {
 		--background: #1b1b1e;
+		--gray-1: #2b2b2e;
+		--gray-2: #3b3b3e;
+		--gray-3: #4b4b4e;
+		--transparent-background: #1115;
+		--transparent-gray-1: #3335;
+		--transparent-gray-2: #5555;
+		--shadow-color: #0004;
 
 		--titlebar-area-inline-start: env(titlebar-area-x, 0);
 		--titlebar-area-inline-size: env(titlebar-area-width, 0);
@@ -25,11 +32,20 @@
 		--titlebar-area-block-start: env(titlebar-area-y, 0);
 		--titlebar-area-block-size: env(titlebar-area-height, 0);
 		--titlebar-area-block-end: calc(100vh - env(titlebar-area-y, 0) - env(titlebar-area-height, 0));
+
+		--px: calc(1rem / 16);
 	}
 
 	@media (prefers-color-scheme: light) {
 		:root {
 			--background: white;
+			--transparent-background: #eee4;
+			--transparent-gray-1: #ccc5;
+			--transparent-gray-2: #aaa5;
+			--gray-1: #eee;
+			--gray-2: #ddd;
+			--gray-3: #ccc;
+			--shadow-color: #8885;
 		}
 	}
 
@@ -60,6 +76,67 @@
 		display: flex;
 		flex-direction: column;
 		overflow-y: hidden;
+	}
+
+	dialog.messagebox {
+		display: flex;
+		flex-direction: column;
+		gap: .6rem;
+		padding: .8rem 1rem;
+		border-radius: .5rem;
+		background-color: var(--gray-2);
+		box-shadow: 0 0 4rem #0004;
+		max-inline-size: calc(min(100% - 6rem, 40rem))
+	}
+
+	dialog.messagebox .message {
+		white-space: pre-wrap;
+		overflow-wrap: break-word;
+	}
+
+	dialog.messagebox .input {
+		border: 2px solid royalBlue;
+		padding: .4em .6em;
+		border-radius: .3rem;
+	}
+
+	dialog.messagebox .input:focus-visible {
+		outline: none;
+		background-color: var(--gray-1);
+	}
+
+	dialog.messagebox .buttons {
+		display: flex;
+		gap: .5rem;
+		justify-content: end;
+	}
+
+	dialog.messagebox button:focus-visible {
+		outline: 2px solid var(--button-color);
+		outline-offset: 2px;
+	}
+
+	dialog.messagebox button.ok {
+		--button-color: royalBlue;
+		color: white;
+	}
+
+	dialog.messagebox button.cancel {
+		--button-color: var(--gray-3);
+		outline-color: #888;
+	}
+
+	dialog.messagebox button {
+		background-color: var(--button-color);
+		padding: .4em .8em;
+		border-radius: .2rem;
+	}
+
+	dialog.messagebox::backdrop {
+		background: none;
+		--backdrop-filter: blur(.125rem);
+		-webkit-backdrop-filter: var(--backdrop-filter);
+		backdrop-filter: var(--backdrop-filter);
 	}
 
 	/* Arabic (ar), Hebrew (iw), Pashto (ps), Persian (fa), Sindhi (sd), Urdu (ur), Uyghur (ug), Yiddish (yi) */

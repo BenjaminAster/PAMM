@@ -46,7 +46,7 @@ dialog {
 	inset: 0;
 	margin: auto;
 	border: none;
-	border-radius: .5rem;
+	padding: 1rem;
 }
 
 ::selection {

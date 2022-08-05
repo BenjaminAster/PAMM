@@ -53,9 +53,33 @@
 		</dialog>
 	</noscript>
 
-	<header>
-		<c-header></c-header>
-	</header>
+	<template id="messageboxes">
+		<dialog class="messagebox alert">
+			<p class="message"></p>
+			<div class="buttons">
+				<button class="ok">OK</button>
+			</div>
+		</dialog>
+
+		<dialog class="messagebox confirm">
+			<p class="message"></p>
+			<div class="buttons" focusgroup="wrap">
+				<button class="ok">OK</button>
+				<button class="cancel">Cancel</button>
+			</div>
+		</dialog>
+
+		<dialog class="messagebox prompt">
+			<p class="message"></p>
+			<input type="text" class="input" />
+			<div class="buttons" focusgroup="wrap">
+				<button class="ok">OK</button>
+				<button class="cancel">Cancel</button>
+			</div>
+		</dialog>
+	</template>
+
+	<c-header></c-header>
 
 	<main>
 		<c-files></c-files>

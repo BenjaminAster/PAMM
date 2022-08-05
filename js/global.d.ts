@@ -1,6 +1,6 @@
 
-type fileStorageType = "indexeddb" | "file-system";
+type FileStorageType = "indexeddb" | "file-system";
 
-type itemType = "folder" | "file";
+type ItemType = "folder" | "file";
 
 declare function log(data: T, trace?: boolean): T;

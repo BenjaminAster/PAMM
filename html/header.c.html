@@ -1,21 +1,24 @@
 
-<a href="https://github.com/BenjaminAster/PAMM" class="github icon:github" title="View on GitHub"></a>
-<img src="./assets/icon.svg" class="icon" alt="icon of PAMM" />
-<input type="text" class="file-name math-only" title="File name" />
+<header focusgroup="wrap">
+	<a href="https://github.com/BenjaminAster/PAMM" class="github icon:github" title="View on GitHub"></a>
+	<img src="./assets/icon.svg" class="icon" alt="icon of PAMM" />
+	<input type="text" class="file-name math-only" title="File name" />
 
-<button data-action="save" class="math-only icon:save-fill" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
-<button data-action="download" class="math-only icon:download" title="Download"><span class="text">Download</span></button>
-<button data-action="print" class="math-only icon:file-earmark-pdf" title="Export PDF or print"><span class="text">Export PDF / print</span></button>
-<button data-action="my-files" class="math-only icon:view-grid" title="My files"><span class="text">My files</span></button>
+	<button data-action="save" class="math-only icon:save-fill" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
+	<button data-action="download" class="math-only icon:download" title="Download"><span class="text">Download</span></button>
+	<button data-action="print" class="math-only icon:file-earmark-pdf" title="Export PDF or print"><span class="text">Export PDF / print</span></button>
+	<button data-action="my-files" class="math-only icon:view-grid" title="My files"><span class="text">My files</span></button>
 
-<button data-action="open" class="files-only icon:folder-open" title="Open"><span class="text">Open</span></button>
-<button data-action="upload" class="files-only icon:upload" title="Upload"><span class="text">Upload</span></button>
+	<button data-action="recently-opened" class="files-only icon:clock" title="Recently opened"><span class="text">Recently opened</span></button>
+	<button data-action="open" class="files-only icon:folder-open" title="Open"><span class="text">Open</span></button>
+	<button data-action="upload" class="files-only icon:upload" title="Upload"><span class="text">Upload</span></button>
 
-<button data-action="install" class="icon:install-desktop" title="Install app" hidden><span class="text">Install app</span></button>
+	<button data-action="install" class="icon:install-desktop" title="Install app" hidden><span class="text">Install app</span></button>
+</header>
 
 <style>
 	@layer elements {
-		:host {
+		header {
 			display: flex;
 			flex-wrap: wrap;
 			align-items: center;
@@ -42,8 +45,8 @@
 			display: none;
 		}
 
-		@media (display-mode: standalone) {
-			:host {
+		@media (display-mode: standalone), (display-mode: window-controls-overlay) {
+			:host header {
 				margin: 0;
 				--radius: .4em;
 				border-radius: 0 0 var(--radius) var(--radius);
@@ -51,14 +54,14 @@
 			}
 		}
 
-		body.window-controls-overlay :host {
+		body.window-controls-overlay :host header {
 			min-block-size: var(--titlebar-area-block-size);
 			padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding-block));
 			padding-inline-start: max(var(--titlebar-area-inline-start), var(--padding-inline));
 			padding-inline-end: max(var(--titlebar-area-inline-end), var(--padding-inline));
 		}
 
-		body.window-controls-overlay:not(.no-wco-animation) :host {
+		body.window-controls-overlay:not(.no-wco-animation) :host header {
 			animation: collapse .5s;
 		}
 

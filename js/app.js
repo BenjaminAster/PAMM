@@ -11,6 +11,8 @@ export const elements = {
 	get saveButton() { return $("c-header [data-action=save]") },
 	get downloadButton() { return $("c-header [data-action=download]") },
 	get printButton() { return $("c-header [data-action=print]") },
+	get recentlyOpenedDialog() { return /** @type {HTMLDialogElement} */ ($("c-files dialog.recently-opened")) },
+	get recentlyOpenedButton() { return $("c-header [data-action=recently-opened]") },
 	get openButton() { return $("c-header [data-action=open]") },
 	get uploadButton() { return $("c-header [data-action=upload]") },
 	get newFolderButton() { return $("c-files [data-action=new-folder]") },
@@ -19,6 +21,14 @@ export const elements = {
 	get foldersUL() { return $("c-files .folders") },
 	get filesUL() { return $("c-files .files") },
 	get breadcrumbUL() { return $("c-files nav.breadcrumb ul") },
+	get htmlOutput() { return $("c-math .html-output") },
+};
+
+export const appMeta = {
+	name: "Pretty Awesome Math Markup [BETA]",
+	shortName: "PAMM [BETA]",
+	fileExtension: ".pamm",
+	mimeType: "text/pretty-awesome-math-markup",
 };
 
 const customElementNames = [
@@ -112,7 +122,10 @@ if (navigator.windowControlsOverlay) {
 		button.hidden = false;
 	});
 	button.addEventListener("click", async () => {
-		if ((await beforeInstallPromptEvent.prompt()).outcome === "accepted") button.hidden = true;
+		await beforeInstallPromptEvent?.prompt();
+	});
+	window.addEventListener("appinstalled", () => {
+		button.hidden = true;
 	});
 }
 

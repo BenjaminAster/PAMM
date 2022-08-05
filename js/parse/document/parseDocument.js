@@ -41,118 +41,113 @@ export default (/** @type {string} */ inputString) => {
 		}
 
 		if (character === "{") {
-			if (currentType !== "math" && !/^\{*$/.test(currentString)) {
-				const displayBlock = /^\n+$/.test(currentString);
+			bracesDepth++;
+			if (currentType !== "math") {
+				const displayBlock = /^(?:\n|-)$/.test(currentString);
+				const displayStyle = /^(?:\n|(?:.*\+)?)$/.test(currentString);
+
 				if (displayBlock) {
 					flattenStack();
 				} else {
+					if (currentString.endsWith("+")) {
+						currentString = currentString.slice(0, -1);
+					}
 					stack.at(-1).content.push({
 						type: "text",
 						string: currentString,
 					});
 				}
+
 				stack.push({
 					type: "math",
 					content: [],
 					displayBlock,
-					displayStyle: displayBlock,
-					bracesDepth: null,
+					displayStyle,
 				});
 				currentString = "";
-				currentType = "mathStart";
+				currentType = "math";
+				continue $loop;
 			}
-			bracesDepth++;
-		} else {
-			if (currentType === "mathStart") {
-				stack.at(-1).bracesDepth = bracesDepth;
-				if (bracesDepth === 2) {
-					stack.at(-1).displayStyle = !stack.at(-1).displayBlock;
+		} else if (character === "}" && bracesDepth > 0) {
+			bracesDepth--;
+			if (bracesDepth === 0 && currentType === "math") {
+				stack.at(-1).content.push(...parseMath(currentString));
+				stack.at(-2).content.push(stack.pop());
+				currentString = "";
+				currentType = "text";
+				continue $loop;
+			}
+		} else if (currentType === "text") {
+			if (character === "\n") {
+				if (currentString === "\n") {
+					flattenStack();
+					continue $loop;
+				} else if (stack[1]?.type === "heading") {
+					stack.at(-1).content.push({
+						type: "text",
+						string: currentString,
+					});
+					flattenStack();
+				} else if (currentString) {
+					stack.at(-1).content.push({
+						type: "text",
+						string: currentString,
+					});
 				}
 				currentString = "";
-				currentType = "math";
-			}
-
-			if (character === "}" && bracesDepth > 0) {
-				if (bracesDepth === stack.at(-1).bracesDepth) {
-					stack.at(-1).content.push(...parseMath(currentString));
-					stack.at(-2).content.push(stack.pop());
-					currentString = "";
-					currentType = "mathEnd";
-					bracesDepth--;
-					continue $loop;
-				}
-				bracesDepth--;
+				currentType = "text";
+			} else if (character === "#" && /^\n+$/.test(currentString)) {
+				flattenStack();
+				currentType = "headingMarker";
+				currentString = "";
 			} else {
-				if (currentType === "mathEnd") {
-					currentType = "text";
-					currentString = "";
-				}
-				if (currentType === "text") {
-					if (character === "\n") {
-						if (currentString === "\n") {
-							flattenStack();
-							continue $loop;
-						} else if (stack[1]?.type === "heading") {
-							stack.at(-1).content.push({
-								type: "text",
-								string: currentString,
-							});
-							flattenStack();
-						} else if (currentString) {
-							stack.at(-1).content.push({
-								type: "text",
-								string: currentString,
-							});
-						}
-						currentString = "";
-						currentType = "text";
-					} else if (character === "#" && /^\n+$/.test(currentString)) {
-						flattenStack();
-						currentType = "headingMarker";
-						currentString = "";
+				if (currentString === "\n") {
+					if (stack.length > 1) {
+						stack.at(-1).content.push({
+							type: "newLine",
+						});
 					} else {
-						if (currentString === "\n") {
-							if (stack.length > 1) {
-								stack.at(-1).content.push({
-									type: "newLine",
-								});
-							} else {
-								flattenStack();
-								stack.push({
-									type: "paragraph",
-									content: [],
-								});
-							}
-							currentString = "";
+						flattenStack();
+						if (character !== "-") {
+							stack.push({
+								type: "paragraph",
+								content: [],
+							});
 						}
+					}
+					currentString = "";
+				} else if (currentString === "-") {
+					stack.push({
+						type: "paragraph",
+						content: [],
+					});
+				}
 
-						$characterLoop: for (const [formattingCharacter, formattingType] of [["*", "bold"], ["_", "italic"]]) {
-							if (formattingCharacter === character) {
-								if (!currentTextFormatting[formattingType]) {
-									stack.at(-1).content.push({
-										type: "text",
-										string: currentString,
-									});
-									stack.push({
-										type: formattingType,
-										content: [],
-									});
-									currentString = "";
-									currentTextFormatting[formattingType] = true;
-									continue $loop;
-								} else if (stack.at(-1).type === formattingType) {
-									stack.at(-1).content.push({
-										type: "text",
-										string: currentString,
-									});
-									stack.at(-2).content.push(stack.pop());
-									currentTextFormatting[formattingType] = false;
-									currentString = "";
-									continue $loop;
-								}
-								break $characterLoop;
-							}
+				$characterLoop: for (const [formattingCharacter, formattingType] of [["*", "bold"], ["_", "italic"]]) {
+					if (formattingCharacter === character) {
+						if (!currentTextFormatting[formattingType]) {
+							stack.at(-1).content.push({
+								type: "text",
+								string: currentString,
+							});
+							stack.push({
+								type: formattingType,
+								content: [],
+							});
+							currentString = "";
+							currentTextFormatting[formattingType] = true;
+							continue $loop;
+						} else if (stack.at(-1).type === formattingType) {
+							stack.at(-1).content.push({
+								type: "text",
+								string: currentString,
+							});
+							stack.at(-2).content.push(stack.pop());
+							currentTextFormatting[formattingType] = false;
+							currentString = "";
+							continue $loop;
 						}
+						break $characterLoop;
 					}
 				}
 			}
@@ -162,7 +157,7 @@ export default (/** @type {string} */ inputString) => {
 
 	if (currentType === "math") {
 		stack.at(-1).content.push(...parseMath(currentString));
-	} else if (currentType !== "mathEnd") {
+	} else {
 		stack.at(-1).content.push({
 			type: currentType,
 			string: currentString,
