@@ -31,6 +31,11 @@ button, input, textarea, select, option {
 	padding: unset;
 }
 
+input, textarea {
+	cursor: auto;
+	background: none;
+}
+
 ul {
 	margin: unset;
 	padding: unset;

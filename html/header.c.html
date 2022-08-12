@@ -1,15 +1,18 @@
 
 <header focusgroup="wrap">
-	<a href="https://github.com/BenjaminAster/PAMM" class="github icon:github" title="View on GitHub"></a>
 	<img src="./assets/icon.svg" class="icon" alt="icon of PAMM" />
-	<input type="text" class="file-name math-only" title="File name" />
+	<a href="https://github.com/BenjaminAster/PAMM" class="github icon:github" title="View on GitHub"></a>
 
-	<button data-action="save" class="math-only icon:save-fill" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
-	<button data-action="download" class="math-only icon:download" title="Download"><span class="text">Download</span></button>
-	<button data-action="print" class="math-only icon:file-earmark-pdf" title="Export PDF or print"><span class="text">Export PDF / print</span></button>
-	<button data-action="my-files" class="math-only icon:view-grid" title="My files"><span class="text">My files</span></button>
-
+	<input type="text" class="file-name editor-only" title="File name" />
 	<button data-action="recently-opened" class="files-only icon:clock" title="Recently opened"><span class="text">Recently opened</span></button>
+
+	<button data-action="toggle-editor-layout" class="editor-only icon:layout-columns" title="Toggle vertical / horizontal layout"></button>
+	<button data-action="toggle-theme" class="icon:moon" title="Toggle color theme"></button>
+
+	<button data-action="save" class="editor-only icon:save-fill" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
+	<button data-action="export" class="editor-only icon:file-export" title="Export"><span class="text">Export</span></button>
+	<a data-action="my-files" href="?folder=home" class="editor-only icon:view-grid" title="My files"><span class="text">My files</span></a>
+
 	<button data-action="open" class="files-only icon:folder-open" title="Open"><span class="text">Open</span></button>
 	<button data-action="upload" class="files-only icon:upload" title="Upload"><span class="text">Upload</span></button>
 
@@ -18,11 +21,7 @@
 
 <style>
 	@layer elements {
-		header {
-			display: flex;
-			flex-wrap: wrap;
-			align-items: center;
-			gap: .5rem;
+		:host {
 			--padding-inline: .5rem;
 			--padding-block: .5rem;
 			padding: var(--padding-block) var(--padding-inline);
@@ -37,16 +36,37 @@
 			box-sizing: border-box;
 		}
 
-		body[data-view=files] :host .math-only {
+		header {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: .5rem;
+			box-sizing: border-box;
+			container: header / inline-size;
+		}
+
+		@container header (max-inline-size: 43rem) {
+			:is(button, a)[data-action] .text {
+				display: none;
+			}
+		}
+
+		@container header (max-inline-size: 47rem) {
+			:is(a.github) {
+				display: none;
+			}
+		}
+
+		:root[data-view=files] :host .editor-only {
 			display: none;
 		}
 
-		body[data-view=math] :host .files-only {
+		:root[data-view=editor] :host .files-only {
 			display: none;
 		}
 
 		@media (display-mode: standalone), (display-mode: window-controls-overlay) {
-			:host header {
+			:host {
 				margin: 0;
 				--radius: .4em;
 				border-radius: 0 0 var(--radius) var(--radius);
@@ -54,14 +74,14 @@
 			}
 		}
 
-		body.window-controls-overlay :host header {
+		:root.window-controls-overlay :host {
 			min-block-size: var(--titlebar-area-block-size);
 			padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding-block));
 			padding-inline-start: max(var(--titlebar-area-inline-start), var(--padding-inline));
 			padding-inline-end: max(var(--titlebar-area-inline-end), var(--padding-inline));
 		}
 
-		body.window-controls-overlay:not(.no-wco-animation) :host header {
+		:root.window-controls-overlay:not(.no-wco-animation) :host {
 			animation: collapse .5s;
 		}
 
@@ -85,10 +105,9 @@
 		}
 
 		img.icon {
-			--size: 1.5rem;
-			block-size: var(--size);
-			inline-size: var(--size);
-			margin-inline: .3rem;
+			inline-size: 1.5rem;
+			aspect-ratio: 1;
+			margin-inline-start: .3rem;
 		}
 
 		input.file-name {
@@ -100,7 +119,7 @@
 			app-region: no-drag;
 			flex-grow: 1;
 			flex-basis: 0;
-			min-inline-size: 5rem;
+			min-inline-size: 1rem;
 			max-inline-size: 15rem;
 		}
 
@@ -108,8 +127,16 @@
 			background-color: #0002;
 		}
 
-		button:is([data-action=save], [data-action=open]) {
-			margin-inline-start: auto;
+		input.file-name, [data-action=recently-opened] {
+			margin-inline-end: auto;
+		}
+
+		:root[data-editorlayout="stacked"] :host [data-action=toggle-editor-layout] {
+			--icon: var(--icon-layout-rows);
+		}
+
+		:root.light-theme :host [data-action=toggle-theme] {
+			--icon: var(--icon-sun);
 		}
 
 		button[data-action=print]::after {
@@ -117,15 +144,15 @@
 			--icon: var(--icon-printer);
 		}
 
-		body.file-dirty :host button[data-action=save] .saved-d {
+		:root.file-dirty :host button[data-action=save] .saved-d {
 			display: none;
 		}
 
-		body.file-dirty :host button[data-action=save] {
+		:root.file-dirty :host button[data-action=save] {
 			--icon: var(--icon-save-outline);
 		}
 
-		button {
+		:is(button, a)[data-action] {
 			padding: .3rem .7em;
 			min-block-size: 2.2rem;
 			border-radius: .4rem;
@@ -136,34 +163,17 @@
 			app-region: no-drag;
 			--icon-size: 1.125rem;
 			transition: background-color .2s;
+			box-sizing: border-box;
 		}
 
-		button:hover {
+		:is(button, a)[data-action]:hover {
 			background-color: #0004;
 		}
 
 		a.github {
 			app-region: no-drag;
 			--icon-size: 1.5rem;
-			margin-inline-start: .3rem;
-		}
-
-		@media (max-width: 60rem) {
-			button .text {
-				display: none;
-			}
-		}
-
-		@media (max-width: 40rem) {
-			body[data-view=math].window-controls-overlay :host :is(img.icon, a.github) {
-				display: none;
-			}
-		}
-
-		@media (max-width: 25rem) {
-			body[data-view=math] :host :is(img.icon, a.github) {
-				display: none;
-			}
+			margin-inline: .2rem;
 		}
 	}
 </style>

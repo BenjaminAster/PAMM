@@ -5,7 +5,7 @@
 @import url("./global.css") layer(global);
 
 @layer important {
-	body.loading * {
+	:root.loading * {
 		transition: none;
 		animation: none;
 	}
@@ -17,6 +17,7 @@
 
 @layer main {
 	:root {
+		color-scheme: dark;
 		--background: #1b1b1e;
 		--gray-1: #2b2b2e;
 		--gray-2: #3b3b3e;
@@ -36,17 +37,16 @@
 		--px: calc(1rem / 16);
 	}
 
-	@media (prefers-color-scheme: light) {
-		:root {
-			--background: white;
-			--transparent-background: #eee4;
-			--transparent-gray-1: #ccc5;
-			--transparent-gray-2: #aaa5;
-			--gray-1: #eee;
-			--gray-2: #ddd;
-			--gray-3: #ccc;
-			--shadow-color: #8885;
-		}
+	:root:is(.light-theme, .printing) {
+		color-scheme: light;
+		--background: white;
+		--transparent-background: #eee4;
+		--transparent-gray-1: #ccc5;
+		--transparent-gray-2: #aaa5;
+		--gray-1: #eee;
+		--gray-2: #ddd;
+		--gray-3: #ccc;
+		--shadow-color: #8885;
 	}
 
 	body {
@@ -65,6 +65,7 @@
 		-moz-text-size-adjust: none;
 		-webkit-text-size-adjust: none;
 		text-size-adjust: none;
+		overflow: hidden;
 	}
 
 	header {
@@ -76,6 +77,51 @@
 		display: flex;
 		flex-direction: column;
 		overflow-y: hidden;
+		overflow: hidden;
+		box-sizing: border-box;
+		page-transition-tag: main-content;
+		contain: paint;
+	}
+
+	/* Arabic (ar), Hebrew (iw), Pashto (ps), Persian (fa), Sindhi (sd), Urdu (ur), Uyghur (ug), Yiddish (yi) */
+	:root:is(.translated-rtl, :lang(ar), :lang(iw), :lang(ps), :lang(fa), :lang(sd), :lang(ur), :lang(ug), :lang(yi)) {
+		direction: rtl;
+
+		--titlebar-area-inline-start: calc(100vw - env(titlebar-area-x, 0) - env(titlebar-area-width, 0));
+		--titlebar-area-inline-end: env(titlebar-area-x, 0);
+	}
+
+	@media not all and (display-mode: browser) {
+		body {
+			overscroll-behavior-block: none;
+		}
+	}
+
+	@media print {
+		:root {
+			-webkit-print-color-adjust: exact;
+			print-color-adjust: exact;
+		}
+
+		body {
+			display: block;
+			block-size: unset;
+			overflow: unset;
+		}
+
+		main {
+			display: block;
+			overflow: unset;
+		}
+
+		c-header {
+			display: none;
+		}
+
+		@page {
+			size: A4 portrait;
+			margin: 0;
+		}
 	}
 
 	dialog.messagebox {
@@ -139,50 +185,108 @@
 		backdrop-filter: var(--backdrop-filter);
 	}
 
-	/* Arabic (ar), Hebrew (iw), Pashto (ps), Persian (fa), Sindhi (sd), Urdu (ur), Uyghur (ug), Yiddish (yi) */
-	:root:is(.translated-rtl, :lang(ar), :lang(iw), :lang(ps), :lang(fa), :lang(sd), :lang(ur), :lang(ug), :lang(yi)) {
-		direction: rtl;
-
-		--titlebar-area-inline-start: calc(100vw - env(titlebar-area-x, 0) - env(titlebar-area-width, 0));
-		--titlebar-area-inline-end: env(titlebar-area-x, 0);
+	dialog.export[open] {
+		display: flex;
+		flex-direction: column;
+		gap: .6rem;
+		inline-size: min(100% - 6rem, 50rem);
+		/* block-size: calc(100% - 12rem); */
+		border-radius: .8rem;
+		background-color: var(--transparent-gray-2);
+		--backdrop-filter: blur(2rem);
+		-webkit-backdrop-filter: var(--backdrop-filter);
+		backdrop-filter: var(--backdrop-filter);
+		box-shadow: 0 0 4rem var(--shadow-color);
 	}
 
-	@media (hover) {
-		body {
-			block-size: 100vb;
+	dialog.export::backdrop {
+		background: none;
+	}
+
+	dialog.export > ul {
+		display: flex;
+	}
+
+	dialog.export > ul > li {
+		flex-grow: 1;
+		flex-shrink: 1;
+		flex-basis: 0;
+		position: relative;
+		transition: background-color .1s, border-color .1s;
+	}
+
+	dialog.export > ul > li:not(:first-of-type) {
+		border-inline-start: 1px solid #8886;
+	}
+
+	dialog.export > ul > li:hover {
+		background-color: #8883;
+		border-radius: .5rem;
+		border-inline-start-color: transparent;
+	}
+
+	dialog.export > ul > li:hover + li {
+		border-inline-start-color: transparent;
+	}
+
+	dialog.export > ul > li button {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		align-items: center;
+		block-size: 100%;
+		padding: .6rem;
+		inline-size: 100%;
+		block-size: 100%;
+		box-sizing: border-box;
+	}
+
+	dialog.export > ul > li button::before {
+		inline-size: min(6rem, 80%);
+	}
+
+	dialog.export button.close {
+		display: grid;
+		place-content: center;
+		float: right;
+		float: inline-end;
+		inline-size: 2rem;
+		block-size: 2rem;
+		border-radius: .3rem;
+		transition: background-color .2s;
+	}
+
+	dialog.export button.close:hover {
+		background-color: #8883;
+	}
+
+	:root {
+		--transition-direction: 1;
+	}
+
+	:root:is([data-view=editor], .transition-reverse) {
+		--transition-direction: -1;
+	}
+
+	:root::page-transition-outgoing-image(main-content) {
+		animation: .15s ease-out both fade-out;
+	}
+
+	:root::page-transition-incoming-image(main-content) {
+		animation: .15s ease-out both fade-in;
+	}
+
+	@keyframes fade-out {
+		to {
+			translate: calc(var(--transition-direction) * -1 * 20%) 0;
+			opacity: 0;
 		}
 	}
 
-	@media not all and (display-mode: browser) {
-		body {
-			overscroll-behavior-block: none;
-		}
-	}
-
-	@media print {
-		:root {
-			-webkit-print-color-adjust: exact;
-			print-color-adjust: exact;
-		}
-
-		body {
-			display: block;
-			block-size: unset;
-			overflow: unset;
-		}
-
-		main {
-			display: block;
-			overflow: unset;
-		}
-
-		header {
-			display: none;
-		}
-
-		@page {
-			size: A4 portrait;
-			margin: 0;
+	@keyframes fade-in {
+		from {
+			translate: calc(var(--transition-direction) * 1 * 20%) 0;
+			opacity: 0;
 		}
 	}
 }

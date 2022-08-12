@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="loading" data-view="files" data-editorlayout="aside">
 
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta name="color-scheme" content="dark light" />
 	<meta name="robots" content="all" />
 	<meta name="author" content="Benjamin Aster" />
-	<meta name="description" content="Pretty Awesome Math Markup – A user-friendly LaTeX alternative with a live editor." />
+	<meta name="description" content="Pretty Awesome Math Markup – A user-friendly LaTeX alternative with a live editor" />
 	<meta name="repository" content="https://github.com/BenjaminAster/PAMM" />
 	<meta name="theme-color" content="blueViolet" />
 	<meta property="og:image" content="https://benjaminaster.com/pamm/assets/icon.png" />
@@ -25,7 +24,6 @@
 	<link rel="preload" as="style" href="./css/icons.css" />
 
 	<script type="module" src="./js/main.js"></script>
-	<link rel="modulepreload" href="./js/utils.js" />
 	<link rel="modulepreload" href="./js/files.js" />
 	<link rel="modulepreload" href="./js/app.js" />
 	<link rel="modulepreload" href="./js/parse/document/parseDocument.js" />
@@ -35,9 +33,10 @@
 	<link rel="modulepreload" href="./js/render/document/renderDocument.js" />
 	<link rel="modulepreload" href="./js/render/math/renderMath.js" />
 
-	<link rel="preload" as="fetch" crossorigin href="./html/math.c.html" />
+	<link rel="preload" as="fetch" crossorigin href="./html/editor.c.html" />
 	<link rel="preload" as="fetch" crossorigin href="./html/header.c.html" />
 	<link rel="preload" as="fetch" crossorigin href="./html/files.c.html" />
+	<link rel="preload" as="fetch" crossorigin href="./assets/introduction.pamm" />
 
 	<script type="module">
 		if (!CSS.supports("color: revert-layer")) {
@@ -46,7 +45,7 @@
 	</script>
 </head>
 
-<body class="loading" data-view="files">
+<body>
 	<noscript>
 		<dialog open>
 			Please enable JavaScript to view this site.
@@ -76,6 +75,27 @@
 				<button class="ok">OK</button>
 				<button class="cancel">Cancel</button>
 			</div>
+		</dialog>
+	</template>
+
+	<template id="export-dialog">
+		<dialog class="export">
+			<div>
+				<button class="close icon:x" title="Close"></button>
+				<h2>Export</h2>
+			</div>
+
+			<ul focusgroup="wrap">
+				<li data-action="download" focusgroup="extend">
+					<button class="icon:download">Download PAMM file</button>
+				</li>
+				<li data-action="print" focusgroup="extend">
+					<button class="icon:file-earmark-pdf">Print or save as PDF</button>
+				</li>
+				<li data-action="export-html" focusgroup="extend">
+					<button class="icon:code">Export as HTML</button>
+				</li>
+			</ul>
 		</dialog>
 	</template>
 

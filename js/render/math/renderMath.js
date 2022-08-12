@@ -1,214 +1,294 @@
 
-import { categories, operators, allBracketsSyntaxes, keywordNames } from "../../parse/math/categorizeArray.js";
-import { createMathElement } from "../../utils.js";
+import { categories, operators, allBracketsSyntaxes, keywords, operatorList } from "../../parse/math/categorizeArray.js";
+import { createMathElement } from "../../app.js";
 
 export default (/** @type {any[]} */ mathTree) => {
 
-	const recursiveRender = (/** @type {any[]} */ tree) => {
-		const elementArray = [];
+	const recursiveRender = (/** @type {any[]} */ tree, { outerElement = false } = {}) => {
 
-		for (const item of tree) {
+		const fragment = new DocumentFragment();
 
-			if (item.category === categories.operator) {
-				if (item.name === operators.fraction) {
+		for (const [expressionIndex, expression] of tree.entries()) {
+			const expressionFragment = new DocumentFragment();
 
-					const numerator = recursiveRender(item.numerator);
-					const denominator = recursiveRender(item.denominator);
+			for (const item of expression) {
 
-					const element = createMathElement("mfrac");
-					element.appendChild(numerator);
-					element.appendChild(denominator);
-					elementArray.push(element);
+				if (item.category === categories.operator) {
+					if (item.operator === operators.fraction) {
 
-				} else if (item.name === operators.power) {
+						const numerator = recursiveRender(item.numerator);
+						const denominator = recursiveRender(item.denominator);
 
-					const base = recursiveRender(item.base);
-					const exponent = recursiveRender(item.exponent);
+						const element = createMathElement("mfrac");
+						element.appendChild(numerator);
+						element.appendChild(denominator);
+						expressionFragment.append(element);
 
-					const element = createMathElement("msup");
-					element.appendChild(base);
-					element.appendChild(exponent);
-					elementArray.push(element);
+					} else if (item.operator === operators.power) {
 
-				} else if (item.name === operators.square) {
+						if (item.base[0]?.[0]?.operator === operators.index) {
+							const base = recursiveRender(item.base[0][0].base);
+							const index = recursiveRender(item.base[0][0].index);
+							const exponent = recursiveRender(item.exponent);
 
-					const base = recursiveRender(item.base);
-					const exponent = Object.assign(createMathElement("mn"), {
-						textContent: "2",
-					});
+							const element = createMathElement("msubsup");
+							element.appendChild(base);
+							element.appendChild(index);
+							element.appendChild(exponent);
+							expressionFragment.append(element);
+						} else {
+							const base = recursiveRender(item.base);
+							const exponent = recursiveRender(item.exponent);
 
-					const element = createMathElement("msup");
-					element.appendChild(base);
-					element.appendChild(exponent);
-					elementArray.push(element);
+							const element = createMathElement("msup");
+							element.appendChild(base);
+							element.appendChild(exponent);
+							expressionFragment.append(element);
+						}
 
-				} else if (item.name === operators.factorial) {
+					} else if (item.operator === operators.factorial) {
 
-					const expression = recursiveRender(item.expression);
-					const exclamationMark = Object.assign(createMathElement("mo"), {
-						textContent: "!",
-					});
+						const expression = recursiveRender(item.expression);
+						const exclamationMark = createMathElement("mo");
+						exclamationMark.textContent = "!";
 
-					elementArray.push(expression);
-					elementArray.push(exclamationMark);
+						const mathRow = createMathElement("mrow");
+						mathRow.append(expression);
+						mathRow.append(exclamationMark);
+						expressionFragment.append(mathRow);
 
-				} else if (item.name === operators.index) {
+					} else if (item.operator === operators.index) {
 
-					const base = recursiveRender(item.base);
-					const index = recursiveRender(item.index);
+						const base = recursiveRender(item.base);
+						const index = recursiveRender(item.index);
 
-					const element = createMathElement("msub");
-					element.appendChild(base);
-					element.appendChild(index);
-					elementArray.push(element);
+						const element = createMathElement("msub");
+						element.appendChild(base);
+						element.appendChild(index);
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.root) {
+					} else if (item.operator === operators.root) {
 
-					const degree = recursiveRender(item.degree);
-					const radicand = recursiveRender(item.radicand);
+						const degree = recursiveRender(item.degree);
+						const radicand = recursiveRender(item.radicand);
 
-					const element = createMathElement("mroot");
-					element.appendChild(radicand);
-					element.appendChild(degree);
-					elementArray.push(element);
+						const element = createMathElement("mroot");
+						element.appendChild(radicand);
+						element.appendChild(degree);
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.squareRoot) {
+					} else if (item.operator === operators.squareRoot) {
 
-					const radicand = recursiveRender(item.radicand);
+						const radicand = recursiveRender(item.radicand);
 
-					const element = createMathElement("msqrt");
-					element.appendChild(radicand);
-					elementArray.push(element);
+						const element = createMathElement("msqrt");
+						element.appendChild(radicand);
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.plus) {
+					} else if (item.operator === operators.plus) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&plus;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.plusMinus) {
+					} else if (item.operator === operators.plusMinus) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&PlusMinus;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.minus) {
+					} else if (item.operator === operators.minus) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&minus;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.times) {
+					} else if (item.operator === operators.times) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&sdot;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.divide) {
+					} else if (item.operator === operators.divide) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&divide;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.invisibleTimes) {
+					} else if (item.operator === operators.invisibleTimes) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&InvisibleTimes;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.innerHTML = "&InvisibleTimes;";
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.equals) {
+					} else if (item.operator === operators.equals) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "=";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.lessThan) {
+					} else if (item.operator === operators.lessThan) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "<";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.greaterThan) {
+					} else if (item.operator === operators.greaterThan) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = ">";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.lessThanOrEqual) {
+					} else if (item.operator === operators.lessThanOrEqual) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&le;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.greaterThanOrEqual) {
+					} else if (item.operator === operators.greaterThanOrEqual) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&ge;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.doubleLeftArrow) {
+					} else if (item.operator === operators.doubleLeftArrow) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&DoubleLongLeftArrow;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.doubleRightArrow) {
+					} else if (item.operator === operators.doubleRightArrow) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&DoubleLongRightArrow;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				} else if (item.name === operators.doubleLeftRightArrow) {
+					} else if (item.operator === operators.doubleLeftRightArrow) {
 
-					const element = createMathElement("mo");
-					element.innerHTML = "&DoubleLongLeftRightArrow;";
-					elementArray.push(element);
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
 
-				}
+					} else if (item.operator === operators.sum) {
 
-			} else if (item.category === categories.keyword) {
+						const underOverElement = createMathElement("munderover");
+						const bottomElement = recursiveRender(item.startExpression);
+						const topElement = recursiveRender(item.endExpression);
+						const sigmaElement = createMathElement("mo");
+						sigmaElement.textContent = operatorList.find(({ name }) => name === item.operator).character;
 
-				if (item.name === keywordNames.pi) {
+						underOverElement.append(sigmaElement, bottomElement, topElement);
+
+						const container = createMathElement("mrow");
+						container.append(underOverElement, recursiveRender(item.expression));
+						expressionFragment.append(container);
+
+					} else if (item.operator === operators.integral) {
+
+						const underOverElement = createMathElement("msubsup");
+						const lowerLimitElement = recursiveRender(item.lowerLimit);
+						const upperLimitElement = recursiveRender(item.upperLimit);
+						const integralElement = createMathElement("mo");
+						integralElement.classList.add("integral");
+						integralElement.textContent = operatorList.find(({ name }) => name === item.operator).character;
+
+						underOverElement.append(integralElement, lowerLimitElement, upperLimitElement);
+
+						const differentialElement = createMathElement("mrow");
+						const dElement = createMathElement("mo");
+						dElement.textContent = "d";
+						dElement.setAttribute("rspace", "0");
+						differentialElement.append(dElement);
+						differentialElement.append(recursiveRender(item.integrationVariable));
+
+						const container = createMathElement("mrow");
+						container.append(underOverElement, recursiveRender(item.integrand), differentialElement);
+						expressionFragment.append(container);
+
+					}
+
+				} else if (item.category === categories.keyword) {
+
+					if (item.keywordName === keywords.pi) {
+						const element = createMathElement("mi");
+						element.innerHTML = "&pi;";
+
+						expressionFragment.append(element);
+					}
+
+				} else if (item.category === categories.variable) {
+
 					const element = createMathElement("mi");
-					element.innerHTML = "&pi;";
+					element.textContent = item.variable;
 
-					elementArray.push(element);
+					expressionFragment.append(element);
+
+				} else if (item.category === categories.number) {
+
+					const element = createMathElement("mn");
+					element.textContent = item.number;
+
+					expressionFragment.append(element);
+
+				} else if (item.category === categories.anyBracket) {
+
+					const openingBracket = createMathElement("mo");
+					openingBracket.textContent = allBracketsSyntaxes.find(({ name, type }) => type === categories.anyOpeningBracket && name == item.anyBracketType).syntax;
+
+					const closingBracket = createMathElement("mo");
+					closingBracket.textContent = allBracketsSyntaxes.find(({ name, type }) => type === categories.anyClosingBracket && name == item.anyBracketType).syntax;
+
+					const container = createMathElement("mrow");
+					container.append(openingBracket, recursiveRender(item.content), closingBracket);
+					expressionFragment.append(container);
+
+				} else if (item.category === categories.function) {
+
+					const mathRow = createMathElement("mrow");
+
+					const functionNameElement = createMathElement("mi");
+					functionNameElement.textContent = item.functionName;
+					mathRow.append(functionNameElement);
+
+					const openingBracket = createMathElement("mo");
+					openingBracket.textContent = "(";
+					mathRow.append(openingBracket);
+
+					mathRow.append(recursiveRender(item.parameters));
+
+					const closingBracket = createMathElement("mo");
+					closingBracket.textContent = ")";
+					mathRow.append(closingBracket);
+
+					expressionFragment.append(mathRow);
+
 				}
+			}
 
-			} else if (item.category === categories.variable) {
+			if (expressionIndex >= 1) {
+				const commaElement = createMathElement("mo");
+				commaElement.textContent = ",";
+				fragment.append(commaElement);
+			}
 
-				const element = createMathElement("mi");
-				element.textContent = item.string;
-
-				elementArray.push(element);
-
-			} else if (item.category === categories.number) {
-
-				const element = createMathElement("mn");
-				element.textContent = item.string;
-
-				elementArray.push(element);
-
-			} else if (item.category === categories.anyBracket) {
-
-				const openingBracket = createMathElement("mo");
-				openingBracket.textContent = allBracketsSyntaxes.find(({ name, type }) => type === categories.anyOpeningBracket && name == item.name).syntax;
-
-				const closingBracket = createMathElement("mo");
-				closingBracket.textContent = allBracketsSyntaxes.find(({ name, type }) => type === categories.anyClosingBracket && name == item.name).syntax;
-
-				elementArray.push(openingBracket, recursiveRender(item.content), closingBracket);
-
+			if (expression.length !== 1 && tree.length === 1 && !outerElement) {
+				const mathRow = createMathElement("mrow");
+				mathRow.append(expressionFragment);
+				fragment.append(mathRow);
+			} else {
+				fragment.append(expressionFragment);
 			}
 		}
 
-		const fragment = new DocumentFragment();
-		fragment.append(...elementArray);
-		const mathRow = createMathElement("mrow");
-		mathRow.appendChild(fragment);
-		return mathRow;
+		if (tree.length !== 1 && !outerElement) {
+			const mathRow = createMathElement("mrow");
+			mathRow.append(fragment);
+			return mathRow;
+		} else {
+			return fragment;
+		}
 	};
 
-	return recursiveRender(mathTree);
+	return recursiveRender(mathTree, { outerElement: true });
 };
 

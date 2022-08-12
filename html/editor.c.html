@@ -1,0 +1,112 @@
+<div class="text-input">
+	<textarea spellcheck="false" aria-label="math formula input"></textarea>
+</div>
+
+<section class="html-output" aria-label="live preview of mathematical document">
+	<div class="end-element"></div>
+</section>
+
+<style>
+	@layer elements {
+		:host {
+			block-size: 100%;
+			display: grid;
+			grid-template: 1fr 1fr / 1fr 1fr;
+			grid-template-areas:
+				"text-input html-output"
+				"text-input html-output";
+			box-sizing: border-box;
+		}
+
+		:root[data-editorlayout="stacked"] :host {
+			grid-template-areas:
+				"text-input text-input"
+				"html-output html-output";
+		}
+
+		.text-input {
+			grid-area: text-input;
+			font-family: ui-monospace, monospace;
+			font-size: 1.1rem;
+			margin: .7rem;
+			background-color: #8882;
+			border-radius: .7rem;
+		}
+
+		.text-input:focus-within {
+			background-color: #8884;
+		}
+
+		.text-input textarea {
+			padding: .8rem 1rem;
+			resize: none;
+			inline-size: 100%;
+			block-size: 100%;
+			box-sizing: border-box;
+			outline: none;
+		}
+
+		.html-output {
+			font-family: "Computer Modern", "Noto Serif", ui-serif, serif;
+			grid-area: html-output;
+			padding: 1rem;
+			padding-block-start: 0;
+			overflow-y: auto;
+			overflow-wrap: break-word;
+		}
+
+		.html-output .section {
+			/* content-visibility: auto; */
+			/* contain-intrinsic-block-size: auto 10rem; */
+		}
+
+		.html-output code {
+			white-space: pre-wrap;
+		}
+
+		:root[data-engine=blink] :host .html-output .integral {
+			font-size: 1.5em;
+		}
+
+		:root[data-engine=blink] :host .html-output :is(msqrt > *, mroot > :first-child) {
+			translate: 0 calc(2 * 1em / 16);
+		}
+
+		:root[data-engine=blink] :host .html-output mfrac > * {
+			translate: 0 calc(1 * 1em / 16);
+			/* translate: 0 .2em; */
+			/* translate: 0 2px; */
+		}
+
+		math {
+			margin-block: .2em;
+		}
+
+		math[display=block] {
+			margin-block: .5em;
+		}
+
+		:is(h1, h2, h3, h4, h5, h6) {
+			margin-block: .8em .5em;
+		}
+
+		p.bottom-margin {
+			margin-block-end: .7em;
+		}
+
+		@media print {
+			:host {
+				display: block;
+			}
+
+			.text-input {
+				display: none;
+			}
+
+			.html-output {
+				overflow: unset;
+				padding: 0;
+			}
+		}
+	}
+</style>

@@ -45,7 +45,7 @@
 			<div class="buttons" focusgroup="wrap">
 				<button data-action="rename" class="icon:pencil" title="Rename"></button>
 				<button data-action="delete" class="icon:trash" title="Delete"></button>
-				<button data-action="download" class="icon:download" title="Download"></button>
+				<button data-action="export" class="icon:file-export" title="Export"></button>
 				<a data-action="permalink" class="icon:link" href="" title="Permalink"></a>
 			</div>
 		</li>
@@ -91,6 +91,12 @@
 			gap: 1rem;
 			flex-grow: 1;
 			overflow-y: auto;
+			box-sizing: border-box;
+		}
+
+		.breadcrumb {
+			page-transition-tag: breadcrumb;
+			contain: paint;
 		}
 
 		.breadcrumb > ul {
@@ -117,6 +123,7 @@
 			background-color: #8884;
 			border-radius: .4rem;
 			transition: background-color .2s, border-color .2s;
+			outline-offset: -2px;
 		}
 
 		.breadcrumb > ul > li > a:hover {

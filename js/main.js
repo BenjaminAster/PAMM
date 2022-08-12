@@ -1,9 +1,9 @@
 
-/// <reference path="../../nonstandards/index.d.ts" />
+/// <reference types="@benjaminaster/new-javascript" />
 /// <reference path="./global.d.ts" />
 
-import { $$ } from "./utils.js";
-import { elements } from "./app.js";
+// export { decodeFile } from "./files.js";
+import { elements, $$ } from "./app.js";
 import parseDocument from "./parse/document/parseDocument.js";
 import renderDocument from "./render/document/renderDocument.js";
 import { keyDown } from "./files.js";
@@ -18,7 +18,7 @@ export const startRendering = () => {
 	const handleInput = function (/** @type {InputEvent} */ { data } = /** @type {any} */ ({})) {
 		const { value, selectionStart, selectionEnd } = this;
 
-		document.body.classList.add("file-dirty");
+		document.documentElement.classList.add("file-dirty");
 
 		// if (data?.match(/^[([{]$/)) {
 		// 	if (selectionStart === selectionEnd) {
@@ -36,21 +36,35 @@ export const startRendering = () => {
 
 		let sectionBracesDepth = 0;
 		let currentSectionArray = [];
-		const initialStringSections = value.split(/(?:\n(?=(?:#|-?{)))|(?:(?:(?<=})|\n)\n(?!(?:\n|#)))/g);
+		// const initialStringSections = value.split(/(?:\n(?=(?:#|-?{)))|(?:(?:(?<=})|\n)\n(?!(?:\n|#)))/g);
+		const initialStringSections = value.split(/\n(?!\n)/g);
+		let codeMode = false;
+		let backslashEscaped = false;
 		for (let index = 0; index < initialStringSections.length; index++) {
 			const stringSection = initialStringSections[index];
 			for (const character of stringSection) {
-				if (character === "{") {
-					sectionBracesDepth++;
-				} else if (character === "}" && sectionBracesDepth > 0) {
-					sectionBracesDepth--;
+				if (sectionBracesDepth === 0 && character === "`") {
+					codeMode = !codeMode;
+				}
+
+				if (!codeMode && !backslashEscaped) {
+					if (character === "{") {
+						sectionBracesDepth++;
+					} else if (character === "}" && sectionBracesDepth > 0) {
+						sectionBracesDepth--;
+					}
+				}
+
+				if (backslashEscaped) {
+					backslashEscaped = false;
+				} else if (character === "\\" && !codeMode) {
+					backslashEscaped = true;
 				}
 			}
 			currentSectionArray.push(stringSection);
-			if (sectionBracesDepth <= 0 || index === initialStringSections.length - 1) {
-				sectionsArray.push({ string: currentSectionArray.join(" ") });
+			if ((sectionBracesDepth === 0 && !codeMode) || index === initialStringSections.length - 1) {
+				sectionsArray.push({ string: currentSectionArray.join("\n") });
 				currentSectionArray = [];
-				sectionBracesDepth = 0;
 			}
 		}
 
@@ -98,7 +112,7 @@ export const startRendering = () => {
 	elements.textInput.addEventListener("input", handleInput);
 
 	handleInput.call(elements.textInput);
-	document.body.classList.remove("file-dirty");
+	document.documentElement.classList.remove("file-dirty");
 };
 
 {
@@ -127,6 +141,16 @@ export const startRendering = () => {
 				elements.textInput.selectionStart = elements.textInput.selectionEnd = selectionStart + 2;
 			}
 		}
+	});
+}
+
+
+{
+	window.addEventListener("beforeprint", () => {
+		document.documentElement.classList.add("printing");
+	});
+	window.addEventListener("afterprint", () => {
+		document.documentElement.classList.remove("printing");
 	});
 }
 

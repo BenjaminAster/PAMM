@@ -1,7 +1,10 @@
 
-import { $, $$, database, fileSystemAccessSupported, isApple, trace, alert, confirm, prompt } from "./utils.js";
-import { elements, appMeta } from "./app.js";
+import { $, $$, database, fileSystemAccessSupported, isApple, alert, confirm, prompt, setTitle, transition, elements, appMeta, encodeFile, decodeFile, storage } from "./app.js";
 import { startRendering } from "./main.js";
+import parseDocument from "./parse/document/parseDocument.js";
+import renderDocument from "./render/document/renderDocument.js";
+
+const /** @type {any} */ trace = (/** @type {any[]} */ ...args) => console.trace(...args);
 
 let currentFolder = {
 	id: "home",
@@ -21,22 +24,6 @@ const fileTypesOption = [{
 const fileSystemAccessAPINotSupportedMessage = "Your browser does not support interacting with local files (File System Access API). "
 	+ "Please use a Chromium-based browser like Google Chrome or Microsoft Edge.";
 
-const encodeFile = (/** @type {{ text: string, metadata?: Record<string, any> }} */ { text, metadata = {} }) => {
-	return `version 1\n-----\n${text}\n-----\n${JSON.stringify(metadata, null, "\t")}`
-};
-
-const decodeFile = (/** @type {{ fileContent: string }} */ { fileContent }) => {
-	const { metadata: metadataString, text } = fileContent.match(/^version 1\n-----\n(?<text>.*)\n-----\n(?<metadata>{(?:(?!\n-----\n).)*})$/s)?.groups ?? {};
-	const metadata = (() => {
-		try {
-			return JSON.parse(metadataString);
-		} catch (error) {
-			throw new Error(`Couldn't read file: error parsing metadata JSON (${metadataString})`, { cause: error });
-		}
-	})();
-	return { text, metadata };
-}
-
 const addToRecentlyOpened = async (/** @type {{ id: string, storageType: FileStorageType }} */ { id, storageType }) => {
 	const recentlyOpenedFils = (await database.get({ store: "key-value", key: "recently-opened" })).value;
 	await database.put({
@@ -49,9 +36,7 @@ const addToRecentlyOpened = async (/** @type {{ id: string, storageType: FileSto
 }
 
 const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string, fileHandle?: FileSystemFileHandle }} */ { storageType, id, fileHandle }) => {
-	toggleView({ filesView: false });
-
-	let returnValue;
+	await toggleView({ filesView: false });
 
 	switch (storageType) {
 		case ("indexeddb"): {
@@ -60,92 +45,127 @@ const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string
 				...await database.get({ store: "files", key: id }),
 			};
 			elements.textInput.value = currentFile.content;
-			document.title = `${currentFile.name} 📄 – ${appMeta.shortName}`;
+			setTitle(`${currentFile.name} 📄`);
+			elements.fileNameInput.value = currentFile.name;
 			await addToRecentlyOpened({ id, storageType });
-			break;
+			startRendering();
+			elements.textInput.focus();
+			return;
 		} case ("file-system"): {
+			// @ts-ignore
+			currentFile ??= {};
 			const name = fileHandle.name.replace(/\.[^.]+$/, "");
 			if (await fileHandle.queryPermission({ mode: "read" }) !== "granted") {
 				if (!(await confirm({
 					message: `Do you want to edit ${fileHandle.name}?\nYour browser will prompt you for permission to access ${fileHandle.name}.`,
 					userGestureCallback: async () => await fileHandle.requestPermission({ mode: "readwrite" }),
-				})).accepted) {
+				})).accepted || await fileHandle.queryPermission({ mode: "read" }) !== "granted") {
+					await toggleView({ filesView: true });
+					await displayFolder({ id: "home" });
+					history.pushState({ folderId: "home" }, "", "./");
 					return {};
 				};
 			}
-			const fileContent = await (await fileHandle.getFile()).text();
-			const { metadata, text } = decodeFile({ fileContent });
-			if (!metadata?.id) throw new Error(`Couldn't read file ${name}: no id specified in metadata`);
-			returnValue = {
-				...metadata,
-				name,
-			};
+			setTitle(`${name + appMeta.fileExtension} 📄`);
+			elements.fileNameInput.value = name;
+			const fileContent = await (async () => {
+				try {
+					return await (await fileHandle.getFile()).text();
+				} catch {
+					await alert({ message: `The file ${fileHandle.name} could not be opened. It may have been moved or renamed.` });
+					await toggleView({ filesView: true });
+					await displayFolder({ id: "home" });
+					history.pushState({ folderId: "home" }, "", "./");
+				}
+			})();
+			if (!fileContent) return {};
+			const { data, text } = decodeFile({ fileContent });
+			elements.textInput.value = text;
+			startRendering();
+			elements.textInput.focus();
+			$ifNotId: if (!id) {
+				for (const { fileHandle: itemFileHandle, id: itemId } of await database.getAll({ store: "file-handles" })) {
+					if (await fileHandle.isSameEntry(itemFileHandle)) {
+						id = itemId;
+						break $ifNotId;
+					}
+				}
+				({ id } = await database.add({
+					store: "file-handles",
+					data: {
+						name,
+						fileHandle,
+						id: `f-${crypto.randomUUID()}`,
+					},
+				}));
+			}
 			currentFile = {
 				storageType,
 				fileHandle,
 				name,
-				id: metadata.id,
+				id,
 				content: text,
 			};
-			elements.textInput.value = text;
-			document.title = `${name}${appMeta.fileExtension} 📄 – ${appMeta.shortName}`;
-			await addToRecentlyOpened({ id: metadata.id, storageType });
-			break;
+			await addToRecentlyOpened({ id, storageType });
+			return {
+				...data,
+				id,
+				name,
+			};
 		}
 	}
-
-	startRendering();
-
-	elements.textInput.focus();
-
-	return returnValue;
 };
 
 
 const toggleView = (() => {
 	let filesView = true;
 
-	return (/** @type {{ filesView?: boolean }} */ { filesView: newFilesView = !filesView } = {}) => {
+	return async (/** @type {{ filesView?: boolean }?} */ { filesView: newFilesView = !filesView } = {}) => {
 		if (newFilesView !== filesView) {
 			filesView = newFilesView;
-			document.body.dataset.view = filesView ? "files" : "math";
-			if (filesView) {
-				const element = document.createElement("c-files");
-				$("c-math").replaceWith(element);
-				initButtonListeners();
-			} else {
-				const element = document.createElement("c-math");
-				$("c-files").replaceWith(element);
-			}
+			await transition(() => {
+				document.documentElement.dataset.view = filesView ? "files" : "editor";
+				if (filesView) {
+					const element = document.createElement("c-files");
+					$("c-editor").replaceWith(element);
+					initButtonListeners();
+				} else {
+					const element = document.createElement("c-editor");
+					$("c-files").replaceWith(element);
+					elements.myFilesLink.href = `?folder=${currentFolder.id}`;
+				}
+			});
 		}
 		return { filesView };
 	}
 })();
 
 
-const itemClickHandler = (/** @type {{ type: ItemType, storageType?: FileStorageType, fileHandle?: FileSystemFileHandle, id: string, changeURL?: boolean }} */
-	{ type, storageType, fileHandle, id, changeURL = false }) => async (/** @type {MouseEvent?} */ event) => {
-		if (event?.ctrlKey || event?.metaKey || event?.shiftKey) return;
-		event?.preventDefault();
+const itemClickHandler = (/** @type {{ type: ItemType, storageType?: FileStorageType, fileHandle?: FileSystemFileHandle, id: string, changeURL?: boolean }} */ {
+	type, storageType, fileHandle, id, changeURL = false
+}) => async (/** @type {MouseEvent?} */ event) => {
+	if (event?.ctrlKey || event?.metaKey || event?.shiftKey) return;
+	event?.preventDefault();
 
-		switch (type) {
-			case ("folder"): {
-				currentFolder.id = id;
-				await displayFolder({ id: currentFolder.id });
-				history.pushState({ folderId: currentFolder.id }, "", changeURL ? `?folder=${id}` : "./");
-				break;
-			} case ("file"): {
-				if (storageType === "indexeddb") {
-					await renderFile({ storageType, id });
-				} else if (storageType === "file-system") {
-					await renderFile({ storageType, fileHandle });
-				} else throw new Error(`Unknown storage type (${storageType})`);
+	switch (type) {
+		case ("folder"): {
+			currentFolder.id = id;
+			await transition(async () => await displayFolder({ id: currentFolder.id }), { resolveWhenFinished: true });
+			history.pushState({ folderId: currentFolder.id }, "", changeURL ? `?folder=${id}` : "./");
+			break;
+		} case ("file"): {
+			if (storageType === "indexeddb") {
+				await renderFile({ storageType, id });
+			} else if (storageType === "file-system") {
+				await renderFile({ storageType, fileHandle });
+			} else throw new Error(`Unknown storage type (${storageType})`);
 
-				history.pushState({ fileId: id, storageType }, "", changeURL ? `?file=${id}` : "./");
-				break;
-			}
+			history.pushState({ fileId: id, storageType }, "", changeURL ? `?file=${id}` : "./");
+			break;
 		}
-	};
+	}
+};
+
 
 const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 
@@ -154,7 +174,7 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 	let { folders, files, parentFolder, name: folderName } = currentFolder = await database.get({ store: "folders", key: id });
 
 	if (id === "home") document.title = appMeta.shortName;
-	else document.title = `${folderName} 📂 – ${appMeta.shortName}`;
+	else setTitle(`${folderName} 📂`);
 
 	[folders, files] = await Promise.all([[folders, "folders"], [files, "files"]].map(
 		async ([items, store]) => await Promise.all(items.map(async ({ id }) => await database.get({ store, key: id })))
@@ -246,9 +266,9 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 				}
 			});
 			if (type === "file") {
-				$("[data-action=download]", clone).addEventListener("click", async () => {
+				$("[data-action=export]", clone).addEventListener("click", async () => {
 					const { content } = await database.get({ store: "files", key: item.id });
-					fileUtils.downloadFile({ name: item.name + appMeta.fileExtension, content });
+					await fileUtils.showExportDialog({ name: item.name, content, renderFileArguments: { storageType: "indexeddb", id: item.id } });
 				});
 			}
 			$("[data-action=permalink]", clone).addEventListener("click", itemClickHandler({ type, id: item.id, storageType: "indexeddb", changeURL: true }));
@@ -269,7 +289,12 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 			const /** @type {HTMLElement} */ clone = /** @type {any} */ (template.content.cloneNode(true)).firstElementChild;
 			$(".name", clone).textContent = folder.name;
 			$("a", clone).setAttribute("href", `?folder=${folder.id}`);
-			$("a", clone).addEventListener("click", itemClickHandler({ type: "folder", id: folder.id }));
+			const folderId = folder.id;
+			$("a", clone).addEventListener("click", async (event) => {
+				document.documentElement.classList.add("transition-reverse");
+				await itemClickHandler({ type: "folder", id: folderId })(event);
+				document.documentElement.classList.remove("transition-reverse");
+			});
 			$("a", clone).addEventListener("dragstart", onDragStart({ type: "folder", id: folder.id }));
 			clone.addEventListener("dragover", (event) => event.preventDefault());
 			clone.addEventListener("drop", onDrop({ folder }));
@@ -294,8 +319,11 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 	}
 }
 
-elements.myFilesButton.addEventListener("click", async () => {
-	if (toggleView().filesView) {
+elements.myFilesLink.addEventListener("click", async (event) => {
+	storage.set("my-files-visited", true);
+	if (event.shiftKey || event.ctrlKey || event.metaKey) return;
+	event.preventDefault();
+	if ((await toggleView()).filesView) {
 		history.pushState({ folderId: currentFolder.id }, "", "./");
 		await displayFolder({ id: currentFolder.id });
 	}
@@ -321,18 +349,21 @@ const fileUtils = new class {
 			} case ("file-system"): {
 				const writable = await currentFile.fileHandle.createWritable().catch(trace);
 				if (!writable) return;
-				await writable.write(encodeFile({ text: currentFile.content, metadata: { id: currentFile.id } }));
+				await writable.write(encodeFile({ text: currentFile.content }));
 				await writable.close();
 				break;
 			}
 		}
-		document.body.classList.remove("file-dirty");
+		document.documentElement.classList.remove("file-dirty");
 	};
-	downloadFile(/** @type {{ name?: string, content?: string }} */ { name, content } = {}) {
+	downloadFile(/** @type {{ name?: string, content?: string }?} */ {
+		name = currentFile.name + appMeta.fileExtension,
+		content = elements.textInput.value.normalize(),
+	} = {}) {
 		const anchor = document.createElement("a");
-		const fileContent = encodeFile({ text: content ?? elements.textInput.value.normalize(), metadata: { id: `f-${crypto.randomUUID()}` } });
+		const fileContent = encodeFile({ text: content });
 		anchor.href = URL.createObjectURL(new Blob([fileContent], { type: appMeta.mimeType }));
-		anchor.download = name ?? currentFile.name + appMeta.fileExtension;
+		anchor.download = name;
 		anchor.click();
 		URL.revokeObjectURL(anchor.href);
 	};
@@ -344,11 +375,7 @@ const fileUtils = new class {
 		if (fileSystemAccessSupported) {
 			let fileHandle = (await window.showOpenFilePicker({ types: fileTypesOption }).catch(trace))?.[0];
 			if (!fileHandle) return;
-			const { id, name } = await renderFile({ storageType: "file-system", fileHandle });
-			await database.put({
-				store: "file-handles",
-				data: { id, fileHandle, name },
-			});
+			const { id } = await renderFile({ storageType: "file-system", fileHandle });
 			history.pushState({ fileId: id, storageType: "file-system" }, "", "./");
 		} else {
 			await alert({
@@ -408,7 +435,7 @@ const fileUtils = new class {
 
 			const writable = await fileHandle.createWritable();
 			if (!writable) return;
-			await writable.write(encodeFile({ text: "", metadata: { id } }));
+			await writable.write(encodeFile({ text: "" }));
 			await writable.close();
 
 			database.add({
@@ -416,15 +443,88 @@ const fileUtils = new class {
 				data: { id, fileHandle, name: fileHandle.name },
 			});
 
-			history.pushState({ fileHandle }, "", "./");
-			await renderFile({ storageType: "file-system", fileHandle });
+			await renderFile({ storageType: "file-system", fileHandle, id });
+			history.pushState({ fileId: id, storageType: "file-system" }, "", "./");
 		} else {
 			await alert({
 				message: fileSystemAccessAPINotSupportedMessage,
 			});
 		}
 	};
-	async showRecentlyOpenedFiles() {
+	async showExportDialog(/** @type {{ name?: string, content?: string, renderFileArguments?: any }?} */ {
+		name,
+		content,
+		renderFileArguments,
+	} = {}) {
+		const dialog = /** @type {HTMLDialogElement} */ (/** @type {any} */ ($("template#export-dialog")).content.firstElementChild.cloneNode(true));
+		$("button.close", dialog).addEventListener("click", () => dialog.remove());
+		$("[data-action=download]", dialog).addEventListener("click", async () => {
+			dialog.remove();
+			this.downloadFile({ name, content });
+		});
+		$("[data-action=print]", dialog).addEventListener("click", async () => {
+			if (renderFileArguments) {
+				await renderFile(renderFileArguments);
+
+				window.addEventListener("afterprint", async () => {
+					await 0; // https://crbug.com/1350720
+					await toggleView({ filesView: true });
+					await displayFolder({ id: currentFolder.id });
+				}, { once: true });
+			}
+			dialog.remove();
+			this.printFile();
+		});
+		$("[data-action=export-html]", dialog).addEventListener("click", async () => {
+			dialog.remove();
+			const tempDiv = document.createElement("div");
+			const tree = parseDocument(content ?? elements.textInput.value.normalize())
+			for (const item of tree) {
+				tempDiv.append(renderDocument([item]));
+				tempDiv.append(document.createTextNode("\n"));
+			}
+			const anchor = document.createElement("a");
+			const html = [
+				`<!DOCTYPE html>`,
+				`<html lang="en">`,
+				`<head>`,
+				`<meta charset="UTF-8" />`,
+				`<meta name="viewport" content="width=device-width, initial-scale=1" />`,
+				`<meta name="color-scheme" content="dark light" />`,
+				Object.assign(document.createElement("title"), { textContent: name ?? currentFile.name }).outerHTML,
+				`<style>`,
+				`body { margin: 0; font-family: "Computer Modern", "Noto Serif", ui-serif, serif; }`,
+				`@media screen { body { margin-inline: auto; padding-inline: 1rem; max-inline-size: 60rem; } }`,
+				`math[display=block] { margin-block: .5rem; }`,
+				`code { white-space: pre-wrap; }`,
+				`</style>`,
+				`</head>`,
+				`<body>`,
+				``,
+				tempDiv.innerHTML,
+				`</body>`,
+				`</html>`,
+			].join("\n");
+			anchor.href = URL.createObjectURL(new Blob([html], { type: appMeta.mimeType }));
+			anchor.download = (name ?? currentFile.name) + ".html";
+			anchor.click();
+			URL.revokeObjectURL(anchor.href);
+		});
+		document.body.append(dialog);
+		dialog.showModal();
+	};
+};
+
+{
+	// elements.downloadButton.addEventListener("click", () => fileUtils.downloadFile());
+	elements.saveButton.addEventListener("click", async () => await fileUtils.saveFile());
+	// elements.printButton.addEventListener("click", async () => await fileUtils.printFile());
+	elements.exportButton.addEventListener("click", async () => await fileUtils.showExportDialog())
+
+	elements.openButton.addEventListener("click", async () => await fileUtils.openFile());
+	elements.uploadButton.addEventListener("click", async () => await fileUtils.uploadFile());
+
+	elements.recentlyOpenedButton.addEventListener("click", async () => {
 		const dialog = elements.recentlyOpenedDialog;
 		for (const element of $$(":scope > li", $("ul", dialog))) {
 			element.remove();
@@ -466,18 +566,7 @@ const fileUtils = new class {
 			UL.append(clone);
 		}
 		dialog.showModal();
-	}
-};
-
-{
-	elements.downloadButton.addEventListener("click", () => fileUtils.downloadFile());
-	elements.saveButton.addEventListener("click", async () => await fileUtils.saveFile());
-	elements.printButton.addEventListener("click", async () => await fileUtils.printFile());
-
-	elements.recentlyOpenedButton.addEventListener("click", async () => await fileUtils.showRecentlyOpenedFiles());
-	elements.openButton.addEventListener("click", async () => await fileUtils.openFile());
-	elements.uploadButton.addEventListener("click", async () => await fileUtils.uploadFile());
-
+	});
 
 	initButtonListeners = () => {
 		elements.newFolderButton.addEventListener("click", async () => {
@@ -513,26 +602,53 @@ const fileUtils = new class {
 		window.launchQueue?.setConsumer(async ({ files: [fileHandle] = [] }) => {
 			const file = await fileHandle?.getFile();
 			if (!file?.name.endsWith(appMeta.fileExtension)) return;
-			const { id, name } = await renderFile({ storageType: "file-system", fileHandle });
-			await database.put({
-				store: "file-handles",
-				data: { id, fileHandle, name },
-			});
+			const { id } = await renderFile({ storageType: "file-system", fileHandle });
 			history.replaceState({ fileId: id, storageType: "file-system" }, "", "./");
 		});
 	}
 }
 
+elements.fileNameInput.addEventListener("blur", async function () {
+	if (this.value !== currentFile.name) {
+		if (currentFile.storageType === "indexeddb") {
+			await database.put({
+				store: "files",
+				data: {
+					...await database.get({ store: "files", key: currentFile.id }),
+					name: this.value,
+				},
+			});
+		} else if (currentFile.storageType === "file-system") {
+			await currentFile.fileHandle.move(this.value + appMeta.fileExtension);
+			await database.put({
+				store: "file-handles",
+				data: {
+					id: currentFile.id,
+					fileHandle: currentFile.fileHandle,
+					name: this.value,
+				},
+			});
+		}
+	}
+});
+
+window.addEventListener("beforeunload", (event) => {
+	if (document.documentElement.classList.contains("file-dirty")) {
+		event.returnValue = true;
+	}
+});
+
 {
 	const handleHistoryStateFile = async () => {
-		switch (history.state.storageType) {
+		const { storageType, fileId: id } = history.state;
+		switch (storageType) {
 			case ("indexeddb"): {
-				await renderFile({ storageType: "indexeddb", id: history.state.fileId });
+				await renderFile({ storageType: "indexeddb", id });
 				break;
 			} case ("file-system"): {
-				const { fileHandle } = await database.get({ store: "file-handles", key: history.state.fileId }) ?? {};
-				if (!fileHandle) throw new Error(`No file handle with id ${history.state.fileId} found`);
-				await renderFile({ storageType: "file-system", fileHandle });
+				const { fileHandle } = await database.get({ store: "file-handles", key: id }) ?? {};
+				if (!fileHandle) throw new Error(`No file handle with id ${id} found`);
+				await renderFile({ storageType: "file-system", fileHandle, id });
 				break;
 			} default: {
 				throw new Error("Unknown storage type");
@@ -544,7 +660,7 @@ const fileUtils = new class {
 		if (event.state?.fileId && event.state.storageType) {
 			await handleHistoryStateFile();
 		} else if (event.state?.folderId) {
-			toggleView({ filesView: true });
+			await toggleView({ filesView: true });
 			currentFolder.id = event.state?.folderId;
 			await displayFolder({ id: currentFolder.id });
 		} else {
@@ -555,14 +671,17 @@ const fileUtils = new class {
 	(async () => {
 		if (history.state?.fileId) {
 			await handleHistoryStateFile();
-		} else {
-			if (!(currentFolder.id = history.state?.folderId)) {
-				currentFolder.id = "home";
-				history.replaceState({ folderId: currentFolder.id }, "");
-			}
-			toggleView({ filesView: true });
+		} else if ((currentFolder.id = history.state?.folderId) || storage.get("my-files-visited")) {
+			currentFolder.id ||= "home";
+			history.replaceState({ folderId: currentFolder.id }, "");
 			await displayFolder({ id: currentFolder.id });
+		} else {
+			currentFolder.id = "home";
+			await renderFile({ storageType: "indexeddb", id: "b-introduction" });
 		}
+
+		for (let i = 0; i < 2; i++) await new Promise((resolve) => window.requestAnimationFrame(resolve));
+		document.documentElement.classList.remove("loading");
 	})();
 }
 

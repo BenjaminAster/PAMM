@@ -1,0 +1,98 @@
+version 1
+-----
+# PAMM
+Pretty Awesome Math Markup – A user-friendly LaTeX alternative with a live editor
+
+this is a *bold* \{word
+this \{1+1} is an _italic_ word
+this \\ is an ^underlined^ word
+this \\{1+1} is a `monospace    *and* \n {esca
+
+ped word`
+#test
+aaaa
+{x^^!<==+-#-x}
+ {x^^!<=+-#-x}
++{x^^!<+-#-x}
+ +{A==>B}
+-{A<==B}
+ -{A<==>B}
+A ⟹ B
+aaaa
+{x^^!>=+-#x}
+
+{ 3 #4 }
+{ 3#4 }
+
+{ (234(23423 inf alpha Alpha }
+
+{ a* b/c } aabbccdd
+{ a * b/c }
+{ a *b/c }
+
+{ a- b/c }
+{ a - b/c }
+{ a -b/c }
+{ -b/c a }
+
+{ 3^^a^3 b^^2 }
+{ c!asdf }
+
+{ a -3#a }
+{ a #5 }
+
+{ sum(n=1, 5, n^^) = 55 }
+{ int(0, 2, x^^, x) = 8/3 }
+{ int(0, 2, x^^) = 8/3 }
+
+# Heading level {1}
+## Heading level {1+1=2}
+
+### Heading level 3
+Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+Compact inline math: {1/#(n^4 - 1/2 n^4)+0 = 1/#(1/2 n^4) = 1/(1/#2 n^^) = #2 /n^^}
+
+Normal inline math: +{1/#(n^4 - 1/2 n^4)+0 = 1/#(1/2 n^4) = 1/(1/#2 n^^) = #2 /n^^}
+
+Normal block math:
+{1/#(n^4 - 1/2 n^4)+0 = 1/#(1/2 n^4) = 1/(1/#2 n^^) = #2 /n^^}
+
+Compact block math:
+-{1/#(n^4 - 1/2 n^4)+0 = 1/#(1/2 n^4) = 1/(1/#2 n^^) = #2 /n^^}
+
+ {7/7}
+asdf
+ +{7/7}
+asdf
+7/7
+asdf
+
+*this is bold
+and* this not anymore
+
+#hihoha
+asdfasd
+
+{ a_b^c }
+
+LaTeX:
+`\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)`
+
+PAMM:
+`(sum(k=1, n, a_k b_k))^^ <= (sum(k=1, n, a_k^^))(sum(k=1, n, b_k^^))`
+{ (sum(k=1, n, a_k b_k))^^ <= (sum(k=1, n, a_k^^))(sum(k=1, n, b_k^^)) }
+
+
+
+
+a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a 
+{ 1/n (sum(i=1, n, 1/#1-x1)) >= 1/#(1 - 1/n (sum(i=1, n, x_i))) = #n /#n-1 }
+
+{ phi(p^alpha) = p^alpha-1 (p-1) }
+
+Lorem ipsum, dolor sit amet consectetur adipisicing elit. Distinctio molestias corporis recusandae!
+
+test hello
+aaaaaaaaaaaa
+-----
+{}

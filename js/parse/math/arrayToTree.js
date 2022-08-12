@@ -1,5 +1,5 @@
 
-import { categories, operators } from "./categorizeArray.js";
+import { categories, keywords, keywordTypes, operators } from "./categorizeArray.js";
 
 const operatorsWithItemBeforeAndAfter = [
 	operators.fraction,
@@ -17,129 +17,185 @@ const operatorsWithItemAfter = [
 	operators.squareRoot,
 ];
 
-const matchGroups = (/** @type {any[]} */ mathArray) => {
+const matchAnyBrackets = (/** @type {any[]} */ mathArray) => {
 	const stack = [{
 		type: "base",
-		content: [],
+		contents: [[]],
 	}];
 
 	for (const item of mathArray) {
 		if (item.category === categories.anyOpeningBracket) {
 			stack.push({
-				type: item.name,
-				content: [],
+				type: item.anyBracketType,
+				contents: [[]],
 			});
 		} else if (item.category === categories.anyClosingBracket) {
 			let /** @type {string} */ previousGroupType;
-			while (stack.length >= 2 && previousGroupType !== item.name) {
+			while (stack.length >= 2 && previousGroupType !== item.anyBracketType) {
 				previousGroupType = stack.at(-1).type;
-				stack.at(-2).content.push(stack.pop());
+				stack.at(-2).contents.at(-1).push(stack.pop());
 			}
+		} else if (item.category === categories.operator && item.operator === operators.comma) {
+			stack.at(-1).contents.push([]);
 		} else {
-			stack.at(-1).content.push({
+			stack.at(-1).contents.at(-1).push({
 				...item,
 				type: "item",
 			});
 		}
 	}
 
-	return stack[0].content;
+	while (stack.length >= 2) {
+		stack.at(-2).contents.at(-1).push(stack.pop());
+	}
+
+	// log({ stack });
+
+	return stack[0].contents;
 };
 
 export default (/** @type {any[]} */ mathArray) => {
 
-	const groupsTree = matchGroups(mathArray);
+	const groupedTree = matchAnyBrackets(mathArray);
 
 	const recursiveTree = (/** @type {any[]} */ tree) => {
 		const newTree = [];
 
-		$loop: for (let index = 0; index < tree?.length; index++) {
-			const item = tree[index];
+		for (const expression of tree) {
+			newTree.push([]);
 
-			if (tree[index + 1]?.category === categories.operator) {
-				if ([...operatorsWithItemBeforeAndAfter, ...operatorsWithItemBefore].includes(tree[index + 1]?.name)) {
-					continue $loop;
+			$itemLoop: for (let itemIndex = 0; itemIndex < expression?.length; itemIndex++) {
+				const item = expression[itemIndex];
+
+				if (expression[itemIndex + 1]?.category === categories.operator) {
+					if ([...operatorsWithItemBeforeAndAfter, ...operatorsWithItemBefore].includes(expression[itemIndex + 1]?.operator)) {
+						continue $itemLoop;
+					}
 				}
-			}
 
-			if (item.category === categories.operator) {
-				if (operatorsWithItemBefore.includes(item.name)) {
-					if (item.name === operators.square) {
-						newTree.push({
-							category: categories.operator,
-							name: item.name,
-							base: recursiveTree(tree[index - 1]?.content),
-						});
-					} else if (item.name === operators.factorial) {
-						newTree.push({
-							category: categories.operator,
-							name: item.name,
-							expression: recursiveTree(tree[index - 1]?.content),
-						});
+				if (item.category === categories.operator) {
+					if (operatorsWithItemBefore.includes(item.operator)) {
+						if (item.operator === operators.square) {
+							newTree.at(-1).push({
+								category: categories.operator,
+								operator: operators.power,
+								base: recursiveTree(expression[itemIndex - 1]?.contents),
+								exponent: [[{
+									category: categories.number,
+									number: "2",
+									type: "item",
+								}]],
+							});
+						} else if (item.operator === operators.factorial) {
+							newTree.at(-1).push({
+								category: categories.operator,
+								operator: item.operator,
+								expression: recursiveTree(expression[itemIndex - 1]?.contents),
+							});
+						}
+
+						continue $itemLoop;
+					} else if (operatorsWithItemBeforeAndAfter.includes(item.operator)) {
+						if (item.operator === operators.fraction) {
+							newTree.at(-1).push({
+								category: categories.operator,
+								operator: item.operator,
+								numerator: recursiveTree(expression[itemIndex - 1]?.contents),
+								denominator: recursiveTree(expression[itemIndex + 1]?.contents),
+							});
+						} else if (item.operator === operators.power) {
+							newTree.at(-1).push({
+								category: categories.operator,
+								operator: item.operator,
+								base: recursiveTree(expression[itemIndex - 1]?.contents),
+								exponent: recursiveTree(expression[itemIndex + 1]?.contents),
+							});
+						} else if (item.operator === operators.index) {
+							newTree.at(-1).push({
+								category: categories.operator,
+								operator: item.operator,
+								base: recursiveTree(expression[itemIndex - 1]?.contents),
+								index: recursiveTree(expression[itemIndex + 1]?.contents),
+							});
+						} else if (item.operator === operators.root) {
+							newTree.at(-1).push({
+								category: categories.operator,
+								operator: item.operator,
+								degree: recursiveTree(expression[itemIndex - 1]?.contents),
+								radicand: recursiveTree(expression[itemIndex + 1]?.contents),
+							});
+						}
+
+						itemIndex++;
+						continue $itemLoop;
+					} else if (operatorsWithItemAfter.includes(item.operator)) {
+						if (item.operator === operators.squareRoot) {
+							newTree.at(-1).push({
+								category: categories.operator,
+								operator: operators.squareRoot,
+								radicand: recursiveTree(expression[itemIndex + 1]?.contents),
+							});
+						}
+
+						itemIndex++;
+						continue $itemLoop;
 					}
-
-					continue $loop;
-				} else if (operatorsWithItemBeforeAndAfter.includes(item.name)) {
-					if (item.name === operators.fraction) {
-						newTree.push({
-							category: categories.operator,
-							name: item.name,
-							numerator: recursiveTree(tree[index - 1]?.content),
-							denominator: recursiveTree(tree[index + 1]?.content),
-						});
-					} else if (item.name === operators.power) {
-						newTree.push({
-							category: categories.operator,
-							name: item.name,
-							base: recursiveTree(tree[index - 1]?.content),
-							exponent: recursiveTree(tree[index + 1]?.content),
-						});
-					} else if (item.name === operators.index) {
-						newTree.push({
-							category: categories.operator,
-							name: item.name,
-							base: recursiveTree(tree[index - 1]?.content),
-							index: recursiveTree(tree[index + 1]?.content),
-						});
-					} else if (item.name === operators.root) {
-						newTree.push({
-							category: categories.operator,
-							name: item.name,
-							degree: recursiveTree(tree[index - 1]?.content),
-							radicand: recursiveTree(tree[index + 1]?.content),
-						});
+				} else if (item.category === categories.function) {
+					newTree.at(-1).push({
+						category: categories.function,
+						functionName: item.functionName,
+						parameters: recursiveTree(expression[itemIndex + 1]?.contents),
+					});
+					itemIndex++;
+					continue $itemLoop;
+				} else if (item.category === categories.keyword) {
+					if (item.keywordType === keywordTypes.function) {
+						if (item.keywordName === keywords.sum) {
+							newTree.at(-1).push({
+								category: categories.operator,
+								operator: operators.sum,
+								startExpression: recursiveTree([expression[itemIndex + 1]?.contents?.[0] ?? []]),
+								endExpression: recursiveTree([expression[itemIndex + 1]?.contents?.[1] ?? []]),
+								expression: recursiveTree([expression[itemIndex + 1]?.contents?.[2] ?? []]),
+							});
+							itemIndex++;
+							continue $itemLoop;
+						} else if (item.keywordName === keywords.integral) {
+							newTree.at(-1).push({
+								category: categories.operator,
+								operator: operators.integral,
+								lowerLimit: recursiveTree([expression[itemIndex + 1]?.contents?.[0] ?? []]),
+								upperLimit: recursiveTree([expression[itemIndex + 1]?.contents?.[1] ?? []]),
+								integrand: recursiveTree([expression[itemIndex + 1]?.contents?.[2] ?? []]),
+								integrationVariable: recursiveTree([expression[itemIndex + 1]?.contents?.[3] ?? [{
+									category: categories.variable,
+									type: "item",
+									variable: "x",
+								}]]),
+							});
+							itemIndex++;
+							continue $itemLoop;
+						}
 					}
-
-					index++;
-					continue $loop;
-				} else if (operatorsWithItemAfter.includes(item.name)) {
-					if (item.name === operators.squareRoot) {
-						newTree.push({
-							category: categories.operator,
-							name: operators.squareRoot,
-							radicand: recursiveTree(tree[index + 1]?.content),
-						});
-					}
-
-					index++;
-					continue $loop;
 				}
-			}
 
-			if (item.type === "item") {
-				delete item.type;
-				newTree.push(item);
-			} else {
-				newTree.push({
-					category: categories.anyBracket,
-					name: item.type,
-					content: recursiveTree(item.content),
-				});
+				if (item.type === "item") {
+					delete item.type;
+					newTree.at(-1).push(item);
+				} else {
+					newTree.at(-1).push({
+						category: categories.anyBracket,
+						anyBracketType: item.type,
+						content: recursiveTree(item.contents),
+					});
+				}
 			}
 		}
 
 		return newTree;
 	};
 
-	return recursiveTree(groupsTree);
+	const tree = recursiveTree(groupedTree);
+
+	return tree;
 };
