@@ -1,7 +1,6 @@
 
-
-// export { keyDown } from "./files.js";
-// export { startRendering } from "./main.js";
+/// <reference types="new-javascript" />
+/// <reference path="./global.d.ts" />
 
 export const $ = (/** @type {string} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
 	(/** @type {HTMLElement} */ (root.querySelector(selector)))
@@ -308,7 +307,7 @@ export const setTitle = (/** @type {string} */ title) => {
 
 const useTransitions = document.createDocumentTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export const transition = async (/** @type {Function} */ callback, /** @type {{ resolveWhenFinished?: boolean }?} */ { resolveWhenFinished = false } = {}) => {
+export const transition = async (/** @type {() => any} */ callback, /** @type {{ resolveWhenFinished?: boolean }?} */ { resolveWhenFinished = false } = {}) => {
 	if (useTransitions && !document.documentElement.classList.contains("loading")) {
 		const documentTransition = document.createDocumentTransition();
 		if (resolveWhenFinished) await documentTransition.start(callback);
@@ -460,7 +459,6 @@ if (!window.MathMLElement) {
 if (navigator.windowControlsOverlay) {
 	let previousVisible = false;
 	const toggleWCO = ({ visible, manuallyToggled = true }) => {
-		document.documentElement.classList.toggle("window-controls-overlay", visible);
 		if (manuallyToggled && previousVisible === false) document.documentElement.classList.remove("no-wco-animation");
 		else document.documentElement.classList.add("no-wco-animation");
 		previousVisible = visible;
@@ -503,6 +501,7 @@ if (navigator.windowControlsOverlay) {
 	});
 
 	mediaMatch.addEventListener("change", ({ matches }) => {
+		log(matches)
 		currentTheme = matches ? "light" : "dark";
 		storage.set("color-theme", "os-default");
 		updateTheme();

@@ -1,4 +1,7 @@
 
+/// <reference types="new-javascript" />
+/// <reference path="./global.d.ts" />
+
 import { $, $$, database, fileSystemAccessSupported, isApple, alert, confirm, prompt, setTitle, transition, elements, appMeta, encodeFile, decodeFile, storage } from "./app.js";
 import { startRendering } from "./main.js";
 import parseDocument from "./parse/document/parseDocument.js";
@@ -618,7 +621,7 @@ elements.fileNameInput.addEventListener("blur", async function () {
 					name: this.value,
 				},
 			});
-		} else if (currentFile.storageType === "file-system") {
+		} else if (currentFile.storageType === "file-system" && FileSystemFileHandle.prototype.move) {
 			await currentFile.fileHandle.move(this.value + appMeta.fileExtension);
 			await database.put({
 				store: "file-handles",

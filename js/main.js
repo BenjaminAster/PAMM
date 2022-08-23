@@ -1,6 +1,6 @@
 
-/// <reference types="@benjaminaster/new-javascript" />
-/// <reference path="./global.d.ts" />
+// / <reference types="new-javascript" />
+// / <reference path="./global.d.ts" />
 
 // export { decodeFile } from "./files.js";
 import { elements, $$ } from "./app.js";
@@ -147,9 +147,11 @@ export const startRendering = () => {
 
 {
 	window.addEventListener("beforeprint", () => {
+		log("beforeprint")
 		document.documentElement.classList.add("printing");
 	});
 	window.addEventListener("afterprint", () => {
+		log("afterprint")
 		document.documentElement.classList.remove("printing");
 	});
 }

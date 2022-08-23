@@ -52,7 +52,7 @@
 		}
 
 		@container header (max-inline-size: 47rem) {
-			:is(a.github) {
+			a.github {
 				display: none;
 			}
 		}
@@ -74,15 +74,17 @@
 			}
 		}
 
-		:root.window-controls-overlay :host {
-			min-block-size: var(--titlebar-area-block-size);
-			padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding-block));
-			padding-inline-start: max(var(--titlebar-area-inline-start), var(--padding-inline));
-			padding-inline-end: max(var(--titlebar-area-inline-end), var(--padding-inline));
-		}
+		@media (display-mode: window-controls-overlay) {
+			:host {
+				min-block-size: var(--titlebar-area-block-size);
+				padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding-block));
+				padding-inline-start: max(var(--titlebar-area-inline-start), var(--padding-inline));
+				padding-inline-end: max(var(--titlebar-area-inline-end), var(--padding-inline));
+			}
 
-		:root.window-controls-overlay:not(.no-wco-animation) :host {
-			animation: collapse .5s;
+			:root:not(.no-wco-animation) :host {
+				animation: collapse .5s;
+			}
 		}
 
 		@keyframes collapse {
