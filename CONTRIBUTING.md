@@ -1,5 +1,5 @@
 
-## TODO:
+## TODO, excluding PAMM parser & renderer itself:
 
  - [x] replace native dialogs with custom ones
  - [ ] prevent folders from being dropped into containing or contained folder
@@ -31,28 +31,19 @@
 ## VSCode settings:
 
 ```jsonc
-	// JavaScript:
-	"js/ts.implicitProjectConfig.checkJs": true,
-	"js/ts.implicitProjectConfig.target": "ESNext",
-	"js/ts.implicitProjectConfig.strictNullChecks": false,
-	"js/ts.implicitProjectConfig.strictFunctionTypes": false,
-
 	// CSS:
 	"css.lint.unknownProperties": "ignore",
 	"css.lint.unknownAtRules": "ignore",
-	"css.validate": false,
-	"html.validate.styles": false,
 
 	// Other:
 	"files.eol": "\n",
 	"editor.insertSpaces": false,
-```
 
-```jsonc
-	// Personal recommendations:
+	// Unrelated personal recommendations:
+	"editor.tabSize": 3,
+	"editor.unicodeHighlight.ambiguousCharacters": false,
+	"editor.renderWhitespace": "all",
+	"editor.smoothScrolling": true,
 	"editor.cursorSmoothCaretAnimation": true,
 	"editor.cursorBlinking": "smooth",
-	"editor.smoothScrolling": true,
-	"editor.renderWhitespace": "all",
-	"editor.unicodeHighlight.ambiguousCharacters": false,
 ```

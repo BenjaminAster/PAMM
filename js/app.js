@@ -305,13 +305,20 @@ export const setTitle = (/** @type {string} */ title) => {
 	document.title = titleArray.join("");
 };
 
-const useTransitions = document.createDocumentTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// const useTransitions = document.createDocumentTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const useTransitions = document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 export const transition = async (/** @type {() => any} */ callback, /** @type {{ resolveWhenFinished?: boolean }?} */ { resolveWhenFinished = false } = {}) => {
 	if (useTransitions && !document.documentElement.classList.contains("loading")) {
-		const documentTransition = document.createDocumentTransition();
-		if (resolveWhenFinished) await documentTransition.start(callback);
-		else await documentTransition.prepare(callback);
+		// const documentTransition = document.createDocumentTransition(callback);
+		const transition = document.startViewTransition(callback);
+		// if (resolveWhenFinished) await documentTransition.start(callback);
+		// else await documentTransition.prepare(callback);
+		// if (resolveWhenFinished) await documentTransition.finished;
+		// else await documentTransition.finished;
+		await (resolveWhenFinished ? transition.finished : transition.ready);
+		// await new Promise(resolve => setTimeout(resolve, 1000))
+		// await transition.finished
 	} else {
 		await callback();
 	}

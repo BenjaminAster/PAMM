@@ -115,6 +115,12 @@ export default (/** @type {any[]} */ mathTree) => {
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
+					} else if (item.operator === operators.colon) {
+
+						const element = createMathElement("mo");
+						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
+						expressionFragment.append(element);
+
 					} else if (item.operator === operators.invisibleTimes) {
 
 						const element = createMathElement("mo");

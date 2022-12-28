@@ -51,13 +51,14 @@
 			grid-area: html-output;
 			padding: 1rem;
 			padding-block-start: 0;
-			overflow-y: auto;
+			/* overflow-y: auto; */
+			overflow: auto;
 			overflow-wrap: break-word;
 		}
 
 		.html-output .section {
-			/* content-visibility: auto; */
-			/* contain-intrinsic-block-size: auto 10rem; */
+			content-visibility: auto;
+			contain-intrinsic-block-size: auto 10rem;
 		}
 
 		.html-output code {
@@ -92,6 +93,10 @@
 
 		p.bottom-margin {
 			margin-block-end: .7em;
+		}
+
+		:is(p, h1, h2, h3, h4, h5, h6) {
+			white-space: pre-wrap;
 		}
 
 		@media print {

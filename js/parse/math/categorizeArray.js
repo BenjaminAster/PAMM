@@ -34,6 +34,7 @@ export const operators = {
 	times: "times",
 	fraction: "fraction",
 	divide: "divide",
+	colon: "colon",
 	power: "power",
 	root: "root",
 	squareRoot: "squareRoot",
@@ -79,6 +80,11 @@ export const operatorList = [
 		syntax: "//",
 		name: operators.divide,
 		character: "÷",
+	},
+	{
+		syntax: ":",
+		name: operators.colon,
+		character: "∶",
 	},
 	{
 		syntax: "^",

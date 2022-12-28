@@ -1,98 +1,69 @@
 version 1
 -----
+
 # PAMM
-Pretty Awesome Math Markup – A user-friendly LaTeX alternative with a live editor
+*P*retty *A*wesome *M*ath *M*arkup – A user-friendly LaTeX alternative with a live editor
 
-this is a *bold* \{word
-this \{1+1} is an _italic_ word
-this \\ is an ^underlined^ word
-this \\{1+1} is a `monospace    *and* \n {esca
+*⚠️ WORK IN PROGRESS*
+This is still very much work in progress and far from a being finished project!
 
-ped word`
-#test
-aaaa
-{x^^!<==+-#-x}
- {x^^!<=+-#-x}
-+{x^^!<+-#-x}
- +{A==>B}
--{A<==B}
- -{A<==>B}
-A ⟹ B
-aaaa
-{x^^!>=+-#x}
+## Document syntax
 
-{ 3 #4 }
-{ 3#4 }
+Use asterisks to create *bold text*: `*bold*`.
+Use underscores to create _italic text_: `_italic_`.
+Use carets to create ^underlined text^: `^underlined^`.
+Use backticks (\`) to create `escaped monospace text`.
+Use backslashes (\\) to \* escape \_ any \^ special \{ character: `\*, \_, \^, \{` etc.
 
-{ (234(23423 inf alpha Alpha }
+## Embedding math expressions
 
-{ a* b/c } aabbccdd
-{ a * b/c }
-{ a *b/c }
+Use curly braces to write math expressions: `{ 1/2pi }`
+{ 1/2pi }
+Math expressions that are inlined into text (like so: { sum(k=1, 10, k^2) }) are automatically rendered in a compact style while math expressions at the start of a line are rendered normally and occupy the whole line:
+{ sum(k=1, 10, k^2) }
+You can put a plus (`+`) in font of an inline math expression to render it in normal style (`+{ sum(k=1, 10, k^2) }` becomes +{ sum(k=1, 10, k^2) }) or a minus (`-`) in front of a math expression at the start of a line to render it in compact style, so `-{ sum(k=1, 10, k^2) }` becomes:
+-{ sum(k=1, 10, k^2) }
 
-{ a- b/c }
-{ a - b/c }
-{ a -b/c }
-{ -b/c a }
+## Math syntax
 
-{ 3^^a^3 b^^2 }
-{ c!asdf }
+The most basic PAMM operators are:
+- Addition: `1 + 2` is rendered as { 1 + 2 }
+- Subtraction: `1 - 2` is rendered as { 1 - 2 }
+- Multiplication: `1 * 2` is rendered as { 1 * 2 }
+- Fraction division: `1 / 2` is rendered as { 1 / 2 }
+- Non-fraction division: `1 // 2` is rendered as { 1 // 2 }
+- Roots: `4#3` is rendered as { 4#3 }
+- Square roots: `#3` is rendered as { #3 }
+- Powers: `4^3` is rendered as { 4^3 }
+- Square powers: `4^^` is rendered as { 4^^ }
+- Indices: `n_i` is rendered as { n_i }, `n1` is rendered as { n1 }
 
-{ a -3#a }
-{ a #5 }
+A core concept of PAMM is the reliance on whitespace. PAMM uses the placement of whitespace to differenciate between different expressions. For example, `1 + 2/3` becomes { 1 + 2/3 } while `1+2 / 3` or `1+2/3` both become { 1+2 / 3 }. While in general this should result in having to use far fewer braces and parentheses, there are often situations where parentheses are still needed. For example, if you want to write the math expression { (2^3 + 4)/5 }, both `2^3+4/5` (rendered as { 2^3+4/5 }) and `2^3 + 4/5` (rendered as { 2^3 + 4/5 }) do not give the desired result. In this example, you would have to enclose the numerator in parentheseis, like so: `(2^3 + 4)/5`. If a parenthesis serves no other purpose than to tell PAMM how to interpret an expression, it gets automatically removed, so `(2^3 + 4)/5` gets rendered as { (2^3 + 4)/5 }. If you still want to keep it, you have to double-enclose the expression, so `((2^3 + 4))/5` gets rendered as { ((2^3 + 4))/5 }.
 
-{ sum(n=1, 5, n^^) = 55 }
-{ int(0, 2, x^^, x) = 8/3 }
-{ int(0, 2, x^^) = 8/3 }
+You can always use the normal multiplication asterisk (`*`) when you want to visualize multiplication with a dot, but you can also just write the factors next to each other, either with or without a whitespace in between, depending on context. The invisible times Unicode character (`U+2062`) then gets inserted in between the factors as an operator. `2ab` gets rendered as { 2ab }, `1/2 n` gets rendered as { 1/2 n }, and so on. This also means that, for example, `4#3` is "the fourth root of three" ({ 4#3 }), but `4 #3` is "four times the square root of three" ({ 4 #3 }).
 
-# Heading level {1}
-## Heading level {1+1=2}
+Extended list of operators, symbols, etc.:
+- Comparison operators: `n = 1` becomes { n = 1 }, `n < 1` becomes { n < 1 }, `n > 1` becomes { n > 1 }, `n <= 1` becomes { n <= 1 }, `n >= 1` becomes { n >= 1 }
+- Factorial: `n!` becomes { n! }
+- Implication arrows: `n ==> 1` becomes { n ==> 1 }, `n <== 1` becomes { n <== 1 }, `n <==> 1` becomes { n <==> 1 }
+- Plus-minus: `n +- 1` becomes { n +- 1 }
+- Greek letters: `alpha` becomes { alpha }, `Gamma` becomes { Gamma }, etc. The final sigma ({ finsigma }) is written as `finsigma`, like in LaTeX.
+- Sum: `sum(n=1, 5, n^^)` is rendered as { sum(n=1, 5, n^^) }
+- Integral: `int(0, 2, x^^, x)` is rendered as { int(0, 2, x^^, x) }
 
-### Heading level 3
-Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-Compact inline math: {1/#(n^4 - 1/2 n^4)+0 = 1/#(1/2 n^4) = 1/(1/#2 n^^) = #2 /n^^}
-
-Normal inline math: +{1/#(n^4 - 1/2 n^4)+0 = 1/#(1/2 n^4) = 1/(1/#2 n^^) = #2 /n^^}
-
-Normal block math:
-{1/#(n^4 - 1/2 n^4)+0 = 1/#(1/2 n^4) = 1/(1/#2 n^^) = #2 /n^^}
-
-Compact block math:
--{1/#(n^4 - 1/2 n^4)+0 = 1/#(1/2 n^4) = 1/(1/#2 n^^) = #2 /n^^}
-
- {7/7}
-asdf
- +{7/7}
-asdf
-7/7
-asdf
-
-*this is bold
-and* this not anymore
-
-#hihoha
-asdfasd
-
-{ a_b^c }
-
-LaTeX:
-`\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)`
-
-PAMM:
-`(sum(k=1, n, a_k b_k))^^ <= (sum(k=1, n, a_k^^))(sum(k=1, n, b_k^^))`
+Examples:
+`(sum(k=1, n, a_k b_k))^^ <= (sum(k=1, n, a_k^^))(sum(k=1, n, b_k^^))` is rendered as:
 { (sum(k=1, n, a_k b_k))^^ <= (sum(k=1, n, a_k^^))(sum(k=1, n, b_k^^)) }
 
+`{1/#(n^4 - 1/2 n^4)+0 = 1/#(1/2 n^4) = 1/(1/#2 n^^) = #2 /n^^}` is rendered as:
+{1/#(n^4 - 1/2 n^4)+0 = 1/#(1/2 n^4) = 1/(1/#2 n^^) = #2 /n^^}
 
-
-
-a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a 
+`{ 1/n (sum(i=1, n, 1/#1-x1)) >= 1/#(1 - 1/n (sum(i=1, n, x_i))) = #n /#n-1 }` is rendered as:
 { 1/n (sum(i=1, n, 1/#1-x1)) >= 1/#(1 - 1/n (sum(i=1, n, x_i))) = #n /#n-1 }
 
+`{ phi(p^alpha) = p^alpha-1 (p-1) }` is rendered as:
 { phi(p^alpha) = p^alpha-1 (p-1) }
 
-Lorem ipsum, dolor sit amet consectetur adipisicing elit. Distinctio molestias corporis recusandae!
 
-test hello
-aaaaaaaaaaaa
 -----
 {}

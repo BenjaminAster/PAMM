@@ -135,6 +135,9 @@ export default (/** @type {string} */ inputString) => {
 						}
 					}
 					currentString = "";
+					if (character === " ") {
+						continue $loop;
+					}
 				} else if (currentString === "-") {
 					stack.push({
 						type: "paragraph",

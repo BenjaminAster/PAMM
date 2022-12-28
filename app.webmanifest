@@ -9,18 +9,18 @@
 	"categories": ["education"],
 	"lang": "en",
 	"theme_color": "blueViolet",
-	"background_color": "#1b1b1e",
+	"background_color": "#2f3034",
 	"icons": [
 		{
 			"src": "./assets/icon.png",
 			"type": "image/png",
-			"sizes": "256x256",
+			"sizes": "512x512",
 			"purpose": "any monochrome"
 		},
 		{
 			"src": "./assets/maskable.png",
 			"type": "image/png",
-			"sizes": "512x512",
+			"sizes": "768x768",
 			"purpose": "maskable"
 		}
 	],
@@ -32,13 +32,13 @@
 		"icons": [{
 			"src": "./assets/icon.png",
 			"type": "image/png",
-			"sizes": "256x256"
+			"sizes": "512x512"
 		}],
 		"launch_type": "multiple-clients"
 	}],
 	"screenshots": [{
 		"src": "./assets/icon.png",
-		"sizes": "256x256",
+		"sizes": "512x512",
 		"type": "image/png",
 		"label": "icon of Pretty Awesome Math Markup"
 	}]

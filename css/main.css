@@ -18,6 +18,7 @@
 @layer main {
 	:root {
 		color-scheme: dark;
+
 		--background: #1b1b1e;
 		--gray-1: #2b2b2e;
 		--gray-2: #3b3b3e;
@@ -35,6 +36,10 @@
 		--titlebar-area-block-end: calc(100vh - env(titlebar-area-y, 0) - env(titlebar-area-height, 0));
 
 		--px: calc(1rem / 16);
+
+		-moz-text-size-adjust: none;
+		-webkit-text-size-adjust: none;
+		text-size-adjust: none;
 	}
 
 	:root:is(.light-theme, .printing) {
@@ -53,19 +58,18 @@
 		font-family: system-ui, sans-serif;
 		box-sizing: border-box;
 		margin: 0;
-		block-size: 100vh;
 		block-size: 100dvb;
-		overflow-y: hidden;
-		display: grid;
+		/* overflow-y: hidden; */
+		/* display: grid;
 		grid-template: auto 1fr / 1fr;
 		grid-template-areas:
 			"titlebar"
-			"main";
+			"main"; */
+		display: flex;
+		flex-direction: column;
 		background-color: var(--background);
-		-moz-text-size-adjust: none;
-		-webkit-text-size-adjust: none;
-		text-size-adjust: none;
 		overflow: hidden;
+		/* overflow: clip; */
 	}
 
 	header {
@@ -73,14 +77,30 @@
 	}
 
 	main {
+		flex-grow: 1;
+		flex-basis: 0;
 		grid-area: main;
 		display: flex;
 		flex-direction: column;
-		overflow-y: hidden;
+		/* overflow: clip; */
 		overflow: hidden;
+		/* overflow: clip; */
 		box-sizing: border-box;
-		page-transition-tag: main-content;
-		contain: paint;
+		view-transition-name: main-content;
+		contain: layout;
+		/* contain: size layout style paint; */
+		/* contain: layout paint style inline-size; */
+		/* contain: size; */
+		/* background-clip: border-box; */
+		/* overflow-clip-margin: border-box; */
+
+		/* isolation: isolate; */
+	}
+
+	@media (hover: none) {
+		main {
+			background-color: #00000001;
+		}
 	}
 
 	/* Arabic (ar), Hebrew (iw), Pashto (ps), Persian (fa), Sindhi (sd), Urdu (ur), Uyghur (ug), Yiddish (yi) */
@@ -268,11 +288,11 @@
 		--transition-direction: -1;
 	}
 
-	:root::page-transition-outgoing-image(main-content) {
+	:root::view-transition-old(main-content) {
 		animation: .15s ease-out both fade-out;
 	}
 
-	:root::page-transition-incoming-image(main-content) {
+	:root::view-transition-new(main-content) {
 		animation: .15s ease-out both fade-in;
 	}
 
