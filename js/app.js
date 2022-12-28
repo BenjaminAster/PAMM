@@ -400,7 +400,7 @@ const customElementNames = [
 ];
 
 if (!window.MathMLElement) {
-	alert({ message: 'MathML not supported.\n\nPlease use Google Chrome Canary or Google Chrome Dev and enable the "Experimental Web Platform features" flag in chrome://flags.' });
+	alert({ message: 'MathML not supported.\n\nPlease use Google Chrome Beta/Dev/Canary or enable the "Experimental Web Platform features" flag in chrome://flags.' });
 }
 
 {
