@@ -39,7 +39,7 @@
 	<link rel="preload" as="fetch" crossorigin href="./assets/introduction.pamm" />
 
 	<script type="module">
-		if (!CSS.supports("color: revert-layer")) {
+		if (!window.MathMLElement || !CSS.supports("(color: revert-layer)")) {
 			window.open("/update-your-browser/?" + location.pathname, "_self");
 		}
 	</script>

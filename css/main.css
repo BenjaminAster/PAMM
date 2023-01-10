@@ -30,14 +30,13 @@
 
 		--titlebar-area-inline-start: env(titlebar-area-x, 0);
 		--titlebar-area-inline-size: env(titlebar-area-width, 0);
-		--titlebar-area-inline-end: calc(100vw - env(titlebar-area-x, 0) - env(titlebar-area-width, 0));
+		--titlebar-area-inline-end: calc(100dvi - env(titlebar-area-x, 0) - env(titlebar-area-width, 0));
 		--titlebar-area-block-start: env(titlebar-area-y, 0);
 		--titlebar-area-block-size: env(titlebar-area-height, 0);
-		--titlebar-area-block-end: calc(100vh - env(titlebar-area-y, 0) - env(titlebar-area-height, 0));
+		--titlebar-area-block-end: calc(100dvb - env(titlebar-area-y, 0) - env(titlebar-area-height, 0));
 
 		--px: calc(1rem / 16);
 
-		-moz-text-size-adjust: none;
 		-webkit-text-size-adjust: none;
 		text-size-adjust: none;
 	}

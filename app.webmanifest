@@ -24,22 +24,52 @@
 			"purpose": "maskable"
 		}
 	],
-	"file_handlers": [{
-		"action": "./",
-		"accept": {
-			"text/pretty-awesome-math-markup": [".pamm"]
-		},
-		"icons": [{
-			"src": "./assets/icon.png",
+	"file_handlers": [
+		{
+			"action": "./",
+			"accept": {
+				"text/pretty-awesome-math-markup": [
+					".pamm"
+				]
+			},
+			"icons": [
+				{
+					"src": "./assets/icon.png",
+					"type": "image/png",
+					"sizes": "512x512"
+				}
+			],
+			"launch_type": "multiple-clients"
+		}
+	],
+	"screenshots": [
+		{
+			"src": "./assets/screenshot-editor-desktop.png",
+			"sizes": "1920x1080",
 			"type": "image/png",
-			"sizes": "512x512"
-		}],
-		"launch_type": "multiple-clients"
-	}],
-	"screenshots": [{
-		"src": "./assets/icon.png",
-		"sizes": "512x512",
-		"type": "image/png",
-		"label": "icon of Pretty Awesome Math Markup"
-	}]
+			"label": "a screenshot of the PAMM editor",
+			"form_factor": "wide"
+		},
+		{
+			"src": "./assets/screenshot-files-desktop.png",
+			"sizes": "1920x1080",
+			"type": "image/png",
+			"label": "a screenshot of the PAMM files overview",
+			"form_factor": "wide"
+		},
+		{
+			"src": "./assets/screenshot-editor-mobile.png",
+			"sizes": "1081x2340",
+			"type": "image/png",
+			"label": "a screenshot of the PAMM editor",
+			"form_factor": "narrow"
+		},
+		{
+			"src": "./assets/screenshot-files-mobile.png",
+			"sizes": "1081x2340",
+			"type": "image/png",
+			"label": "a screenshot of the PAMM files overview",
+			"form_factor": "narrow"
+		}
+	]
 }

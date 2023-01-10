@@ -305,23 +305,16 @@ export const setTitle = (/** @type {string} */ title) => {
 	document.title = titleArray.join("");
 };
 
-// const useTransitions = document.createDocumentTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const useTransitions = document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const useTransitions = !!document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 export const transition = async (/** @type {() => any} */ callback, /** @type {{ resolveWhenFinished?: boolean }?} */ { resolveWhenFinished = false } = {}) => {
-	if (useTransitions && !document.documentElement.classList.contains("loading")) {
-		// const documentTransition = document.createDocumentTransition(callback);
-		const transition = document.startViewTransition(callback);
-		// if (resolveWhenFinished) await documentTransition.start(callback);
-		// else await documentTransition.prepare(callback);
-		// if (resolveWhenFinished) await documentTransition.finished;
-		// else await documentTransition.finished;
-		await (resolveWhenFinished ? transition.finished : transition.ready);
-		// await new Promise(resolve => setTimeout(resolve, 1000))
-		// await transition.finished
-	} else {
+	if (!useTransitions || document.documentElement.classList.contains("loading")) {
 		await callback();
+		return;
 	}
+
+	const transition = document.startViewTransition(callback);
+	await (resolveWhenFinished ? transition.finished : transition.ready);
 };
 
 {
@@ -399,10 +392,6 @@ const customElementNames = [
 	"files",
 ];
 
-if (!window.MathMLElement) {
-	alert({ message: 'MathML not supported.\n\nPlease use Google Chrome Beta/Dev/Canary or enable the "Experimental Web Platform features" flag in chrome://flags.' });
-}
-
 {
 	const tempDocument = document.implementation.createHTMLDocument();
 
@@ -464,14 +453,12 @@ if (!window.MathMLElement) {
 }
 
 if (navigator.windowControlsOverlay) {
-	let previousVisible = false;
-	const toggleWCO = ({ visible, manuallyToggled = true }) => {
-		if (manuallyToggled && previousVisible === false) document.documentElement.classList.remove("no-wco-animation");
-		else document.documentElement.classList.add("no-wco-animation");
-		previousVisible = visible;
-	};
-	if (navigator.windowControlsOverlay.visible) toggleWCO({ visible: true, manuallyToggled: false });
-	navigator.windowControlsOverlay.addEventListener("geometrychange", toggleWCO);
+	if (navigator.windowControlsOverlay.visible) {
+		document.documentElement.classList.add("no-wco-animation");
+	}
+	navigator.windowControlsOverlay.addEventListener("geometrychange", () => {
+		document.documentElement.classList.remove("no-wco-animation");
+	}, { once: true });
 }
 
 {
