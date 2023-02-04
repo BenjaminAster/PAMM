@@ -30,6 +30,8 @@ export const startRendering = () => {
 		// 	}
 		// }
 
+		console.clear();
+
 		const /** @type {any[]} */ sectionsArray = [];
 
 		let sectionBracesDepth = 0;
@@ -41,7 +43,7 @@ export const startRendering = () => {
 		for (let index = 0; index < initialStringSections.length; index++) {
 			const stringSection = initialStringSections[index];
 			for (const character of stringSection) {
-				if (sectionBracesDepth === 0 && character === "`") {
+				if (character === "`" && sectionBracesDepth === 0 && !backslashEscaped) {
 					codeMode = !codeMode;
 				}
 
@@ -53,9 +55,8 @@ export const startRendering = () => {
 					}
 				}
 
-				if (backslashEscaped) {
-					backslashEscaped = false;
-				} else if (character === "\\" && !codeMode) {
+				backslashEscaped = false;
+				if (character === "\\" && !codeMode) {
 					backslashEscaped = true;
 				}
 			}
@@ -65,6 +66,8 @@ export const startRendering = () => {
 				currentSectionArray = [];
 			}
 		}
+
+		console.log(structuredClone(sectionsArray));
 
 		const sectionCountDifference = sectionsArray.length - previousSectionsArray.length;
 		let currentRelativeSectionIndex = 0;

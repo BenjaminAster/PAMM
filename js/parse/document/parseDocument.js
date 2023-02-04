@@ -214,6 +214,11 @@ export default (/** @type {string} */ inputString) => {
 				string: currentString,
 			}],
 		});
+	} else if (currentType === "code") {
+		stack.at(-1).content.push({
+			type: "text",
+			string: currentString,
+		});
 	} else {
 		stack.at(-1).content.push({
 			type: currentType,
