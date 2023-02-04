@@ -20,8 +20,8 @@ export default (/** @type {any[]} */ mathTree) => {
 						const denominator = recursiveRender(item.denominator);
 
 						const element = createMathElement("mfrac");
-						element.appendChild(numerator);
-						element.appendChild(denominator);
+						element.append(numerator);
+						element.append(denominator);
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.power) {
@@ -32,17 +32,17 @@ export default (/** @type {any[]} */ mathTree) => {
 							const exponent = recursiveRender(item.exponent);
 
 							const element = createMathElement("msubsup");
-							element.appendChild(base);
-							element.appendChild(index);
-							element.appendChild(exponent);
+							element.append(base);
+							element.append(index);
+							element.append(exponent);
 							expressionFragment.append(element);
 						} else {
 							const base = recursiveRender(item.base);
 							const exponent = recursiveRender(item.exponent);
 
 							const element = createMathElement("msup");
-							element.appendChild(base);
-							element.appendChild(exponent);
+							element.append(base);
+							element.append(exponent);
 							expressionFragment.append(element);
 						}
 
@@ -63,8 +63,8 @@ export default (/** @type {any[]} */ mathTree) => {
 						const index = recursiveRender(item.index);
 
 						const element = createMathElement("msub");
-						element.appendChild(base);
-						element.appendChild(index);
+						element.append(base);
+						element.append(index);
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.root) {
@@ -73,8 +73,8 @@ export default (/** @type {any[]} */ mathTree) => {
 						const radicand = recursiveRender(item.radicand);
 
 						const element = createMathElement("mroot");
-						element.appendChild(radicand);
-						element.appendChild(degree);
+						element.append(radicand);
+						element.append(degree);
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.squareRoot) {
@@ -82,7 +82,7 @@ export default (/** @type {any[]} */ mathTree) => {
 						const radicand = recursiveRender(item.radicand);
 
 						const element = createMathElement("msqrt");
-						element.appendChild(radicand);
+						element.append(radicand);
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.plus) {

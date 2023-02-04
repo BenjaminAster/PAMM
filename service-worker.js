@@ -1,9 +1,11 @@
 
+/// <reference no-default-lib="true" />
+/// <reference lib="ESNext" />
 /// <reference lib="WebWorker" />
+/// <reference lib="WebWorker.Iterable" />
+/// <reference types="better-typescript/worker" />
 
-const /** @type {ServiceWorkerGlobalScope} */ _self = /** @type {any} */ (self);
-
-_self.addEventListener("fetch", (event) => {
-
+self.addEventListener("fetch", (event) => {
+	event.respondWith;
 });
 

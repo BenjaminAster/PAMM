@@ -31,6 +31,12 @@
 ## VSCode settings:
 
 ```jsonc
+	// Type checking for JavaScript:
+	"js/ts.implicitProjectConfig.target": "ESNext",
+	"js/ts.implicitProjectConfig.checkJs": true,
+	"js/ts.implicitProjectConfig.strictNullChecks": false,
+	"js/ts.implicitProjectConfig.strictFunctionTypes": false,
+
 	// CSS:
 	"css.lint.unknownProperties": "ignore",
 	"css.lint.unknownAtRules": "ignore",

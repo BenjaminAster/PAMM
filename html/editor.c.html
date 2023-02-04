@@ -18,7 +18,7 @@
 			box-sizing: border-box;
 		}
 
-		:root[data-editorlayout="stacked"] :host {
+		:root[data-editor-layout="stacked"] :host {
 			grid-template-areas:
 				"text-input text-input"
 				"html-output html-output";
@@ -26,6 +26,7 @@
 
 		.text-input {
 			grid-area: text-input;
+			/* font-family: ui-monospace, monospace; */
 			font-family: ui-monospace, monospace;
 			font-size: 1.1rem;
 			margin: .7rem;
@@ -47,13 +48,15 @@
 		}
 
 		.html-output {
-			font-family: "Computer Modern", "Noto Serif", ui-serif, serif;
+			font-family: "Computer Modern Serif", "Noto Serif", ui-serif, serif;
 			grid-area: html-output;
 			padding: 1rem;
 			padding-block-start: 0;
 			/* overflow-y: auto; */
 			overflow: auto;
 			overflow-wrap: break-word;
+			font-size: 1.1rem;
+			line-height: 1.8rem;
 		}
 
 		.html-output .section {
@@ -63,10 +66,18 @@
 
 		.html-output code {
 			white-space: pre-wrap;
+			font-family: "FreeMono", "Courier New", ui-monospace, monospace;
+			/* padding: .05em .15em; */
+			/* padding: .0em .15em; */
+			padding-inline: .2em;
+			/* border: 1px solid #8885; */
+			/* border-radius: .2em; */
+			background-color: var(--gray-1);
+			font-size: .8em;
 		}
 
 		:root[data-engine=blink] :host .html-output .integral {
-			font-size: 1.5em;
+			/* font-size: 1.5em; */
 		}
 
 		:root[data-engine=blink] :host .html-output :is(msqrt > *, mroot > :first-child) {

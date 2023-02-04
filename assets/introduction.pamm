@@ -48,8 +48,8 @@ Extended list of operators, symbols, etc.:
 - Implication arrows: `n ==> 1` becomes { n ==> 1 }, `n <== 1` becomes { n <== 1 }, `n <==> 1` becomes { n <==> 1 }
 - Plus-minus: `n +- 1` becomes { n +- 1 }
 - Greek letters: `alpha` becomes { alpha }, `Gamma` becomes { Gamma }, etc. The final sigma ({ finsigma }) is written as `finsigma`, like in LaTeX.
-- Sum: `sum(n=1, 5, n^^)` is rendered as { sum(n=1, 5, n^^) }
-- Integral: `int(0, 2, x^^, x)` is rendered as { int(0, 2, x^^, x) }
+- Sum: `sum(n=1, 5, n^^)` is rendered as +{ sum(n=1, 5, n^^) }
+- Integral: `int(0, 2, x^^, x)` is rendered as +{ int(0, 2, x^^, x) }
 
 Examples:
 `(sum(k=1, n, a_k b_k))^^ <= (sum(k=1, n, a_k^^))(sum(k=1, n, b_k^^))` is rendered as:

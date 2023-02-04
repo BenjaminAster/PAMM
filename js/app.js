@@ -1,20 +1,20 @@
 
-/// <reference types="new-javascript" />
+/// <reference types="better-typescript" />
 /// <reference path="./global.d.ts" />
 
-export const $ = (/** @type {string} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
-	(/** @type {HTMLElement} */ (root.querySelector(selector)))
+export const $ = /** @template K */ (/** @type {K extends string ? K : never} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
+	root.querySelector(selector)
 );
 
-export const $$ = (/** @type {string} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
-	(/** @type {HTMLElement[]} */ ([...root.querySelectorAll(selector)]))
+export const $$ = /** @template K */ (/** @type {K extends string ? K : never} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
+	[...root.querySelectorAll(selector)]
 );
 
-export const fileSystemAccessSupported = !!(window.showSaveFilePicker && window.showOpenFilePicker);
+export const fileSystemAccessSupported = Boolean(window.showSaveFilePicker && window.showOpenFilePicker);
 
 export const isApple = navigator.userAgentData?.platform ? ["macOS", "iOS"].includes(navigator.userAgentData.platform) : /^(Mac|iP)/.test(navigator.platform);
 
-export const createMathElement = (/** @type {string} */ name) => /** @type {MathMLElement} */(document.createElementNS("http://www.w3.org/1998/Math/MathML", name));
+export const createMathElement = (/** @type {string} */ name) => document.createElementNS("http://www.w3.org/1998/Math/MathML", name);
 
 export const encodeFile = (/** @type {{ text: string, data?: Record<string, any> }} */ { text, data = {} }) => {
 	return `version 1\n-----\n${text}\n-----\n${JSON.stringify(data, null, "\t")}`
@@ -109,49 +109,49 @@ export const database = await new class {
 				fileStore.add({
 					id: "b-aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 					name: "aaaa",
-					content: "aaaa",
+					content: "# aaaa\n\naaaa",
 					parentFolder: { id: "home" },
 				});
 
 				fileStore.add({
 					id: "b-bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
 					name: "bbbb",
-					content: "bbbb",
+					content: "# bbbb\n\nbbbb",
 					parentFolder: { id: "home" },
 				});
 
 				fileStore.add({
 					id: "b-cccccccc-cccc-cccc-cccc-cccccccccccc",
 					name: "cccc",
-					content: "cccc",
+					content: "# cccc\n\ncccc",
 					parentFolder: { id: "home" },
 				});
 
 				fileStore.add({
 					id: "b-dddddddd-dddd-dddd-dddd-dddddddddddd",
 					name: "dddd",
-					content: "dddd",
+					content: "# dddd\n\ndddd",
 					parentFolder: { id: "11111111-1111-1111-1111-111111111111" },
 				});
 
 				fileStore.add({
 					id: "b-eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
 					name: "eeee",
-					content: "eeee",
+					content: "# eeee\n\neeee",
 					parentFolder: { id: "11111111-1111-1111-1111-111111111111" },
 				});
 
 				fileStore.add({
 					id: "b-ffffffff-ffff-ffff-ffff-ffffffffffff",
 					name: "ffff",
-					content: "ffff",
+					content: "# ffff\n\nffff",
 					parentFolder: { id: "22222222-2222-2222-2222-222222222222" },
 				});
 
 				fileStore.add({
 					id: "b-gggggggg-gggg-gggg-gggg-gggggggggggg",
 					name: "gggg",
-					content: "gggg",
+					content: "# gggg\n\ngggg",
 					parentFolder: { id: "33333333-3333-3333-3333-333333333333" },
 				});
 			}, { once: true });
@@ -249,10 +249,10 @@ export const storage = new class {
 };
 
 
-const messageboxesTemplate = /** @type {HTMLTemplateElement} */ ($("template#messageboxes")).content;
+const messageboxesTemplate = $("template#messageboxes").content;
 
 export const alert = async (/** @type {{ message: string, userGestureCallback?: Function }} */ { message, userGestureCallback }) => {
-	const dialog = /** @type {HTMLDialogElement} */ ($("dialog.alert", messageboxesTemplate).cloneNode(true));
+	const dialog = $("dialog.alert", messageboxesTemplate).cloneNode(true);
 	$(".message", dialog).textContent = message;
 	document.body.append(dialog);
 	dialog.showModal();
@@ -264,7 +264,7 @@ export const alert = async (/** @type {{ message: string, userGestureCallback?: 
 };
 
 export const confirm = async (/** @type {{ message: string, userGestureCallback?: Function }} */ { message, userGestureCallback }) => {
-	const dialog = /** @type {HTMLDialogElement} */ ($("dialog.confirm", messageboxesTemplate).cloneNode(true));
+	const dialog = $("dialog.confirm", messageboxesTemplate).cloneNode(true);
 	$(".message", dialog).textContent = message;
 	document.body.append(dialog);
 	dialog.showModal();
@@ -280,9 +280,9 @@ export const confirm = async (/** @type {{ message: string, userGestureCallback?
 };
 
 export const prompt = async (/** @type {{ message: string, defaultValue?: string }} */ { message, defaultValue = "" }) => {
-	const dialog = /** @type {HTMLDialogElement} */ ($("dialog.prompt", messageboxesTemplate).cloneNode(true));
+	const dialog = $("dialog.prompt", messageboxesTemplate).cloneNode(true);
 	$(".message", dialog).textContent = message;
-	;/** @type {HTMLInputElement} */ ($(".input", dialog)).value = defaultValue;
+	$("input.input", dialog).value = defaultValue;
 	document.body.append(dialog);
 	dialog.showModal();
 	const accepted = await new Promise((resolve) => {
@@ -290,7 +290,7 @@ export const prompt = async (/** @type {{ message: string, defaultValue?: string
 		$("button.ok", dialog).addEventListener("click", () => resolve(true), { once: true });
 		$("button.cancel", dialog).addEventListener("click", () => resolve(false), { once: true });
 	});
-	const value = accepted ? /** @type {HTMLInputElement} */ ($(".input", dialog)).value : undefined;
+	const value = accepted ? $("input.input", dialog).value : undefined;
 	dialog.remove();
 	return { accepted, value };
 };
@@ -305,7 +305,7 @@ export const setTitle = (/** @type {string} */ title) => {
 	document.title = titleArray.join("");
 };
 
-const useTransitions = !!document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const useTransitions = Boolean(document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
 export const transition = async (/** @type {() => any} */ callback, /** @type {{ resolveWhenFinished?: boolean }?} */ { resolveWhenFinished = false } = {}) => {
 	if (!useTransitions || document.documentElement.classList.contains("loading")) {
@@ -357,8 +357,8 @@ export const transition = async (/** @type {() => any} */ callback, /** @type {{
 
 
 export const appMeta = {
-	name: "Pretty Awesome Math Markup [BETA]",
-	shortName: "PAMM [BETA]",
+	name: "Pretty Awesome Math Markup",
+	shortName: "PAMM",
 	fileExtension: ".pamm",
 	mimeType: "text/pretty-awesome-math-markup",
 };
@@ -366,24 +366,24 @@ export const appMeta = {
 navigator.serviceWorker?.register("./service-worker.js", { scope: "./", updateViaCache: "all" });
 
 export const elements = {
-	get textInput() { return /** @type {HTMLTextAreaElement} */ ($("c-editor .text-input textarea")) },
-	get htmlOutput() { return $("c-editor .html-output") },
-	get myFilesLink() { return /** @type {HTMLAnchorElement} */ ($("c-header [data-action=my-files]")) },
-	get saveButton() { return $("c-header [data-action=save]") },
-	get exportButton() { return $("c-header [data-action=export]") },
-	get recentlyOpenedDialog() { return /** @type {HTMLDialogElement} */ ($("c-files dialog.recently-opened")) },
-	get recentlyOpenedButton() { return $("c-header [data-action=recently-opened]") },
-	get openButton() { return $("c-header [data-action=open]") },
-	get uploadButton() { return $("c-header [data-action=upload]") },
-	get newFolderButton() { return $("c-files [data-action=new-folder]") },
-	get newBrowserFileButton() { return $("c-files [data-action=new-browser-file]") },
-	get newDiskFileButton() { return $("c-files [data-action=new-disk-file]") },
-	get foldersUL() { return $("c-files .folders") },
-	get filesUL() { return $("c-files .files") },
+	get textInput() { return $("c-editor .text-input textarea") },
+	get htmlOutput() { return $("c-editor section.html-output") },
+	get myFilesLink() { return $("c-header a[data-action=my-files]") },
+	get saveButton() { return $("c-header button[data-action=save]") },
+	get exportButton() { return $("c-header button[data-action=export]") },
+	get recentlyOpenedDialog() { return $("c-files dialog.recently-opened") },
+	get recentlyOpenedButton() { return $("c-header button[data-action=recently-opened]") },
+	get openButton() { return $("c-header button[data-action=open]") },
+	get uploadButton() { return $("c-header button[data-action=upload]") },
+	get newFolderButton() { return $("c-files button[data-action=new-folder]") },
+	get newBrowserFileButton() { return $("c-files button[data-action=new-browser-file]") },
+	get newDiskFileButton() { return $("c-files button[data-action=new-disk-file]") },
+	get foldersUL() { return $("c-files ul.folders") },
+	get filesUL() { return $("c-files ul.files") },
 	get breadcrumbUL() { return $("c-files nav.breadcrumb ul") },
-	get fileNameInput() { return /** @type {HTMLInputElement} */ ($("c-header input.file-name")) },
-	get toggleThemeButton() { return ($("c-header [data-action=toggle-theme]")) },
-	get toggleLayoutButton() { return ($("c-header [data-action=toggle-editor-layout]")) },
+	get fileNameInput() { return $("c-header input.file-name") },
+	get toggleThemeButton() { return ($("c-header button[data-action=toggle-theme]")) },
+	get toggleLayoutButton() { return ($("c-header button[data-action=toggle-editor-layout]")) },
 };
 
 const customElementNames = [
@@ -424,21 +424,21 @@ const customElementNames = [
 		const styleElement = content.querySelector("style");
 		styleElement.remove();
 
-		tempDocument.body.appendChild(styleElement);
+		tempDocument.body.append(styleElement);
 
 		const rules = styleElement.sheet.cssRules;
 
 		editRulesRecursively(rules, name);
 
 		styleElement.textContent = [...rules].map((rule) => rule.cssText).join("\n") + (
-			`\n/*# sourceMappingURL=data:,${window.encodeURIComponent(JSON.stringify({
+			`\n/*# sourceMappingURL=data:application/json,${window.encodeURIComponent(JSON.stringify({
 				version: 3,
 				mappings: "",
 				sources: [`./html/${name}.c.html`],
 			}))} */`
 		);
 		styleElement.dataset.customElement = `c-${name}`;
-		document.head.appendChild(styleElement);
+		document.head.append(styleElement);
 
 		window.customElements.define(`c-${name}`, class extends HTMLElement {
 			#content = content;
@@ -446,7 +446,7 @@ const customElementNames = [
 				super();
 			};
 			connectedCallback() {
-				this.appendChild(this.#content.cloneNode(true));
+				this.append(this.#content.cloneNode(true));
 			};
 		});
 	}));
@@ -506,10 +506,10 @@ if (navigator.windowControlsOverlay) {
 	// horizontal / vertical layout
 	const button = elements.toggleLayoutButton;
 	let currentLayout = storage.get("editor-layout") ?? "aside";
-	document.documentElement.dataset.editorlayout = currentLayout;
+	document.documentElement.dataset.editorLayout = currentLayout;
 	button.addEventListener("click", () => {
 		currentLayout = currentLayout === "aside" ? "stacked" : "aside";
-		document.documentElement.dataset.editorlayout = currentLayout;
+		document.documentElement.dataset.editorLayout = currentLayout;
 		storage.set("editor-layout", currentLayout);
 	});
 }

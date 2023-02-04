@@ -2,6 +2,53 @@
 
 @import url("./icons.css") layer(icons);
 
+/* Latin Modern Math font: */
+
+@font-face {
+	font-family: "Latin Modern Math";
+	font-display: swap;
+	src: local("Latin Modern Math"), local("LatinModernMath-Regular"), url("../assets/latinmodern-math/normal.otf");
+	/* Source: https://tug.org/svn/texlive/trunk/Master/texmf-dist/fonts/opentype/public/lm-math/latinmodern-math.otf?revision=36915 */
+}
+
+/* Computer Modern Serif font: */
+
+@font-face {
+	font-family: "Computer Modern Serif";
+	font-display: swap;
+	src: local("Computer Modern Serif"), url("../assets/computer-modern/normal.otf");
+	/* Source: https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunrm.otf */
+}
+
+@font-face {
+	font-family: "Computer Modern Serif";
+	font-display: swap;
+	font-weight: bold;
+	src: local("Computer Modern Serif"), url("../assets/computer-modern/bold.otf");
+	/* Source: https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunrb.otf */
+}
+
+@font-face {
+	font-family: "Computer Modern Serif";
+	font-display: swap;
+	font-style: italic;
+	src: local("Computer Modern Serif"), url("../assets/computer-modern/italic.otf");
+	/* Source: https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunti.otf */
+}
+
+@font-face {
+	font-family: "Computer Modern Serif";
+	font-display: swap;
+	font-style: italic;
+	font-weight: bold;
+	src: local("Computer Modern Serif"), url("../assets/computer-modern/bold-italic.otf");
+	/* Source: https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunbi.otf */
+}
+
+math {
+	font-family: "Latin Modern Math", math;
+}
+
 :root {
 	scrollbar-color: blueViolet transparent;
 }

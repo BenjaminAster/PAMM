@@ -1,6 +1,6 @@
 
 <header focusgroup="wrap">
-	<img src="./assets/icon.svg" class="icon" alt="icon of PAMM" />
+	<img src="./assets/icon.svg" class="icon" alt="icon of PAMM" width="1" height="1" />
 	<a href="https://github.com/BenjaminAster/PAMM" class="github icon:github" title="View on GitHub"></a>
 
 	<input type="text" class="file-name editor-only" title="File name" />
@@ -97,7 +97,7 @@
 				padding-block-start: calc(var(--titlebar-area-block-start) + var(--titlebar-area-block-size));
 			}
 			60% {
-				inline-size: 100vw;
+				inline-size: 100dvi;
 				padding-inline-start: max(var(--titlebar-area-inline-start), var(--padding-inline));
 				padding-inline-end: max(var(--titlebar-area-inline-end), var(--padding-inline));
 			}
@@ -108,8 +108,9 @@
 		}
 
 		img.icon {
-			inline-size: 1.5rem;
-			aspect-ratio: 1;
+			--size: 1.5rem;
+			inline-size: var(--size);
+			block-size: var(--size);
 			margin-inline-start: .3rem;
 		}
 
@@ -134,7 +135,7 @@
 			margin-inline-end: auto;
 		}
 
-		:root[data-editorlayout="stacked"] :host [data-action=toggle-editor-layout] {
+		:root[data-editor-layout="stacked"] :host [data-action=toggle-editor-layout] {
 			--icon: var(--icon-layout-rows);
 		}
 

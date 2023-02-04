@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="loading" data-view="files" data-editorlayout="aside">
+<html lang="en" class="loading" data-view="files" data-editor-layout="aside">
 
 <head>
 	<meta charset="UTF-8" />
@@ -11,7 +11,7 @@
 	<meta name="theme-color" content="blueViolet" />
 	<meta property="og:image" content="https://benjaminaster.com/pamm/assets/icon.png" />
 
-	<title>PAMM [BETA]</title>
+	<title>PAMM</title>
 	<base href="./" />
 
 	<link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
@@ -37,9 +37,14 @@
 	<link rel="preload" as="fetch" crossorigin href="./html/header.c.html" />
 	<link rel="preload" as="fetch" crossorigin href="./html/files.c.html" />
 	<link rel="preload" as="fetch" crossorigin href="./assets/introduction.pamm" />
+	<link rel="preload" as="font" crossorigin href="./assets/latinmodern-math/normal.otf" />
+	<link rel="preload" as="font" crossorigin href="./assets/computer-modern/normal.otf" />
+	<link rel="preload" as="font" crossorigin href="./assets/computer-modern/bold.otf" />
+	<link rel="preload" as="font" crossorigin href="./assets/computer-modern/italic.otf" />
+	<link rel="preload" as="font" crossorigin href="./assets/computer-modern/bold-italic.otf" />
 
 	<script type="module">
-		if (!window.MathMLElement || !CSS.supports("(color: revert-layer)")) {
+		if (!window.MathMLElement || !CSS.supports("(block-size: 100dvb)")) {
 			window.open("/update-your-browser/?" + location.pathname, "_self");
 		}
 	</script>

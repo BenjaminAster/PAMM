@@ -1,5 +1,5 @@
 
-/// <reference types="new-javascript" />
+/// <reference types="better-typescript" />
 /// <reference path="./global.d.ts" />
 
 import { $, $$, database, fileSystemAccessSupported, isApple, alert, confirm, prompt, setTitle, transition, elements, appMeta, encodeFile, decodeFile, storage } from "./app.js";
@@ -222,13 +222,12 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 
 		for (const item of [...UL.children].filter(({ classList }) => classList.contains("item"))) item.remove();
 
-		const template = /** @type {HTMLTemplateElement} */ ($(":scope > template", UL));
+		const template = $(":scope > template", UL);
 
 		for (const item of items) {
-			const /** @type {HTMLElement} */ clone = /** @type {any} */ (template.content.cloneNode(true)).firstElementChild;
+			const clone = /** @type {HTMLElement} */ (template.content.cloneNode(true).firstElementChild);
 			$(".name", clone).textContent = item.name;
-			// @ts-ignore
-			$("a", clone).href = $("[data-action=permalink]", clone).href = `?${type}=${item.id}`;
+			$("a", clone).href = $("a[data-action=permalink]", clone).href = `?${type}=${item.id}`;
 			$("a", clone).addEventListener("click", itemClickHandler({ type, id: item.id, storageType: "indexeddb" }));
 			$("a", clone).addEventListener("dragstart", onDragStart({ type, id: item.id }));
 			if (type === "folder") {
@@ -281,7 +280,7 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 
 	{
 		const breadcrumbUL = elements.breadcrumbUL;
-		const template = /** @type {HTMLTemplateElement} */ ($(":scope > template", breadcrumbUL));
+		const template = $(":scope > template", breadcrumbUL);
 
 		for (const child of [...breadcrumbUL.childNodes].filter(({ nodeName }) => nodeName !== "TEMPLATE")) child.remove();
 
@@ -289,7 +288,7 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 		let folder = currentFolder;
 
 		do {
-			const /** @type {HTMLElement} */ clone = /** @type {any} */ (template.content.cloneNode(true)).firstElementChild;
+			const clone = /** @type {HTMLElement} */ (template.content.cloneNode(true).firstElementChild);
 			$(".name", clone).textContent = folder.name;
 			$("a", clone).setAttribute("href", `?folder=${folder.id}`);
 			const folderId = folder.id;
@@ -304,7 +303,7 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 			fragment.insertBefore(clone, fragment.firstElementChild);
 		} while (folder.parentFolder && (folder = await database.get({ store: "folders", key: folder.parentFolder.id })));
 
-		breadcrumbUL.appendChild(fragment);
+		breadcrumbUL.append(fragment);
 	}
 };
 
@@ -459,7 +458,7 @@ const fileUtils = new class {
 		content,
 		renderFileArguments,
 	} = {}) {
-		const dialog = /** @type {HTMLDialogElement} */ (/** @type {any} */ ($("template#export-dialog")).content.firstElementChild.cloneNode(true));
+		const dialog = /** @type {HTMLDialogElement} */ ($("template#export-dialog").content.firstElementChild.cloneNode(true));
 		$("button.close", dialog).addEventListener("click", () => dialog.remove());
 		$("[data-action=download]", dialog).addEventListener("click", async () => {
 			dialog.remove();
@@ -470,7 +469,7 @@ const fileUtils = new class {
 				await renderFile(renderFileArguments);
 
 				window.addEventListener("afterprint", async () => {
-					await 0; // https://crbug.com/1350720
+					await 0; // https://crbug.com/1316315
 					await toggleView({ filesView: true });
 					await displayFolder({ id: currentFolder.id });
 				}, { once: true });
@@ -544,13 +543,12 @@ const fileUtils = new class {
 			};
 		}));
 		const UL = $("ul", dialog);
-		const listItem = /** @type {HTMLTemplateElement} */ ($(":scope > template", UL)).content;
+		const listItem = $(":scope > template", UL).content;
 		$("button.close", dialog).addEventListener("click", () => dialog.close(), { once: true });
 		for (const { id, storageType, name, fileHandle } of recentlyOpenedFiles) {
 			const clone = /** @type {DocumentFragment} */ (listItem.cloneNode(true));
 			$("[data-storagetype]", clone).dataset.storagetype = storageType;
 			$(".name", clone).textContent = name + ((storageType === "file-system") ? appMeta.fileExtension : "");
-			// @ts-ignore
 			$("a.link", clone).href = $("a.permalink", clone).href = `?file=${id}`;
 			for (const [selectorString, changeURL] of /** @type {any} */ ([["a.link", false], ["a.permalink", true]])) {
 				if (storageType === "indexeddb") {
