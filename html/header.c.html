@@ -1,9 +1,9 @@
 
 <header focusgroup="wrap">
-	<img src="./assets/icon.svg" class="icon" alt="icon of PAMM" width="1" height="1" />
+	<img src="./assets/icon.svg" class="logo" alt="icon of PAMM" width="1" height="1" />
 	<a href="https://github.com/BenjaminAster/PAMM" class="github icon:github" title="View on GitHub"></a>
 
-	<input type="text" class="file-name editor-only" title="File name" />
+	<input type="text" class="file-name editor-only" title="File name" spellcheck="false" />
 	<button data-action="recently-opened" class="files-only icon:clock" title="Recently opened"><span class="text">Recently opened</span></button>
 
 	<button data-action="toggle-editor-layout" class="editor-only icon:layout-columns" title="Toggle vertical / horizontal layout"></button>
@@ -22,19 +22,18 @@
 <style>
 	@layer elements {
 		:host {
-			--padding-inline: .5rem;
-			--padding-block: .5rem;
-			padding: var(--padding-block) var(--padding-inline);
-			background-color: blueViolet;
-			color-scheme: dark;
-			color: white;
+			/* background-color: blueViolet; */
+			/* color-scheme: dark; */
+			/* color: white; */
 			app-region: drag;
-			border-radius: .7rem;
-			margin: .7rem;
-			margin-block-end: 0;
+			--padding: .5rem;
+			/* border-radius: .7rem; */
+			/* margin: .7rem; */
+			/* margin-block-end: 0; */
 			transition: padding-inline .5s;
 			box-sizing: border-box;
 			grid-area: titlebar;
+			background-color: var(--gray-1);
 		}
 
 		header {
@@ -44,15 +43,29 @@
 			gap: .5rem;
 			box-sizing: border-box;
 			container: header / inline-size;
+			padding: var(--padding);
+			transition: padding-inline .5s;
 		}
 
-		@container header (max-inline-size: 43rem) {
-			:is(button, a)[data-action] .text {
+		@container header (inline-size < 32rem) {
+			img.logo {
 				display: none;
 			}
 		}
 
-		@container header (max-inline-size: 47rem) {
+		@container header (inline-size < 43rem) {
+			:root[data-view=editor] :host :is(button, a)[data-action] .text {
+				display: none;
+			}
+		}
+
+		@container header (inline-size < 38rem) {
+			:root[data-view=files] :host :is(button, a)[data-action] .text {
+				display: none;
+			}
+		}
+
+		@container header (inline-size < 47rem) {
 			a.github {
 				display: none;
 			}
@@ -67,10 +80,7 @@
 		}
 
 		@media (display-mode: standalone), (display-mode: window-controls-overlay) {
-			:host {
-				margin: 0;
-				--radius: .4em;
-				border-radius: 0 0 var(--radius) var(--radius);
+			header {
 				padding-block-start: 0;
 			}
 		}
@@ -78,36 +88,41 @@
 		@media (display-mode: window-controls-overlay) {
 			:host {
 				min-block-size: var(--titlebar-area-block-size);
-				padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding-block));
-				padding-inline-start: max(var(--titlebar-area-inline-start), var(--padding-inline));
-				padding-inline-end: max(var(--titlebar-area-inline-end), var(--padding-inline));
+				padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding));
+				padding-inline-start: max(var(--titlebar-area-inline-start));
+				padding-inline-end: max(var(--titlebar-area-inline-end));
 			}
 
 			:root:not(.no-wco-animation) :host {
 				animation: collapse .5s;
+				/* animation: collapse 50s; */
+			}
+
+			header {
+				padding-inline-end: max(var(--padding) - var(--titlebar-area-inline-end), 0px);
 			}
 		}
 
 		@keyframes collapse {
 			0% {
 				padding-block-start: calc(var(--titlebar-area-block-start) + var(--titlebar-area-block-size));
-				padding-inline: var(--padding-inline);
+				padding-inline: 0;
 			}
 			40% {
 				padding-block-start: calc(var(--titlebar-area-block-start) + var(--titlebar-area-block-size));
 			}
 			60% {
 				inline-size: 100dvi;
-				padding-inline-start: max(var(--titlebar-area-inline-start), var(--padding-inline));
-				padding-inline-end: max(var(--titlebar-area-inline-end), var(--padding-inline));
+				padding-inline-start: var(--titlebar-area-inline-start);
+				padding-inline-end: var(--titlebar-area-inline-end);
 			}
 			100% {
-				padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding-block));
+				padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding));
 				min-block-size: var(--titlebar-area-block-size);
 			}
 		}
 
-		img.icon {
+		img.logo {
 			--size: 1.5rem;
 			inline-size: var(--size);
 			block-size: var(--size);
@@ -116,7 +131,7 @@
 
 		input.file-name {
 			background: none;
-			border: 1px solid #fff4;
+			border: 1px solid var(--gray-3);
 			border-radius: .4rem;
 			padding: .3rem .4rem;
 			outline: none;
@@ -128,7 +143,7 @@
 		}
 
 		input.file-name:focus-visible {
-			background-color: #0002;
+			background-color: var(--background);
 		}
 
 		input.file-name, [data-action=recently-opened] {
@@ -137,6 +152,26 @@
 
 		:root[data-editor-layout="stacked"] :host [data-action=toggle-editor-layout] {
 			--icon: var(--icon-layout-rows);
+		}
+
+		@layer {
+			:is(button, a)[data-action] {
+				padding: .3rem .7em;
+				min-block-size: 2.2rem;
+				border-radius: .4rem;
+				background-color: var(--gray-2);
+				display: flex;
+				align-items: center;
+				gap: .5rem;
+				app-region: no-drag;
+				--icon-size: 1.125rem;
+				transition: background-color .2s;
+				box-sizing: border-box;
+			}
+
+			:is(button, a)[data-action]:hover {
+				background-color: var(--gray-3);
+			}
 		}
 
 		:root.light-theme :host [data-action=toggle-theme] {
@@ -148,30 +183,29 @@
 			--icon: var(--icon-printer);
 		}
 
+		:is([data-action=my-files], [data-action=recently-opened], [data-action=install]) {
+			color-scheme: dark;
+			--lightness: var(--accent-lightness);
+			background-color: hsl(var(--accent-hue) var(--accent-saturation) var(--lightness));
+			color: white;
+		}
+
+		:is([data-action=my-files], [data-action=recently-opened], [data-action=install]):hover {
+			--lightness: calc(var(--accent-lightness) + 5%);
+		}
+
+		a[data-action=my-files]:has(~ [data-action=install]:not([hidden])) {
+			color-scheme: revert-layer;
+			background-color: revert-layer;
+			color: revert-layer;
+		}
+
 		:root.file-dirty :host button[data-action=save] .saved-d {
 			display: none;
 		}
 
 		:root.file-dirty :host button[data-action=save] {
 			--icon: var(--icon-save-outline);
-		}
-
-		:is(button, a)[data-action] {
-			padding: .3rem .7em;
-			min-block-size: 2.2rem;
-			border-radius: .4rem;
-			background-color: #0002;
-			display: flex;
-			align-items: center;
-			gap: .5rem;
-			app-region: no-drag;
-			--icon-size: 1.125rem;
-			transition: background-color .2s;
-			box-sizing: border-box;
-		}
-
-		:is(button, a)[data-action]:hover {
-			background-color: #0004;
 		}
 
 		a.github {

@@ -49,8 +49,6 @@ const matchAnyBrackets = (/** @type {any[]} */ mathArray) => {
 		stack.at(-2).contents.at(-1).push(stack.pop());
 	}
 
-	// log({ stack });
-
 	return stack[0].contents;
 };
 

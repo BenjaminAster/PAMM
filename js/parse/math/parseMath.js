@@ -5,8 +5,6 @@ import categorizeArray, { categories, characterCategories, keywordList, operator
 
 export default (/** @type {string} */ mathString) => {
 
-	// log({mathString})
-
 	let mathArray = categorizeArray(mathString);
 
 	{
@@ -269,8 +267,6 @@ export default (/** @type {string} */ mathString) => {
 	mathArray = mathArray.filter(({ category }) => category !== categories.whitespace);
 
 	const tree = arrayToTree(mathArray);
-
-	// log(tree)
 
 	return tree;
 };

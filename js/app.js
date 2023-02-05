@@ -232,19 +232,20 @@ export const database = await new class {
 }
 
 export const storage = new class {
+	#pathname = new URL(document.baseURI).pathname;
 	get(/** @type {string} */ key) {
 		try {
-			return JSON.parse(localStorage.getItem(`${new URL(document.baseURI).pathname}:${key}`));
+			return JSON.parse(localStorage.getItem(`${this.#pathname}:${key}`));
 		} catch (error) {
 			console.error(error);
 			return null;
 		}
 	};
 	set(/** @type {string} */ key, /** @type {any} */ value) {
-		localStorage.setItem(`${new URL(document.baseURI).pathname}:${key}`, JSON.stringify(value));
+		localStorage.setItem(`${this.#pathname}:${key}`, JSON.stringify(value));
 	};
 	remove(/** @type {string} */ key) {
-		localStorage.removeItem(`${new URL(document.baseURI).pathname}:${key}`);
+		localStorage.removeItem(`${this.#pathname}:${key}`);
 	};
 };
 
@@ -306,6 +307,7 @@ export const setTitle = (/** @type {string} */ title) => {
 };
 
 const useTransitions = Boolean(document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+// const useTransitions = false;
 
 export const transition = async (/** @type {() => any} */ callback, /** @type {{ resolveWhenFinished?: boolean }?} */ { resolveWhenFinished = false } = {}) => {
 	if (!useTransitions || document.documentElement.classList.contains("loading")) {
@@ -365,40 +367,20 @@ export const appMeta = {
 
 navigator.serviceWorker?.register("./service-worker.js", { scope: "./", updateViaCache: "all" });
 
-export const elements = {
-	get textInput() { return $("c-editor .text-input textarea") },
-	get htmlOutput() { return $("c-editor section.html-output") },
-	get myFilesLink() { return $("c-header a[data-action=my-files]") },
-	get saveButton() { return $("c-header button[data-action=save]") },
-	get exportButton() { return $("c-header button[data-action=export]") },
-	get recentlyOpenedDialog() { return $("c-files dialog.recently-opened") },
-	get recentlyOpenedButton() { return $("c-header button[data-action=recently-opened]") },
-	get openButton() { return $("c-header button[data-action=open]") },
-	get uploadButton() { return $("c-header button[data-action=upload]") },
-	get newFolderButton() { return $("c-files button[data-action=new-folder]") },
-	get newBrowserFileButton() { return $("c-files button[data-action=new-browser-file]") },
-	get newDiskFileButton() { return $("c-files button[data-action=new-disk-file]") },
-	get foldersUL() { return $("c-files ul.folders") },
-	get filesUL() { return $("c-files ul.files") },
-	get breadcrumbUL() { return $("c-files nav.breadcrumb ul") },
-	get fileNameInput() { return $("c-header input.file-name") },
-	get toggleThemeButton() { return ($("c-header button[data-action=toggle-theme]")) },
-	get toggleLayoutButton() { return ($("c-header button[data-action=toggle-editor-layout]")) },
-};
-
-const customElementNames = [
-	"editor",
-	"header",
-	"files",
-];
 
 {
+	const customElements = [
+		"editor",
+		"header",
+		"files",
+	];
+
 	const tempDocument = document.implementation.createHTMLDocument();
 
-	const hostRegex = /:host\b/;
+	const hostRegex = /:host\b/g;
 	const editRule = (/** @type {any} */ rule, /** @type {string} */ name) => {
 		const selector = rule.selectorText;
-		rule.selectorText = hostRegex.test(selector) ? selector.replace(hostRegex, `c-${name}`) : `c-${name} ${selector}`;
+		rule.selectorText = hostRegex.test(selector) ? selector.replaceAll(hostRegex, `c-${name}`) : `c-${name} ${selector}`;
 	};
 	const editRulesRecursively = (/** @type {any} */ rules, /** @type {string} */ name) => {
 		for (const rule of rules) {
@@ -415,7 +397,7 @@ const customElementNames = [
 		}
 	};
 
-	await Promise.all(customElementNames.map(async (name) => {
+	await Promise.all(customElements.map(async (name) => {
 		const html = await (await window.fetch(`./html/${name}.c.html`)).text();
 		const content = (/** @type {HTMLTemplateElement} */ (
 			new DOMParser().parseFromString(`<template>${html}</template>`, "text/html").head.firstElementChild
@@ -444,21 +426,50 @@ const customElementNames = [
 			#content = content;
 			constructor() {
 				super();
+				queueMicrotask(() => {
+					this.append(this.#content.cloneNode(true));
+				});
 			};
 			connectedCallback() {
-				this.append(this.#content.cloneNode(true));
 			};
 		});
 	}));
 }
 
-if (navigator.windowControlsOverlay) {
-	if (navigator.windowControlsOverlay.visible) {
-		document.documentElement.classList.add("no-wco-animation");
-	}
-	navigator.windowControlsOverlay.addEventListener("geometrychange", () => {
+export const elements = {
+	get myFilesLink() { return $("c-header a[data-action=my-files]") },
+	get saveButton() { return $("c-header button[data-action=save]") },
+	get exportButton() { return $("c-header button[data-action=export]") },
+	get recentlyOpenedDialog() { return $("c-files dialog.recently-opened") },
+	get recentlyOpenedButton() { return $("c-header button[data-action=recently-opened]") },
+	get openButton() { return $("c-header button[data-action=open]") },
+	get uploadButton() { return $("c-header button[data-action=upload]") },
+	get newFolderButton() { return $("c-files button[data-action=new-folder]") },
+	get newBrowserFileButton() { return $("c-files button[data-action=new-browser-file]") },
+	get newDiskFileButton() { return $("c-files button[data-action=new-disk-file]") },
+	get foldersUL() { return $("c-files ul.folders") },
+	get filesUL() { return $("c-files ul.files") },
+	get breadcrumbUL() { return $("c-files nav.breadcrumb ul") },
+	get fileNameInput() { return $("c-header input.file-name") },
+	get toggleThemeButton() { return ($("c-header button[data-action=toggle-theme]")) },
+	get toggleLayoutButton() { return ($("c-header button[data-action=toggle-editor-layout]")) },
+	files: document.querySelector("c-files"),
+	editor: document.createElement("c-editor"),
+	get textInput() { return $(".text-input textarea", this.editor) },
+	get htmlOutput() { return $("section.html-output", this.editor) },
+};
+
+// @ts-ignore
+window.elements = elements;
+
+if (navigator.windowControlsOverlay?.visible) {
+	document.documentElement.classList.add("no-wco-animation");
+	const onGeometryChange = (/** @type {{ visible: boolean }} */ { visible }) => {
+		if (visible) return;
 		document.documentElement.classList.remove("no-wco-animation");
-	}, { once: true });
+		navigator.windowControlsOverlay.removeEventListener("geometrychange", onGeometryChange);
+	};
+	navigator.windowControlsOverlay.addEventListener("geometrychange", onGeometryChange);
 }
 
 {
@@ -469,10 +480,11 @@ if (navigator.windowControlsOverlay) {
 		button.hidden = false;
 	});
 	button.addEventListener("click", async () => {
-		await beforeInstallPromptEvent?.prompt();
+		await beforeInstallPromptEvent.prompt();
 	});
 	window.addEventListener("appinstalled", () => {
 		button.hidden = true;
+		beforeInstallPromptEvent = undefined;
 	});
 }
 
@@ -485,6 +497,8 @@ if (navigator.windowControlsOverlay) {
 
 	const updateTheme = () => {
 		document.documentElement.classList.toggle("light-theme", currentTheme === "light");
+		const themeColor = window.getComputedStyle(document.querySelector("c-header")).backgroundColor.trim();
+		document.querySelector("meta[name=theme-color]").content = themeColor;
 	};
 	updateTheme();
 
@@ -495,22 +509,8 @@ if (navigator.windowControlsOverlay) {
 	});
 
 	mediaMatch.addEventListener("change", ({ matches }) => {
-		log(matches)
 		currentTheme = matches ? "light" : "dark";
 		storage.set("color-theme", "os-default");
 		updateTheme();
 	});
 }
-
-{
-	// horizontal / vertical layout
-	const button = elements.toggleLayoutButton;
-	let currentLayout = storage.get("editor-layout") ?? "aside";
-	document.documentElement.dataset.editorLayout = currentLayout;
-	button.addEventListener("click", () => {
-		currentLayout = currentLayout === "aside" ? "stacked" : "aside";
-		document.documentElement.dataset.editorLayout = currentLayout;
-		storage.set("editor-layout", currentLayout);
-	});
-}
-

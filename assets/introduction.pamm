@@ -1,6 +1,5 @@
 version 1
 -----
-
 # PAMM
 *P*retty *A*wesome *M*ath *M*arkup – A user-friendly LaTeX alternative with a live editor
 
@@ -35,7 +34,7 @@ The most basic PAMM operators are:
 - Roots: `4#3` is rendered as { 4#3 }
 - Square roots: `#3` is rendered as { #3 }
 - Powers: `4^3` is rendered as { 4^3 }
-- Square powers: `4^^` is rendered as { 4^^ }
+- Squares: `4^^` is rendered as { 4^^ }
 - Indices: `n_i` is rendered as { n_i }, `n1` is rendered as { n1 }
 
 A core concept of PAMM is the reliance on whitespace. PAMM uses the placement of whitespace to differenciate between different expressions. For example, `1 + 2/3` becomes { 1 + 2/3 } while `1+2 / 3` or `1+2/3` both become { 1+2 / 3 }. While in general this should result in having to use far fewer braces and parentheses, there are often situations where parentheses are still needed. For example, if you want to write the math expression { (2^3 + 4)/5 }, both `2^3+4/5` (rendered as { 2^3+4/5 }) and `2^3 + 4/5` (rendered as { 2^3 + 4/5 }) do not give the desired result. In this example, you would have to enclose the numerator in parentheseis, like so: `(2^3 + 4)/5`. If a parenthesis serves no other purpose than to tell PAMM how to interpret an expression, it gets automatically removed, so `(2^3 + 4)/5` gets rendered as { (2^3 + 4)/5 }. If you still want to keep it, you have to double-enclose the expression, so `((2^3 + 4))/5` gets rendered as { ((2^3 + 4))/5 }.

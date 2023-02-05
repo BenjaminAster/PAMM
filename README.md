@@ -7,3 +7,5 @@ A user-friendly [LaTeX](https://latex-project.org) alternative with a live edito
 |-
 
 [benjaminaster.com/pamm](https://benjaminaster.com/pamm/)
+
+![screenshot of the PAMM editor](./assets/screenshot-editor-desktop.png)

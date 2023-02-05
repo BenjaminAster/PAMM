@@ -16,44 +16,66 @@
 }
 
 @layer main {
-	:root {
-		color-scheme: light;
-		--background: white;
-		--transparent-background: #eee4;
-		--transparent-gray-1: #ccc5;
-		--transparent-gray-2: #aaa5;
-		--gray-1: #eee;
-		--gray-2: #ddd;
-		--gray-3: #ccc;
-		--shadow-color: #8885;
-	}
-
 	@media screen {
 		:root:not(.light-theme) {
 			color-scheme: dark;
-			--background: #1b1b1e;
-			--transparent-background: #1115;
-			--transparent-gray-1: #3335;
-			--transparent-gray-2: #5555;
-			--gray-1: #2b2b2e;
-			--gray-2: #3b3b3e;
-			--gray-3: #4b4b4e;
+			--color: #fbfbfe;
+			--hue: 247deg;
+			--saturation: 10%;
+			--background-lightness: 10%;
+			--gray-lightness-step: 8%;
 			--shadow-color: #0004;
+			--item-shadow-color: #0004;
+
+			--accent-hue: 245deg;
+			--accent-saturation: 70%;
+			--accent-lightness: 55%;
 		}
 	}
 
 	:root {
+		color-scheme: light;
+		--color: black;
+		--hue: 240deg;
+		--saturation: 15%;
+		--background-lightness: 100%;
+		--gray-lightness-step: -5%;
+		--shadow-color: var(--transparent-gray-3);
+		--item-shadow-color: transparent;
+
+		--accent-hue: 235deg;
+		--accent-saturation: 80%;
+		--accent-lightness: 65%;
+	}
+	
+	:root {
+		--background: hsl(var(--hue) var(--saturation) var(--background-lightness));
+		--gray-1: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 1 * var(--gray-lightness-step)));
+		--gray-2: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 2 * var(--gray-lightness-step)));
+		--gray-3: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 3 * var(--gray-lightness-step)));
+		--gray-4: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 4 * var(--gray-lightness-step)));
+		--gray-5: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 5 * var(--gray-lightness-step)));
+		--transparent-background: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 2 * var(--gray-lightness-step)) / 30%);
+		--transparent-gray-1: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 4 * var(--gray-lightness-step)) / 30%);
+		--transparent-gray-2: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 6 * var(--gray-lightness-step)) / 30%);
+		--transparent-gray-3: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 8 * var(--gray-lightness-step)) / 30%);
+
 		--titlebar-area-inline-start: env(titlebar-area-x, 0px);
 		--titlebar-area-inline-size: env(titlebar-area-width, 0px);
 		--titlebar-area-inline-end: calc(100dvi - env(titlebar-area-x, 0px) - env(titlebar-area-width, 0px));
 		--titlebar-area-block-start: env(titlebar-area-y, 0px);
 		--titlebar-area-block-size: env(titlebar-area-height, 0px);
 		--titlebar-area-block-end: calc(100dvb - env(titlebar-area-y, 0px) - env(titlebar-area-height, 0px));
-
+		
+		
 		--px: calc(1rem / 16);
+
+		--scrollbar-color: hsl(var(--accent-hue) var(--accent-saturation) var(--accent-lightness));
+		scrollbar-color: var(--scrollbar-color) transparent;
 
 		font-family: system-ui, sans-serif;
 		background-color: var(--background);
+		color: var(--color);
 		-webkit-text-size-adjust: none;
 		text-size-adjust: none;
 	}
@@ -70,7 +92,7 @@
 			"main"; */
 		display: flex;
 		flex-direction: column;
-		overflow: hidden;
+		/* overflow: hidden; */
 		/* overflow: clip; */
 	}
 
@@ -85,7 +107,8 @@
 		display: flex;
 		flex-direction: column;
 		/* overflow: clip; */
-		overflow: hidden;
+		/* overflow: hidden; */
+		overflow: auto;
 		/* overflow: clip; */
 		box-sizing: border-box;
 		view-transition-name: main-content;
@@ -97,12 +120,6 @@
 		/* overflow-clip-margin: border-box; */
 
 		/* isolation: isolate; */
-	}
-
-	@media (hover: none) {
-		main {
-			background-color: #00000001;
-		}
 	}
 
 	/* Arabic (ar), Hebrew (iw), Pashto (ps), Persian (fa), Sindhi (sd), Urdu (ur), Uyghur (ug), Yiddish (yi) */
@@ -153,7 +170,7 @@
 		padding: .8rem 1rem;
 		border-radius: .5rem;
 		background-color: var(--gray-2);
-		box-shadow: 0 0 4rem #0004;
+		box-shadow: 0 0 4rem var(--shadow-color);
 		max-inline-size: calc(min(100% - 6rem, 40rem))
 	}
 
@@ -163,7 +180,9 @@
 	}
 
 	dialog.messagebox .input {
+		/* border: 2px solid hsl(var(--accent-hue) var(--accent-saturation) calc(var(--accent-lightness) + 5%)); */
 		border: 2px solid royalBlue;
+		/* border: 2px solid royalBlue; */
 		padding: .4em .6em;
 		border-radius: .3rem;
 	}
@@ -185,13 +204,16 @@
 	}
 
 	dialog.messagebox button.ok {
+		color-scheme: dark;
+		/* --button-color: hsl(var(--accent-hue) var(--accent-saturation) calc(var(--accent-lightness) + 5%)); */
 		--button-color: royalBlue;
+		/* --button-color: royalBlue; */
 		color: white;
 	}
 
 	dialog.messagebox button.cancel {
 		--button-color: var(--gray-3);
-		outline-color: #888;
+		outline-color: var(--gray-5);
 	}
 
 	dialog.messagebox button {
@@ -225,6 +247,11 @@
 		background: none;
 	}
 
+	dialog.export h2 {
+		font-weight: 500;
+		font-size: 1.2rem;
+	}
+
 	dialog.export > ul {
 		display: flex;
 	}
@@ -238,11 +265,11 @@
 	}
 
 	dialog.export > ul > li:not(:first-of-type) {
-		border-inline-start: 1px solid #8886;
+		border-inline-start: 1px solid var(--transparent-gray-3);
 	}
 
 	dialog.export > ul > li:hover {
-		background-color: #8883;
+		background-color: var(--transparent-gray-2);
 		border-radius: .5rem;
 		border-inline-start-color: transparent;
 	}
@@ -261,10 +288,12 @@
 		inline-size: 100%;
 		block-size: 100%;
 		box-sizing: border-box;
+		/* --icon-size: min(6rem, 80%); */
+		--icon-size: min(3rem, 80%);
 	}
 
 	dialog.export > ul > li button::before {
-		inline-size: min(6rem, 80%);
+		opacity: .8;
 	}
 
 	dialog.export button.close {
@@ -279,7 +308,7 @@
 	}
 
 	dialog.export button.close:hover {
-		background-color: #8883;
+		background-color: var(--transparent-gray-3);
 	}
 
 	:root {

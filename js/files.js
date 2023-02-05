@@ -53,6 +53,7 @@ const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string
 			await addToRecentlyOpened({ id, storageType });
 			startRendering();
 			elements.textInput.focus();
+			window.requestAnimationFrame(async () => (await 0, elements.textInput.scrollTo({ top: 0 })));
 			return;
 		} case ("file-system"): {
 			// @ts-ignore
@@ -86,6 +87,7 @@ const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string
 			elements.textInput.value = text;
 			startRendering();
 			elements.textInput.focus();
+			window.requestAnimationFrame(async () => (await 0, elements.textInput.scrollTo({ top: 0 })));
 			$ifNotId: if (!id) {
 				for (const { fileHandle: itemFileHandle, id: itemId } of await database.getAll({ store: "file-handles" })) {
 					if (await fileHandle.isSameEntry(itemFileHandle)) {
@@ -122,6 +124,8 @@ const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string
 
 const toggleView = (() => {
 	let filesView = true;
+	// const files = document.querySelector("c-files");
+	// const editor = document.createElement("c-editor");
 
 	return async (/** @type {{ filesView?: boolean }?} */ { filesView: newFilesView = !filesView } = {}) => {
 		if (newFilesView !== filesView) {
@@ -129,12 +133,17 @@ const toggleView = (() => {
 			await transition(() => {
 				document.documentElement.dataset.view = filesView ? "files" : "editor";
 				if (filesView) {
-					const element = document.createElement("c-files");
-					$("c-editor").replaceWith(element);
-					initButtonListeners();
+					// const element = document.createElement("c-files");
+					// $("c-editor").replaceWith(element);
+					for (const section of $$(".html-output > .section", elements.editor)) {
+						section.remove();
+					}
+					elements.editor.replaceWith(elements.files);
+					// initButtonListeners();
 				} else {
-					const element = document.createElement("c-editor");
-					$("c-files").replaceWith(element);
+					// const element = document.createElement("c-editor");
+					// $("c-files").replaceWith(element);
+					elements.files.replaceWith(elements.editor);
 					elements.myFilesLink.href = `?folder=${currentFolder.id}`;
 				}
 			});
@@ -332,7 +341,6 @@ elements.myFilesLink.addEventListener("click", async (event) => {
 });
 
 export let /** @type {(event: KeyboardEvent) => void} */ keyDown;
-export let /** @type {() => void} */ initButtonListeners;
 
 const fileUtils = new class {
 	async saveFile() {
@@ -528,9 +536,12 @@ const fileUtils = new class {
 
 	elements.recentlyOpenedButton.addEventListener("click", async () => {
 		const dialog = elements.recentlyOpenedDialog;
-		for (const element of $$(":scope > li", $("ul", dialog))) {
-			element.remove();
-		}
+		const closeDialog = () => {
+			dialog.close();
+			for (const element of $$(":scope > ul > li", dialog)) {
+				element.remove();
+			}
+		};
 		const recentlyOpenedFiles = await Promise.all((await database.get({ store: "key-value", key: "recently-opened" })).value.map(async ({ id, storageType }) => {
 			const store = {
 				"indexeddb": "files",
@@ -544,7 +555,7 @@ const fileUtils = new class {
 		}));
 		const UL = $("ul", dialog);
 		const listItem = $(":scope > template", UL).content;
-		$("button.close", dialog).addEventListener("click", () => dialog.close(), { once: true });
+		$("button.close", dialog).addEventListener("click", closeDialog, { once: true });
 		for (const { id, storageType, name, fileHandle } of recentlyOpenedFiles) {
 			const clone = /** @type {DocumentFragment} */ (listItem.cloneNode(true));
 			$("[data-storagetype]", clone).dataset.storagetype = storageType;
@@ -552,7 +563,10 @@ const fileUtils = new class {
 			$("a.link", clone).href = $("a.permalink", clone).href = `?file=${id}`;
 			for (const [selectorString, changeURL] of /** @type {any} */ ([["a.link", false], ["a.permalink", true]])) {
 				if (storageType === "indexeddb") {
-					$(selectorString, clone).addEventListener("click", itemClickHandler({ id, type: "file", storageType, changeURL }));
+					$(selectorString, clone).addEventListener("click", (event) => {
+						closeDialog();
+						itemClickHandler({ id, type: "file", storageType, changeURL })(event);
+					});
 				} else if (storageType === "file-system") {
 					$(selectorString, clone).addEventListener("click", async (event) => {
 						if (event.ctrlKey || event.metaKey || event.shiftKey) return;
@@ -560,6 +574,7 @@ const fileUtils = new class {
 						if (await fileHandle.queryPermission({ mode: "read" }) !== "granted") {
 							if (await fileHandle.requestPermission({ mode: "readwrite" }) !== "granted") return;
 						}
+						closeDialog();
 						await itemClickHandler({ id, type: "file", storageType, fileHandle, changeURL })();
 					});
 				} else throw new Error(`Unknown storage type (${storageType})`);
@@ -569,23 +584,19 @@ const fileUtils = new class {
 		dialog.showModal();
 	});
 
-	initButtonListeners = () => {
-		elements.newFolderButton.addEventListener("click", async () => {
-			const name = (await prompt({ message: "Folder name:" })).value?.trim();
-			await fileUtils.newFolder({ name });
-		});
+	elements.newFolderButton.addEventListener("click", async () => {
+		const name = (await prompt({ message: "Folder name:" })).value?.trim();
+		await fileUtils.newFolder({ name });
+	});
 
-		elements.newBrowserFileButton.addEventListener("click", async () => {
-			const name = (await prompt({ message: "File name:" })).value?.trim();
-			await fileUtils.newBrowserFile({ name });
-		});
+	elements.newBrowserFileButton.addEventListener("click", async () => {
+		const name = (await prompt({ message: "File name:" })).value?.trim();
+		await fileUtils.newBrowserFile({ name });
+	});
 
-		elements.newDiskFileButton.addEventListener("click", async () => {
-			await fileUtils.newDiskFile();
-		});
-	};
-
-	initButtonListeners();
+	elements.newDiskFileButton.addEventListener("click", async () => {
+		await fileUtils.newDiskFile();
+	});
 
 	keyDown = (/** @type {KeyboardEvent} */ event) => {
 		if (event.ctrlKey === !isApple && event.metaKey === isApple && !event.shiftKey && !event.altKey) {
@@ -681,8 +692,9 @@ window.addEventListener("beforeunload", (event) => {
 			await renderFile({ storageType: "indexeddb", id: "b-introduction" });
 		}
 
-		for (let i = 0; i < 2; i++) await new Promise((resolve) => window.requestAnimationFrame(resolve));
-		document.documentElement.classList.remove("loading");
+		window.setTimeout(() => {
+			document.documentElement.classList.remove("loading");
+		}, 500);
 	})();
 }
 

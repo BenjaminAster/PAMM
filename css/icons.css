@@ -8,7 +8,7 @@
 	display: var(--icon-display, block);
 	inline-size: var(--icon-size, 1em);
 	aspect-ratio: 1;
-	background-color: currentColor;
+	background-color: var(--icon-color, currentColor);
 	--mask: var(--icon) center / contain no-repeat;
 	-webkit-mask: var(--mask);
 	mask: var(--mask);
@@ -39,7 +39,10 @@
 	--icon-moon: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="black"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>');
 	--icon-layout-columns: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="black" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="4" y="4" width="16" height="16" rx="2"></rect><line x1="12" y1="4" x2="12" y2="20"></line></svg>');
 	--icon-layout-rows: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="black" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="4" y="4" width="16" height="16" rx="2"></rect><line x1="4" y1="12" x2="20" y2="12"></line></svg>');
+	--icon-folder: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="black"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>');
+	--icon-document-text: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="black"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>');
 }
+
 
 .icon\:pencil           { --icon: var(--icon-pencil);           }
 .icon\:trash            { --icon: var(--icon-trash);            }
@@ -65,3 +68,6 @@
 .icon\:moon             { --icon: var(--icon-moon);             }
 .icon\:layout-columns   { --icon: var(--icon-layout-columns);   }
 .icon\:layout-rows      { --icon: var(--icon-layout-rows);      }
+.icon\:document-text    { --icon: var(--icon-document-text);    }
+.icon\:folder           { --icon: var(--icon-folder);           }
+

@@ -1,6 +1,7 @@
-<svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" style="color-scheme: dark light">
+<svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
 	<style>
 		:root {
+			color-scheme: dark light;
 			--wood: peru;
 		}
 

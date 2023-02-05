@@ -9,7 +9,7 @@
 	</ul>
 </nav>
 
-<h2>Folders</h2>
+<h2 class="icon:folder">Folders</h2>
 
 <ul class="items folders" focusgroup="wrap">
 	<template>
@@ -33,7 +33,7 @@
 	</li>
 </ul>
 
-<h2>Files</h2>
+<h2 class="icon:document-text">Files</h2>
 
 <ul class="items files" focusgroup="wrap">
 	<template>
@@ -90,7 +90,6 @@
 			flex-direction: column;
 			gap: 1rem;
 			flex-grow: 1;
-			overflow: auto;
 			box-sizing: border-box;
 		}
 
@@ -100,6 +99,7 @@
 		}
 
 		.breadcrumb > ul {
+			overflow: clip;
 			display: flex;
 			flex-wrap: wrap;
 			--gap: 1.7rem;
@@ -120,14 +120,15 @@
 		.breadcrumb > ul > li > a {
 			display: block;
 			padding: .5rem .8rem;
-			background-color: #8884;
+			background-color: var(--gray-1);
+			box-shadow: 0 1px .3rem 0 var(--item-shadow-color);
 			border-radius: .4rem;
 			transition: background-color .2s, border-color .2s;
 			outline-offset: -2px;
 		}
 
 		.breadcrumb > ul > li > a:hover {
-			background-color: #8888;
+			background-color: var(--gray-2);
 		}
 
 		.breadcrumb > ul > li:not(:last-child)::after {
@@ -142,6 +143,24 @@
 			font-size: 1.5rem;
 		}
 
+		:host > h2 {
+			font-weight: 400;
+			display: flex;
+			gap: .4rem;
+			align-items: center;
+			padding-inline: .3rem;
+			font-size: 1.1rem;
+			--icon-size: 1rem;
+			--icon-size: 1.5rem;
+			margin-block-start: .5rem;
+			/* opacity: .95; */
+			/* --icon-display: none; */
+		}
+
+		:host > h2::before {
+			opacity: .8;
+		}
+
 		ul.items {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
@@ -154,11 +173,16 @@
 			--buttons-height: 2rem;
 		}
 
+		.items > li {
+			border-radius: .7em;
+		}
+
 		.items > li > :is(a, button) {
 			box-sizing: border-box;
 			padding: var(--padding);
-			border: 1px solid #8886;
-			border-radius: .7em;
+			background-color: var(--gray-1);
+			box-shadow: 0 1px .3rem 0 var(--item-shadow-color);
+			border-radius: inherit;
 			text-align: center;
 			inline-size: 100%;
 			block-size: 100%;
@@ -177,13 +201,12 @@
 		}
 
 		.item > a:hover {
-			background-color: #8882;
-			border-color: #888c;
+			background-color: var(--gray-2);
 		}
 
-		.items > li > button {
-			background-color: #35f3;
-			border-color: #35fb;
+		.items > li > button[data-action] {
+			--alpha: 30%;
+			background-color: hsl(calc(var(--accent-hue) - 10deg) 100% 65% / var(--alpha));
 			display: flex;
 			flex-direction: column;
 			gap: .4rem;
@@ -193,9 +216,14 @@
 			transition: background-color .2s, border-color .2s;
 		}
 
-		.items > li > button:hover {
-			background-color: #35f5;
-			border-color: #35ff;
+		
+		.items > li > button[data-action] > h3 {
+			font-weight: 400;
+			font-size: 1.1rem;
+		}
+
+		.items > li > button[data-action]:hover {
+			--alpha: 50%;
 		}
 
 		.item > .buttons {
@@ -214,7 +242,7 @@
 		}
 
 		.item > .buttons > :is(button, a) {
-			background-color: #8883;
+			background-color: var(--gray-2);
 			--icon-size: 1.25rem;
 			border-radius: .4rem;
 			block-size: 100%;
@@ -224,8 +252,12 @@
 			transition: background-color .2s, border-color .2s;
 		}
 
+		.item:hover > .buttons:not(:hover) > :is(button, a) {
+			background-color: var(--gray-3);
+		}
+
 		.item > .buttons > :is(button, a):hover {
-			background-color: #8888;
+			background-color: var(--gray-3);
 		}
 
 		.recently-opened[open] {
@@ -251,7 +283,7 @@
 		}
 
 		.recently-opened > ul > li {
-			transition: background-color .1s, border-color .1s;
+			transition: background-color .2s, border-color .2s;
 			position: relative;
 		}
 
@@ -260,7 +292,7 @@
 			display: flex;
 			align-items: center;
 			gap: .7rem;
-			padding: .5em .8em;
+			padding: .5rem .75rem;
 			inline-size: 100%;
 			outline-offset: -3px;
 		}
@@ -274,11 +306,11 @@
 		}
 
 		.recently-opened > ul > li:not(:first-of-type) {
-			border-block-start: 1px solid #8886;
+			border-block-start: 1px solid var(--transparent-gray-3);
 		}
 
 		.recently-opened > ul > li:hover {
-			background-color: #8883;
+			background-color: var(--transparent-gray-2);
 			border-radius: .5rem;
 			border-block-start-color: transparent;
 		}
@@ -299,7 +331,7 @@
 		}
 
 		.recently-opened button.close:hover {
-			background-color: #8883;
+			background-color: var(--transparent-gray-2);
 		}
 
 		.recently-opened > ul > li > .buttons {
@@ -308,8 +340,9 @@
 			justify-content: end;
 			align-items: center;
 			position: absolute;
-			inset-inline-end: .3rem;
-			inset-block: .3rem;
+			inset-inline-end: 0;
+			inset-block: 0;
+			margin: .25rem;
 		}
 
 		.recently-opened > ul > li > .buttons > .permalink {
@@ -320,10 +353,11 @@
 			block-size: 100%;
 			aspect-ratio: 1;
 			border-radius: .3rem;
+			transition: background-color .2s;
 		}
 
 		.recently-opened > ul > li > .buttons > .permalink:hover {
-			background-color: #8884;
+			background-color: var(--transparent-gray-3);
 		}
 
 

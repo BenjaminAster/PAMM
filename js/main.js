@@ -1,17 +1,13 @@
 
 /// <reference types="better-typescript" />
 
-import { elements, $$ } from "./app.js";
+import { elements, $$, storage } from "./app.js";
 import parseDocument from "./parse/document/parseDocument.js";
 import renderDocument from "./render/document/renderDocument.js";
 import { keyDown } from "./files.js";
 
-export const startRendering = () => {
+export const { startRendering } = (() => {
 	let previousSectionsArray = [];
-
-	for (const element of $$(":scope > .section", elements.htmlOutput)) {
-		element.remove();
-	}
 
 	const handleInput = function (/** @type {InputEvent} */ { data } = /** @type {any} */ ({})) {
 		const { value, selectionStart, selectionEnd } = this;
@@ -29,8 +25,6 @@ export const startRendering = () => {
 		// 		this.selectionStart = this.selectionEnd = selectionStart;
 		// 	}
 		// }
-
-		console.clear();
 
 		const /** @type {any[]} */ sectionsArray = [];
 
@@ -66,8 +60,6 @@ export const startRendering = () => {
 				currentSectionArray = [];
 			}
 		}
-
-		console.log(structuredClone(sectionsArray));
 
 		const sectionCountDifference = sectionsArray.length - previousSectionsArray.length;
 		let currentRelativeSectionIndex = 0;
@@ -112,9 +104,20 @@ export const startRendering = () => {
 
 	elements.textInput.addEventListener("input", handleInput);
 
-	handleInput.call(elements.textInput);
-	document.documentElement.classList.remove("file-dirty");
-};
+	return {
+		startRendering() {
+			previousSectionsArray = [];
+
+			for (const element of $$(":scope > .section", elements.htmlOutput)) {
+				element.remove();
+			}
+
+			handleInput.call(elements.textInput);
+
+			document.documentElement.classList.remove("file-dirty");
+		},
+	};
+})();
 
 {
 	let onlyShiftPressed = false;
@@ -144,3 +147,64 @@ export const startRendering = () => {
 		}
 	});
 }
+
+
+{
+	// horizontal / vertical layout
+	const button = elements.toggleLayoutButton;
+	let /** @type {EditorLayout} */ currentLayout = storage.get("editor-layout") ?? "aside";
+	document.documentElement.dataset.editorLayout = currentLayout;
+	button.addEventListener("click", () => {
+		currentLayout = currentLayout === "aside" ? "stacked" : "aside";
+		document.documentElement.dataset.editorLayout = currentLayout;
+		storage.set("editor-layout", currentLayout);
+	});
+
+	const editor = elements.editor;
+	const dragger = editor.querySelector(".dragger");
+
+	let dragging = false;
+	let /** @type {number} */ relativeDraggerCoordinate;
+	let /** @type {number} */ draggerSize;
+	let /** @type {number} */ containerCoordinate;
+	let /** @type {number} */ containerSize;
+
+	dragger.addEventListener("mousedown", ({ clientX, clientY }) => {
+		editor.classList.add("dragging");
+		dragging = true;
+		const stacked = currentLayout === "stacked";
+		let /** @type {number} */ draggerCoordinate;
+		({ [stacked ? "y" : "x"]: draggerCoordinate, [stacked ? "height" : "width"]: draggerSize } = dragger.getBoundingClientRect());
+		relativeDraggerCoordinate = (stacked ? clientY : clientX) - draggerCoordinate;
+		({ [stacked ? "y" : "x"]: containerCoordinate, [stacked ? "height" : "width"]: containerSize } = editor.getBoundingClientRect());
+	});
+
+	window.addEventListener("mouseup", () => {
+		if (!dragging) return;
+		editor.classList.remove("dragging");
+		dragging = false;
+	});
+
+	window.addEventListener("mousemove", ({ clientX, clientY }) => {
+		if (!dragging) return;
+		const stacked = currentLayout === "stacked";
+		const splitProportion = ((stacked ? clientY : clientX) - relativeDraggerCoordinate - containerCoordinate) / (containerSize - draggerSize);
+		editor.style.setProperty("--split-proportion", splitProportion);
+	});
+
+	dragger.addEventListener("touchstart", (event) => {
+		if (event.touches.length !== 1) return;
+		dragger.dispatchEvent(new MouseEvent("mousedown", event.touches[0]))
+	}, { passive: false });
+
+	window.addEventListener("touchend", (event) => {
+		if (event.touches.length !== 0) return;
+		window.dispatchEvent(new MouseEvent("mouseup"))
+	}, { passive: false });
+
+	window.addEventListener("touchmove", (event) => {
+		if (event.touches.length !== 1) return;
+		window.dispatchEvent(new MouseEvent("mousemove", event.touches[0]))
+	}, { passive: false });
+}
+

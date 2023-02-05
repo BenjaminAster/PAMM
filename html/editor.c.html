@@ -2,6 +2,8 @@
 	<textarea spellcheck="false" aria-label="math formula input"></textarea>
 </div>
 
+<div class="dragger"></div>
+
 <section class="html-output" aria-label="live preview of mathematical document">
 	<div class="end-element"></div>
 </section>
@@ -10,32 +12,51 @@
 	@layer elements {
 		:host {
 			block-size: 100%;
-			display: grid;
-			grid-template: 1fr 1fr / 1fr 1fr;
-			grid-template-areas:
-				"text-input html-output"
-				"text-input html-output";
+			display: flex;
 			box-sizing: border-box;
+			background-color: var(--gray-1);
+			--dragger-width: 10px;
+			--split-proportion: .5;
+			--full-length: 100cqi;
+			--dragger-cursor: ew-resize;
+			container-type: size;
+		}
+
+		@media (hover: none) {
+			:host {
+				--dragger-width: 16px;
+			}
 		}
 
 		:root[data-editor-layout="stacked"] :host {
-			grid-template-areas:
-				"text-input text-input"
-				"html-output html-output";
+			flex-direction: column;
+			--dragger-cursor: ns-resize;
+			--full-length: 100cqb;
+		}
+
+		:host.dragging {
+			cursor: var(--dragger-cursor);
+			-webkit-user-select: none;
+			user-select: none;
+		}
+
+		:root[data-editor-layout="aside"] :host .text-input {
+			border-start-end-radius: .3rem;
+		}
+		
+		:root[data-editor-layout="aside"] :host .html-output {
+			border-start-start-radius: .3rem;
 		}
 
 		.text-input {
-			grid-area: text-input;
-			/* font-family: ui-monospace, monospace; */
+			flex-grow: 0;
+			flex-shrink: 0;
+			--clamped-split-proportion: clamp(0, var(--split-proportion), 1);
+			flex-basis: calc(var(--clamped-split-proportion) * (var(--full-length) - var(--dragger-width)));
 			font-family: ui-monospace, monospace;
 			font-size: 1.1rem;
-			margin: .7rem;
-			background-color: #8882;
-			border-radius: .7rem;
-		}
-
-		.text-input:focus-within {
-			background-color: #8884;
+			background-color: var(--background);
+			overflow: hidden;
 		}
 
 		.text-input textarea {
@@ -45,13 +66,58 @@
 			block-size: 100%;
 			box-sizing: border-box;
 			outline: none;
+			overflow: auto;
+			min-block-size: 0;
+		}
+
+		.dragger {
+			flex-shrink: 0;
+			flex-basis: var(--dragger-width);
+			cursor: var(--dragger-cursor);
+			display: flex;
+			gap: 2px;
+			align-items: center;
+			justify-content: center;
+			transition: background-color .2s;
+		}
+
+		:root[data-editor-layout="stacked"] :host .dragger {
+			flex-direction: column;
+		}
+
+		.dragger:hover {
+			background-color: var(--gray-2);
+		}
+
+		.dragger::before, .dragger::after {
+			content: "";
+			--width: 2px;
+			--length: 1rem;
+			inline-size: var(--width);
+			block-size: var(--length);
+			border-radius: 1px;
+			background-color: var(--color);
+			opacity: .5;
+		}
+
+		:root[data-editor-layout="stacked"] :host .dragger::before, :root[data-editor-layout="stacked"] :host .dragger::after {
+			inline-size: var(--length);
+			block-size: var(--width);
+		}
+
+		:root[data-editor-layout="aside"] :host .dragger {
+			border-start-start-radius: .15rem;
+			border-start-end-radius: .15rem;
 		}
 
 		.html-output {
+			flex-grow: 1;
+			flex-shrink: 1;
+			flex-basis: 0;
 			font-family: "Computer Modern Serif", "Noto Serif", ui-serif, serif;
-			grid-area: html-output;
 			padding: 1rem;
 			padding-block-start: 0;
+			background-color: var(--background);
 			/* overflow-y: auto; */
 			overflow: auto;
 			overflow-wrap: break-word;
@@ -67,13 +133,9 @@
 		.html-output code {
 			white-space: pre-wrap;
 			font-family: "FreeMono", "Courier New", ui-monospace, monospace;
-			/* padding: .05em .15em; */
-			/* padding: .0em .15em; */
 			padding-inline: .2em;
-			/* border: 1px solid #8885; */
-			/* border-radius: .2em; */
 			background-color: var(--gray-1);
-			font-size: .8em;
+			font-size: .9rem;
 		}
 
 		:root[data-engine=blink] :host .html-output .integral {
@@ -91,7 +153,7 @@
 		}
 
 		math {
-			margin-block: .2em;
+			/* margin-block: .2em; */
 		}
 
 		math[display=block] {
@@ -113,9 +175,10 @@
 		@media print {
 			:host {
 				display: block;
+				container-type: normal;
 			}
 
-			.text-input {
+			.dragger, .text-input {
 				display: none;
 			}
 

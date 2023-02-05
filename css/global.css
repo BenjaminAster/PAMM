@@ -49,10 +49,6 @@ math {
 	font-family: "Latin Modern Math", math;
 }
 
-:root {
-	scrollbar-color: blueViolet transparent;
-}
-
 h1, h2, h3, h4, h5, h6, strong, b {
 	font-weight: 600;
 }
@@ -80,7 +76,6 @@ button, input, textarea, select, option {
 
 input, textarea {
 	cursor: auto;
-	background: none;
 }
 
 ul {
@@ -102,8 +97,8 @@ dialog {
 }
 
 ::selection {
-	background-color: CanvasText;
-	color: Canvas;
+	background-color: var(--color);
+	color: var(--background);
 }
 
 @media (hover: none) {
@@ -117,8 +112,8 @@ dialog {
 }
 
 ::-webkit-scrollbar, ::-webkit-scrollbar-corner {
-	inline-size: 1rem;
-	block-size: 1rem;
+	inline-size: .8rem;
+	block-size: .8rem;
 	background: none;
 }
 
@@ -127,10 +122,10 @@ dialog {
 }
 
 ::-webkit-scrollbar-thumb, ::-webkit-scrollbar-button {
-	background-color: blueViolet;
-	inline-size: 1rem;
-	block-size: 1rem;
-	border: .25rem solid transparent;
-	border-radius: .5rem;
+	background-color: var(--scrollbar-color);
+	inline-size: .8rem;
+	block-size: .8rem;
+	border: .2rem solid transparent;
+	border-radius: .4rem;
 	background-clip: padding-box;
 }
