@@ -130,7 +130,7 @@ const toggleView = (() => {
 	return async (/** @type {{ filesView?: boolean }?} */ { filesView: newFilesView = !filesView } = {}) => {
 		if (newFilesView !== filesView) {
 			filesView = newFilesView;
-			await transition(() => {
+			await transition(async () => {
 				document.documentElement.dataset.view = filesView ? "files" : "editor";
 				if (filesView) {
 					// const element = document.createElement("c-files");
@@ -146,7 +146,7 @@ const toggleView = (() => {
 					elements.files.replaceWith(elements.editor);
 					elements.myFilesLink.href = `?folder=${currentFolder.id}`;
 				}
-			});
+			}, { name: "toggling-view" });
 		}
 		return { filesView };
 	}
@@ -162,7 +162,7 @@ const itemClickHandler = (/** @type {{ type: ItemType, storageType?: FileStorage
 	switch (type) {
 		case ("folder"): {
 			currentFolder.id = id;
-			await transition(async () => await displayFolder({ id: currentFolder.id }), { resolveWhenFinished: true });
+			await transition(async () => await displayFolder({ id: currentFolder.id }), { name: "changing-folder", resolveWhenFinished: true });
 			history.pushState({ folderId: currentFolder.id }, "", changeURL ? `?folder=${id}` : "./");
 			break;
 		} case ("file"): {

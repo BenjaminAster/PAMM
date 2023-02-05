@@ -94,16 +94,32 @@
 		}
 
 		.breadcrumb {
+			contain: layout paint;
+		}
+
+		:root[data-transition=changing-folder] :host .breadcrumb {
 			view-transition-name: breadcrumb;
-			contain: layout;
 		}
 
 		.breadcrumb > ul {
+			position: relative;
 			overflow: clip;
 			display: flex;
 			flex-wrap: wrap;
-			--gap: 1.7rem;
+			--gap: 1rem;
+			--actual-gap: 4px;
 			gap: var(--gap);
+			inline-size: fit-content;
+			box-shadow: 0 1px .3rem 0 var(--item-shadow-color);
+			border-radius: .4rem;
+		}
+
+		.breadcrumb > ul::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background-color: var(--item-shadow-color);
+			opacity: .3;
 		}
 
 		.breadcrumb > ul:not(:has(> :not(template)))::after {
@@ -115,32 +131,58 @@
 
 		.breadcrumb > ul > li {
 			position: relative;
+			border-radius: inherit;
 		}
 
 		.breadcrumb > ul > li > a {
 			display: block;
-			padding: .5rem .8rem;
-			background-color: var(--gray-1);
-			box-shadow: 0 1px .3rem 0 var(--item-shadow-color);
-			border-radius: .4rem;
-			transition: background-color .2s, border-color .2s;
+			padding: .5rem .5rem;
+			border-radius: inherit;
+			--background-color: var(--gray-1);
+			background-color: var(--background-color);
+			transition: background-color .2s;
 			outline-offset: -2px;
+			isolation: isolate;
+		}
+
+		.breadcrumb > ul > li:first-of-type > a {
+			padding-inline-start: .9rem;
+		}
+
+		.breadcrumb > ul > li:last-of-type > a {
+			padding-inline-end: .9rem;
 		}
 
 		.breadcrumb > ul > li > a:hover {
-			background-color: var(--gray-2);
+			--background-color: var(--gray-2);
 		}
 
-		.breadcrumb > ul > li:not(:last-child)::after {
-			content: "/";
-			display: block;
+
+		.breadcrumb > ul > li:not(:first-of-type) > a::before,
+		.breadcrumb > ul > li:not(:last-of-type) > a::after {
+			content: "";
+			background-color: inherit;
+			background-color: var(--background-color);
 			position: absolute;
-			inset-inline-end: calc(-1 * var(--gap));
-			inline-size: var(--gap);
 			inset-block: 0;
-			display: grid;
-			place-content: center;
-			font-size: 1.5rem;
+			--horizontal-inset: calc(-1 * (var(--gap) - var(--actual-gap)) / 2);
+			transition: inherit;
+			inline-size: 1rem;
+			z-index: -1;
+			transform: skewX(-15grad);
+			--radius: .15rem;
+		}
+
+		.breadcrumb > ul > li:not(:first-of-type) > a::before {
+			inset-inline-start: var(--horizontal-inset);
+			border-start-start-radius: var(--radius);
+			border-end-start-radius: var(--radius);
+		}
+
+		.breadcrumb > ul > li:not(:last-of-type) > a::after {
+			inset-inline-end: var(--horizontal-inset);
+			border-start-end-radius: var(--radius);
+			border-end-end-radius: var(--radius);
 		}
 
 		:host > h2 {
@@ -163,41 +205,51 @@
 
 		ul.items {
 			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+			grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
 			gap: 1rem;
 		}
 
 		.items > li {
 			position: relative;
 			--padding: .5rem;
-			--buttons-height: 2rem;
+			--buttons-height: 2.25rem;
+			min-block-size: 6rem;
 		}
 
 		.items > li {
 			border-radius: .7em;
 		}
 
-		.items > li > :is(a, button) {
-			box-sizing: border-box;
-			padding: var(--padding);
-			background-color: var(--gray-1);
-			box-shadow: 0 1px .3rem 0 var(--item-shadow-color);
-			border-radius: inherit;
-			text-align: center;
-			inline-size: 100%;
-			block-size: 100%;
-			transition: background-color .2s, border-color .2s;
+		@layer {
+			.items > li > :is(a, button) {
+				box-sizing: border-box;
+				padding: var(--padding);
+				background-color: var(--gray-1);
+				box-shadow: 0 1px .3rem 0 var(--item-shadow-color);
+				border-radius: inherit;
+				text-align: center;
+				inline-size: 100%;
+				block-size: 100%;
+				transition: background-color .2s, border-color .2s;
+			}
+		}
+
+		.item > a::before {
+			content: "";
 		}
 
 		.item > a {
+			padding-block-start: 0;
 			display: flex;
 			flex-direction: column;
-			gap: .5rem;
+			justify-content: space-between;
+			gap: var(--padding);
 			user-select: text;
 		}
 
 		.item > a > h3 {
 			font-weight: normal;
+			overflow-wrap: break-word;
 		}
 
 		.item > a:hover {
@@ -246,7 +298,7 @@
 			--icon-size: 1.25rem;
 			border-radius: .4rem;
 			block-size: 100%;
-			aspect-ratio: 1;
+			aspect-ratio: 11 / 10;
 			display: grid;
 			place-content: center;
 			transition: background-color .2s, border-color .2s;

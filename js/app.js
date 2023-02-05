@@ -309,13 +309,17 @@ export const setTitle = (/** @type {string} */ title) => {
 const useTransitions = Boolean(document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 // const useTransitions = false;
 
-export const transition = async (/** @type {() => any} */ callback, /** @type {{ resolveWhenFinished?: boolean }?} */ { resolveWhenFinished = false } = {}) => {
+export const transition = async (/** @type {() => Promise<any>} */ callback, /** @type {{ name?: string, resolveWhenFinished?: boolean }} */ { name, resolveWhenFinished = false } = {}) => {
 	if (!useTransitions || document.documentElement.classList.contains("loading")) {
 		await callback();
 		return;
 	}
 
+	document.documentElement.dataset.transition = name;
 	const transition = document.startViewTransition(callback);
+	transition.finished.then(() => {
+		delete document.documentElement.dataset.transition;
+	});
 	await (resolveWhenFinished ? transition.finished : transition.ready);
 };
 

@@ -111,8 +111,8 @@
 		overflow: auto;
 		/* overflow: clip; */
 		box-sizing: border-box;
-		view-transition-name: main-content;
 		contain: layout;
+		/* contain: paint; */
 		/* contain: size layout style paint; */
 		/* contain: layout paint style inline-size; */
 		/* contain: size; */
@@ -120,6 +120,10 @@
 		/* overflow-clip-margin: border-box; */
 
 		/* isolation: isolate; */
+	}
+
+	:root:is([data-transition=toggling-view], [data-transition=changing-folder]) main {
+		view-transition-name: main-content;
 	}
 
 	/* Arabic (ar), Hebrew (iw), Pashto (ps), Persian (fa), Sindhi (sd), Urdu (ur), Uyghur (ug), Yiddish (yi) */
@@ -319,12 +323,16 @@
 		--transition-direction: -1;
 	}
 
-	:root::view-transition-old(main-content) {
+	:root:is([data-transition=toggling-view], [data-transition=changing-folder])::view-transition-old(main-content) {
 		animation: .15s ease-out both fade-out;
 	}
 
-	:root::view-transition-new(main-content) {
+	:root:is([data-transition=toggling-view], [data-transition=changing-folder])::view-transition-new(main-content) {
 		animation: .15s ease-out both fade-in;
+	}
+
+	:root[data-transition=toggling-view]::view-transition-group(header) {
+		animation-duration: .25s;
 	}
 
 	@keyframes fade-out {
@@ -338,6 +346,61 @@
 		from {
 			translate: calc(var(--transition-direction) * 1 * 20%) 0;
 			opacity: 0;
+		}
+	}
+
+	:root[data-transition="toggling-layout"]::view-transition-group(*) {
+		animation-duration: 10s;
+		animation-duration: .3s;
+		animation-timing-function: ease-in-out;
+	}
+
+	:root[data-transition="toggling-layout"]::view-transition-image-pair(*) {
+		inline-size: 100%;
+		block-size: 100%;
+		animation-timing-function: inherit;
+		--halfway-size: 80%;
+	}
+
+	:root[data-transition="toggling-layout"]::view-transition-image-pair(text-input) {
+		animation-name: text-input;
+	}
+
+	:root[data-transition="toggling-layout"]::view-transition-image-pair(html-output) {
+		animation-name: html-output;
+	}
+
+	:root[data-transition="toggling-layout"]::view-transition-old(*),
+	:root[data-transition="toggling-layout"]::view-transition-new(*) {
+		inset: 0;
+		inline-size: 100%;
+		block-size: 100%;
+		animation-timing-function: inherit;
+	}
+
+	:root[data-transition="toggling-layout"]::view-transition-old(text-input),
+	:root[data-transition="toggling-layout"]::view-transition-new(text-input) {
+		--animation-name: text-input;
+	}
+
+	:root[data-transition="toggling-layout"]::view-transition-old(html-output),
+	:root[data-transition="toggling-layout"]::view-transition-new(html-output) {
+		--animation-name: html-output;
+	}
+
+	@keyframes text-input {
+		50% {
+			inline-size: var(--halfway-size);
+			block-size: var(--halfway-size);
+		}
+	}
+
+	@keyframes html-output {
+		50% {
+			inline-size: var(--halfway-size);
+			block-size: var(--halfway-size);
+			inset-inline-start: calc(100% - var(--halfway-size));
+			inset-block-start: calc(100% - var(--halfway-size));
 		}
 	}
 }

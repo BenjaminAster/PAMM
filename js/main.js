@@ -1,7 +1,7 @@
 
 /// <reference types="better-typescript" />
 
-import { elements, $$, storage } from "./app.js";
+import { elements, $$, storage, transition } from "./app.js";
 import parseDocument from "./parse/document/parseDocument.js";
 import renderDocument from "./render/document/renderDocument.js";
 import { keyDown } from "./files.js";
@@ -154,9 +154,11 @@ export const { startRendering } = (() => {
 	const button = elements.toggleLayoutButton;
 	let /** @type {EditorLayout} */ currentLayout = storage.get("editor-layout") ?? "aside";
 	document.documentElement.dataset.editorLayout = currentLayout;
-	button.addEventListener("click", () => {
+	button.addEventListener("click", async () => {
 		currentLayout = currentLayout === "aside" ? "stacked" : "aside";
-		document.documentElement.dataset.editorLayout = currentLayout;
+		await transition(async () => {
+			document.documentElement.dataset.editorLayout = currentLayout;
+		}, { name: "toggling-layout" });
 		storage.set("editor-layout", currentLayout);
 	});
 

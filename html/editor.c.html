@@ -47,6 +47,14 @@
 		:root[data-editor-layout="aside"] :host .html-output {
 			border-start-start-radius: .3rem;
 		}
+		
+		:root[data-transition="toggling-layout"] :host .text-input {
+			view-transition-name: text-input;
+		}
+		
+		:root[data-transition="toggling-layout"] :host .html-output {
+			view-transition-name: html-output;
+		}
 
 		.text-input {
 			flex-grow: 0;
@@ -57,6 +65,8 @@
 			font-size: 1.1rem;
 			background-color: var(--background);
 			overflow: hidden;
+			contain: layout;
+			/* view-transition-name: text-input; */
 		}
 
 		.text-input textarea {
@@ -123,6 +133,8 @@
 			overflow-wrap: break-word;
 			font-size: 1.1rem;
 			line-height: 1.5rem;
+			contain: layout;
+			/* view-transition-name: html-output; */
 		}
 
 		.html-output .section {
