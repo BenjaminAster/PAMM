@@ -4,7 +4,8 @@
 	content: "";
 }
 
-:where([class^="icon:"], [class*=" icon:"])::before, :where([class^="icon:"], [class*=" icon:"])::after {
+:where([class^="icon:"], [class*=" icon:"])::before,
+:where([class^="icon:"], [class*=" icon:"])::after {
 	display: var(--icon-display, block);
 	inline-size: var(--icon-size, 1em);
 	aspect-ratio: 1;
@@ -70,4 +71,3 @@
 .icon\:layout-rows      { --icon: var(--icon-layout-rows);      }
 .icon\:document-text    { --icon: var(--icon-document-text);    }
 .icon\:folder           { --icon: var(--icon-folder);           }
-

@@ -43,8 +43,8 @@
 		--shadow-color: var(--transparent-gray-3);
 		--item-shadow-color: transparent;
 
-		--accent-hue: 235deg;
-		--accent-saturation: 80%;
+		--accent-hue: 245deg;
+		--accent-saturation: 100%;
 		--accent-lightness: 65%;
 	}
 	
@@ -107,8 +107,8 @@
 		display: flex;
 		flex-direction: column;
 		/* overflow: clip; */
-		/* overflow: hidden; */
-		overflow: auto;
+		overflow: hidden;
+		/* overflow: auto; */
 		/* overflow: clip; */
 		box-sizing: border-box;
 		contain: layout;
@@ -122,7 +122,7 @@
 		/* isolation: isolate; */
 	}
 
-	:root:is([data-transition=toggling-view], [data-transition=changing-folder]) main {
+	:root:is([data-transition=toggling-view]) main {
 		view-transition-name: main-content;
 	}
 
@@ -319,20 +319,21 @@
 		--transition-direction: 1;
 	}
 
-	:root:is([data-view=editor], .transition-reverse) {
+	:root:is([data-transition=toggling-view], [data-transition=changing-folder]):is([data-view=editor], .transition-reverse) {
 		--transition-direction: -1;
 	}
 
+	:root:is([data-transition=toggling-view], [data-transition=changing-folder])::view-transition-group(*) {
+		animation-duration: .2s;
+		animation-timing-function: ease;
+	}
+
 	:root:is([data-transition=toggling-view], [data-transition=changing-folder])::view-transition-old(main-content) {
-		animation: .15s ease-out both fade-out;
+		animation-name: fade-out;
 	}
 
 	:root:is([data-transition=toggling-view], [data-transition=changing-folder])::view-transition-new(main-content) {
-		animation: .15s ease-out both fade-in;
-	}
-
-	:root[data-transition=toggling-view]::view-transition-group(header) {
-		animation-duration: .25s;
+		animation-name: fade-in;
 	}
 
 	@keyframes fade-out {
@@ -349,8 +350,11 @@
 		}
 	}
 
+	:root[data-transition="toggling-layout"] c-header {
+		view-transition-name: header;
+	}
+
 	:root[data-transition="toggling-layout"]::view-transition-group(*) {
-		animation-duration: 10s;
 		animation-duration: .3s;
 		animation-timing-function: ease-in-out;
 	}
@@ -358,16 +362,24 @@
 	:root[data-transition="toggling-layout"]::view-transition-image-pair(*) {
 		inline-size: 100%;
 		block-size: 100%;
-		animation-timing-function: inherit;
 		--halfway-size: 80%;
 	}
 
-	:root[data-transition="toggling-layout"]::view-transition-image-pair(text-input) {
-		animation-name: text-input;
+	:root[data-transition="toggling-layout"]::view-transition-image-pair(text-input),
+	:root[data-transition="toggling-layout"]::view-transition-image-pair(html-output) {
+		inset: auto;
+		animation-name: layout-toggle;
 	}
 
+	:root[data-transition="toggling-layout"]::view-transition-image-pair(text-input) {
+		inset-block-start: 0;
+		inset-inline-start: 0;
+	}
+	
 	:root[data-transition="toggling-layout"]::view-transition-image-pair(html-output) {
-		animation-name: html-output;
+		inset-block-end: 0;
+		inset-inline-end: 0;
+
 	}
 
 	:root[data-transition="toggling-layout"]::view-transition-old(*),
@@ -375,32 +387,12 @@
 		inset: 0;
 		inline-size: 100%;
 		block-size: 100%;
-		animation-timing-function: inherit;
 	}
 
-	:root[data-transition="toggling-layout"]::view-transition-old(text-input),
-	:root[data-transition="toggling-layout"]::view-transition-new(text-input) {
-		--animation-name: text-input;
-	}
-
-	:root[data-transition="toggling-layout"]::view-transition-old(html-output),
-	:root[data-transition="toggling-layout"]::view-transition-new(html-output) {
-		--animation-name: html-output;
-	}
-
-	@keyframes text-input {
+	@keyframes layout-toggle {
 		50% {
 			inline-size: var(--halfway-size);
 			block-size: var(--halfway-size);
-		}
-	}
-
-	@keyframes html-output {
-		50% {
-			inline-size: var(--halfway-size);
-			block-size: var(--halfway-size);
-			inset-inline-start: calc(100% - var(--halfway-size));
-			inset-block-start: calc(100% - var(--halfway-size));
 		}
 	}
 }

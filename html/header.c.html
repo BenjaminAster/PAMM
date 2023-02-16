@@ -38,7 +38,7 @@
 		}
 
 		:root[data-transition=toggling-view] :host {
-			view-transition-name: header;
+			/* view-transition-name: header; */
 		}
 
 		header {
@@ -193,6 +193,7 @@
 			--lightness: var(--accent-lightness);
 			background-color: hsl(var(--accent-hue) var(--accent-saturation) var(--lightness));
 			color: white;
+			box-shadow: 0 1px .3rem #0002;
 		}
 
 		:is([data-action=my-files], [data-action=recently-opened], [data-action=install]):hover {
@@ -202,6 +203,7 @@
 		a[data-action=my-files]:has(~ [data-action=install]:not([hidden])) {
 			color-scheme: revert-layer;
 			background-color: revert-layer;
+			box-shadow: revert-layer;
 			color: revert-layer;
 		}
 
