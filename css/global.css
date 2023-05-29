@@ -17,7 +17,7 @@
 	font-family: "Computer Modern Serif";
 	font-display: swap;
 	src: local("Computer Modern Serif"), url("../assets/computer-modern/normal.otf");
-	/* Source: https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunrm.otf */
+	/* Source: https://ctan.org/tex-archive/fonts/cm-unicode/fonts/otf/cmunrm.otf */
 }
 
 @font-face {
@@ -25,7 +25,7 @@
 	font-display: swap;
 	font-weight: bold;
 	src: local("Computer Modern Serif"), url("../assets/computer-modern/bold.otf");
-	/* Source: https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunrb.otf */
+	/* Source: https://ctan.org/tex-archive/fonts/cm-unicode/fonts/otf/cmunrb.otf */
 }
 
 @font-face {
@@ -33,7 +33,7 @@
 	font-display: swap;
 	font-style: italic;
 	src: local("Computer Modern Serif"), url("../assets/computer-modern/italic.otf");
-	/* Source: https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunti.otf */
+	/* Source: https://ctan.org/tex-archive/fonts/cm-unicode/fonts/otf/cmunti.otf */
 }
 
 @font-face {
@@ -42,7 +42,7 @@
 	font-style: italic;
 	font-weight: bold;
 	src: local("Computer Modern Serif"), url("../assets/computer-modern/bold-italic.otf");
-	/* Source: https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunbi.otf */
+	/* Source: https://ctan.org/tex-archive/fonts/cm-unicode/fonts/otf/cmunbi.otf */
 }
 
 math {
@@ -106,10 +106,6 @@ dialog {
 }
 
 @media (hover: none) {
-	:any-link, button, summary, label {
-		-webkit-tap-highlight-color: transparent;
-	}
-
 	::-webkit-scrollbar {
 		display: none;
 	}
@@ -132,4 +128,8 @@ dialog {
 	border: .2rem solid transparent;
 	border-radius: .4rem;
 	background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-button:hover {
+	background-color: var(--scrollbar-hover-color);
 }

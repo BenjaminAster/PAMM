@@ -227,7 +227,10 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 		await displayFolder({ id: currentFolder.id });
 	};
 
-	for (const [items, UL, type, store] of [[folders, elements.foldersUL, "folder", "folders"], [files, elements.filesUL, "file", "files"]]) {
+	for (const [items, UL, type, store] of /** @type {const} */ ([
+		[folders, elements.foldersUL, "folder", "folders"],
+		[files, elements.filesUL, "file", "files"],
+	])) {
 
 		for (const item of [...UL.children].filter(({ classList }) => classList.contains("item"))) item.remove();
 
@@ -557,11 +560,11 @@ const fileUtils = new class {
 		const listItem = $(":scope > template", UL).content;
 		$("button.close", dialog).addEventListener("click", closeDialog, { once: true });
 		for (const { id, storageType, name, fileHandle } of recentlyOpenedFiles) {
-			const clone = /** @type {DocumentFragment} */ (listItem.cloneNode(true));
+			const clone = listItem.cloneNode(true);
 			$("[data-storagetype]", clone).dataset.storagetype = storageType;
 			$(".name", clone).textContent = name + ((storageType === "file-system") ? appMeta.fileExtension : "");
 			$("a.link", clone).href = $("a.permalink", clone).href = `?file=${id}`;
-			for (const [selectorString, changeURL] of /** @type {any} */ ([["a.link", false], ["a.permalink", true]])) {
+			for (const [selectorString, changeURL] of /** @type {const} */ ([["a.link", false], ["a.permalink", true]])) {
 				if (storageType === "indexeddb") {
 					$(selectorString, clone).addEventListener("click", (event) => {
 						closeDialog();
@@ -697,4 +700,3 @@ window.addEventListener("beforeunload", (event) => {
 		}, 500);
 	})();
 }
-

@@ -150,16 +150,15 @@
 			font-size: .9rem;
 		}
 
-		:root[data-engine=blink] :host .html-output .integral {
-			/* font-size: 1.5em; */
-		}
-
 		:root[data-engine=blink] :host .html-output :is(msqrt > *, mroot > :first-child) {
-			translate: 0 calc(2 * 1em / 16);
+			/* translate: 0 calc(3 * 1em / 16); */
+			padding-block-start: calc(3 * 1em / 16);
+			padding-inline: calc(2 * 1em / 16);
 		}
 
-		:root[data-engine=blink] :host .html-output mfrac > * {
-			translate: 0 calc(1 * 1em / 16);
+		:root[data-engine=blink] :host .html-output mfrac > :last-child {
+			/* translate: 0 calc(1 * 1em / 16); */
+			/* padding-block-start: calc(1 * 1em / 16) */
 			/* translate: 0 .2em; */
 			/* translate: 0 2px; */
 		}

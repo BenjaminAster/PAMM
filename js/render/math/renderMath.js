@@ -195,7 +195,6 @@ export default (/** @type {any[]} */ mathTree) => {
 						const lowerLimitElement = recursiveRender(item.lowerLimit);
 						const upperLimitElement = recursiveRender(item.upperLimit);
 						const integralElement = createMathElement("mo");
-						integralElement.classList.add("integral");
 						integralElement.textContent = operatorList.find(({ name }) => name === item.operator).character;
 
 						underOverElement.append(integralElement, lowerLimitElement, upperLimitElement);

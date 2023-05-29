@@ -14,8 +14,8 @@
 	<title>PAMM</title>
 	<base href="./" />
 
-	<link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
-	<link rel="icon" href="./assets/icon.png" type="image/png" sizes="any" />
+	<link rel="icon" href="./assets/icon.png" type="image/png" sizes="512x512" />
+	<link rel="icon" href="./assets/icon.svg" type="image/svg+xml" sizes="any" />
 	<link rel="manifest" href="./app.webmanifest" />
 	<link rel="canonical" href="https://benjaminaster.com/pamm/" />
 
@@ -44,8 +44,8 @@
 	<link rel="preload" as="font" crossorigin href="./assets/computer-modern/bold-italic.otf" />
 
 	<script type="module">
-		if (!window.MathMLElement || !CSS.supports("(block-size: 100cqb)")) {
-			window.open("/update-your-browser/?" + location.pathname, "_self");
+		if ((!window.MathMLElement || !CSS.supports("(block-size: 100cqb)")) && localStorage.getItem(`${location.pathname}:force`) !== "true") {
+			window.open("/update-your-browser/?source=" + location.pathname, "_self");
 		}
 	</script>
 </head>

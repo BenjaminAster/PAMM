@@ -11,7 +11,7 @@
 
 	<button data-action="save" class="editor-only icon:save-fill" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
 	<button data-action="export" class="editor-only icon:file-export" title="Export"><span class="text">Export</span></button>
-	<a data-action="my-files" href="?folder=home" class="editor-only icon:view-grid" title="My files"><span class="text">My files</span></a>
+	<a data-action="my-files" href="?folder=home" class="editor-only icon:view-grid" title="Your files"><span class="text">Files</span></a>
 
 	<button data-action="open" class="files-only icon:folder-open" title="Open"><span class="text">Open</span></button>
 	<button data-action="upload" class="files-only icon:upload" title="Upload"><span class="text">Upload</span></button>
@@ -161,7 +161,7 @@
 
 		@layer {
 			:is(button, a)[data-action] {
-				padding: .3rem .7em;
+				padding: .3rem .8em;
 				min-block-size: 2.2rem;
 				border-radius: .4rem;
 				background-color: var(--gray-2);

@@ -16,9 +16,10 @@
 }
 
 @layer main {
-	@media screen {
+	@media not print {
 		:root:not(.light-theme) {
 			color-scheme: dark;
+
 			--color: #fbfbfe;
 			--hue: 247deg;
 			--saturation: 10%;
@@ -35,6 +36,7 @@
 
 	:root {
 		color-scheme: light;
+
 		--color: black;
 		--hue: 240deg;
 		--saturation: 15%;
@@ -66,11 +68,11 @@
 		--titlebar-area-block-start: env(titlebar-area-y, 0px);
 		--titlebar-area-block-size: env(titlebar-area-height, 0px);
 		--titlebar-area-block-end: calc(100dvb - env(titlebar-area-y, 0px) - env(titlebar-area-height, 0px));
-		
-		
+
 		--px: calc(1rem / 16);
 
 		--scrollbar-color: hsl(var(--accent-hue) var(--accent-saturation) var(--accent-lightness));
+		--scrollbar-hover-color: hsl(var(--accent-hue) var(--accent-saturation) calc(var(--accent-lightness) + 10%));
 		scrollbar-color: var(--scrollbar-color) transparent;
 
 		font-family: system-ui, sans-serif;
@@ -78,6 +80,7 @@
 		color: var(--color);
 		-webkit-text-size-adjust: none;
 		text-size-adjust: none;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	body {

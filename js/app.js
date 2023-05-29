@@ -2,11 +2,11 @@
 /// <reference types="better-typescript" />
 /// <reference path="./global.d.ts" />
 
-export const $ = /** @template K */ (/** @type {K extends string ? K : never} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
+export const $ = /** @template {string} K */ (/** @type {K} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
 	root.querySelector(selector)
 );
 
-export const $$ = /** @template K */ (/** @type {K extends string ? K : never} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
+export const $$ = /** @template {string} K */ (/** @type {K} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
 	[...root.querySelectorAll(selector)]
 );
 
@@ -36,8 +36,7 @@ export const database = await new class {
 	#database;
 	constructor() {
 		this.#database = /** @type {IDBDatabase} */ (null);
-		// @ts-ignore
-		return (async () => {
+		const constructorPromise = (async () => {
 			const request = window.indexedDB.open(new URL(document.baseURI).pathname, 1);
 
 			request.addEventListener("upgradeneeded", () => {
@@ -164,6 +163,8 @@ export const database = await new class {
 
 			return this;
 		})();
+
+		return /** @type {Awaited<typeof constructorPromise>} */ (constructorPromise);
 	};
 
 	async #operation(/** @type {{ callback: (store: IDBObjectStore) => IDBRequest, transactionMode: IDBTransactionMode, store: string }} */ {
@@ -185,21 +186,21 @@ export const database = await new class {
 			store,
 		});
 	};
-	async add(/** @type {{ store: string, data: Record<string, any> }} */ { store, data }) {
+	add = /** @template {Record<string, any>} T */ async (/** @type {{ store: string, data: T }} */ { store, data }) => {
 		await this.#operation({
 			callback: (store) => store.add(data),
 			transactionMode: "readwrite",
 			store,
 		});
-		return /** @type {any} */ (data);
+		return data;
 	};
-	async put(/** @type {{ store: string, data: Record<string, any> }} */ { store, data }) {
+	put = /** @template {Record<string, any>} T */ async (/** @type {{ store: string, data: T }} */ { store, data }) => {
 		await this.#operation({
 			callback: (store) => store.put(data),
 			transactionMode: "readwrite",
 			store,
 		});
-		return /** @type {any} */ (data);
+		return data;
 	};
 	async delete(/** @type {{ store: string, key: string }} */ { store, key }) {
 		await this.#operation({
@@ -217,6 +218,7 @@ export const database = await new class {
 	};
 };
 
+
 {
 	const introductionFileText = decodeFile({ fileContent: await (await window.fetch("./assets/introduction.pamm")).text() }).text;
 	await database.put({ store: "files", data: { ...await database.get({ store: "files", key: "b-introduction" }), content: introductionFileText } });
@@ -225,8 +227,9 @@ export const database = await new class {
 {
 	let /** @type {string} */ engine;
 	if (navigator.userAgentData?.brands?.find(({ brand }) => brand === "Chromium")) engine = "blink";
-	else if (navigator.userAgent.match(/\bVersion\/([\d.]+)(?: |$)/)) engine = "webkit";
-	else if (navigator.userAgent.match(/\bFirefox\/([\d.]+)(?: |$)/)) engine = "gecko";
+	else if (navigator.userAgent.match(/\bFirefox\//)) engine = "gecko";
+	else if (navigator.userAgent.match(/\bChrome\//)) engine = "blink";
+	else if (navigator.userAgent.match(/\bVersion\//)) engine = "webkit";
 	else engine = "unknown";
 	document.documentElement.dataset.engine = engine;
 }
@@ -333,16 +336,16 @@ export const transition = async (/** @type {() => Promise<any>} */ callback, /**
 			data = structuredClone(data);
 		} catch { };
 
-		$switch: switch (data instanceof Object && !Array.isArray(data)) {
-			case (true): {
+		$: {
+			if (data instanceof Object && !Array.isArray(data)) {
 				let objectEntries = Object.entries(data);
 				if (objectEntries.length === 1) {
 					logFunction(`${objectEntries[0][0]}:`, objectEntries[0][1]);
-					break $switch;
+					break $;
 				}
-			} case (false): {
-				logFunction(data);
 			}
+
+			logFunction(data);
 		}
 
 		return originalData;
@@ -350,7 +353,7 @@ export const transition = async (/** @type {() => Promise<any>} */ callback, /**
 
 	Object.defineProperty(window, "r", {
 		get() {
-			for (const element of /** @type {any} */ ($(".html-output").children)) {
+			for (const element of $(".html-output").children) {
 				element.style.color = "red";
 			}
 		},
@@ -358,7 +361,6 @@ export const transition = async (/** @type {() => Promise<any>} */ callback, /**
 
 	// @ts-ignore
 	window.database = database;
-	window.alert = alert;
 }
 
 
@@ -518,3 +520,4 @@ if (navigator.windowControlsOverlay?.visible) {
 		updateTheme();
 	});
 }
+

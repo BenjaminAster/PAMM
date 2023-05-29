@@ -15,7 +15,7 @@ export default (/** @type {any[]} */ documentTree) => {
 				} case ("math"): {
 					const mathElement = createMathElement("math");
 					if (item.displayBlock) mathElement.setAttribute("display", "block");
-					if (item.displayBlock !== item.displayStyle) mathElement.setAttribute("displaystyle", item.displayStyle.toString());
+					if (item.displayBlock !== item.displayStyle) mathElement.setAttribute("displaystyle", item.displayStyle);
 					mathElement.append(renderMath(item.content));
 					fragment.append(mathElement);
 					break;
