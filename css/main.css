@@ -21,16 +21,16 @@
 			color-scheme: dark;
 
 			--color: #fbfbfe;
-			--hue: 247deg;
-			--saturation: 10%;
-			--background-lightness: 10%;
-			--gray-lightness-step: 8%;
+			--hue: 290deg;
+			--chroma: 0.02;
+			--background-lightness: 0.20;
+			--gray-lightness-step: 0.09;
 			--shadow-color: #0004;
 			--item-shadow-color: #0004;
 
-			--accent-hue: 245deg;
-			--accent-saturation: 70%;
-			--accent-lightness: 55%;
+			--accent-hue: 277deg;
+			--accent-chroma: 0.23;
+			--accent-lightness: 0.48;
 		}
 	}
 
@@ -38,48 +38,47 @@
 		color-scheme: light;
 
 		--color: black;
-		--hue: 240deg;
-		--saturation: 15%;
-		--background-lightness: 100%;
-		--gray-lightness-step: -5%;
+		--hue: 290deg;
+		--chroma: 0.01;
+		--background-lightness: 1;
+		--gray-lightness-step: -0.05;
 		--shadow-color: var(--transparent-gray-3);
 		--item-shadow-color: transparent;
 
-		--accent-hue: 245deg;
-		--accent-saturation: 100%;
-		--accent-lightness: 65%;
+		--accent-hue: 277deg;
+		--accent-lightness: 0.6;
+		--accent-chroma: 0.25;
 	}
 	
 	:root {
-		--background: hsl(var(--hue) var(--saturation) var(--background-lightness));
-		--gray-1: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 1 * var(--gray-lightness-step)));
-		--gray-2: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 2 * var(--gray-lightness-step)));
-		--gray-3: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 3 * var(--gray-lightness-step)));
-		--gray-4: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 4 * var(--gray-lightness-step)));
-		--gray-5: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 5 * var(--gray-lightness-step)));
-		--transparent-background: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 2 * var(--gray-lightness-step)) / 30%);
-		--transparent-gray-1: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 4 * var(--gray-lightness-step)) / 30%);
-		--transparent-gray-2: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 6 * var(--gray-lightness-step)) / 30%);
-		--transparent-gray-3: hsl(var(--hue) var(--saturation) calc(var(--background-lightness) + 8 * var(--gray-lightness-step)) / 30%);
+		--background: oklch(var(--background-lightness) var(--chroma) var(--hue));
+		--gray-1: oklch(calc(var(--background-lightness) + 1 * var(--gray-lightness-step)) var(--chroma) var(--hue));
+		--gray-2: oklch(calc(var(--background-lightness) + 2 * var(--gray-lightness-step)) var(--chroma) var(--hue));
+		--gray-3: oklch(calc(var(--background-lightness) + 3 * var(--gray-lightness-step)) var(--chroma) var(--hue));
+		--gray-4: oklch(calc(var(--background-lightness) + 4 * var(--gray-lightness-step)) var(--chroma) var(--hue));
+		--gray-5: oklch(calc(var(--background-lightness) + 5 * var(--gray-lightness-step)) var(--chroma) var(--hue));
+		--transparent-background: oklch(calc(var(--background-lightness) + 2 * var(--gray-lightness-step)) var(--chroma) var(--hue) / 30%);
+		--transparent-gray-1: oklch(calc(var(--background-lightness) + 4 * var(--gray-lightness-step)) var(--chroma) var(--hue) / 30%);
+		--transparent-gray-2: oklch(calc(var(--background-lightness) + 6 * var(--gray-lightness-step)) var(--chroma) var(--hue) / 30%);
+		--transparent-gray-3: oklch(calc(var(--background-lightness) + 8 * var(--gray-lightness-step)) var(--chroma) var(--hue) / 30%);
 
 		--titlebar-area-inline-start: env(titlebar-area-x, 0px);
 		--titlebar-area-inline-size: env(titlebar-area-width, 0px);
-		--titlebar-area-inline-end: calc(100dvi - env(titlebar-area-x, 0px) - env(titlebar-area-width, 0px));
+		--titlebar-area-inline-end: calc(100dvi - var(--titlebar-area-inline-start) - var(--titlebar-area-inline-size));
 		--titlebar-area-block-start: env(titlebar-area-y, 0px);
 		--titlebar-area-block-size: env(titlebar-area-height, 0px);
-		--titlebar-area-block-end: calc(100dvb - env(titlebar-area-y, 0px) - env(titlebar-area-height, 0px));
+		--titlebar-area-block-end: calc(100dvb - var(--titlebar-area-block-start) - var(--titlebar-area-block-size));
 
 		--px: calc(1rem / 16);
 
-		--scrollbar-color: hsl(var(--accent-hue) var(--accent-saturation) var(--accent-lightness));
-		--scrollbar-hover-color: hsl(var(--accent-hue) var(--accent-saturation) calc(var(--accent-lightness) + 10%));
+		--scrollbar-color: oklch(var(--accent-lightness) var(--accent-chroma) var(--accent-hue));
+		--scrollbar-hover-color: oklch(calc(var(--accent-lightness) + 0.1) var(--accent-chroma) var(--accent-hue));
 		scrollbar-color: var(--scrollbar-color) transparent;
 
 		font-family: system-ui, sans-serif;
 		background-color: var(--background);
 		color: var(--color);
-		-webkit-text-size-adjust: none;
-		text-size-adjust: none;
+		overflow-wrap: break-word;
 		-webkit-tap-highlight-color: transparent;
 	}
 
@@ -183,13 +182,10 @@
 
 	dialog.messagebox .message {
 		white-space: pre-wrap;
-		overflow-wrap: break-word;
 	}
 
 	dialog.messagebox .input {
-		/* border: 2px solid hsl(var(--accent-hue) var(--accent-saturation) calc(var(--accent-lightness) + 5%)); */
 		border: 2px solid royalBlue;
-		/* border: 2px solid royalBlue; */
 		padding: .4em .6em;
 		border-radius: .3rem;
 	}
@@ -212,9 +208,7 @@
 
 	dialog.messagebox button.ok {
 		color-scheme: dark;
-		/* --button-color: hsl(var(--accent-hue) var(--accent-saturation) calc(var(--accent-lightness) + 5%)); */
 		--button-color: royalBlue;
-		/* --button-color: royalBlue; */
 		color: white;
 	}
 
@@ -231,9 +225,18 @@
 
 	dialog.messagebox::backdrop {
 		background: none;
-		--backdrop-filter: blur(.125rem);
+		--blur-radius: .2rem;
+		--backdrop-filter: blur(var(--blur-radius));
 		-webkit-backdrop-filter: var(--backdrop-filter);
 		backdrop-filter: var(--backdrop-filter);
+		animation: blur-radius .3s;
+	}
+
+	@keyframes blur-radius {
+		from {
+			-webkit-backdrop-filter: blur(0rem);
+			backdrop-filter: blur(0rem);
+		}
 	}
 
 	dialog.export[open] {
@@ -241,7 +244,6 @@
 		flex-direction: column;
 		gap: .6rem;
 		inline-size: min(100% - 6rem, 50rem);
-		/* block-size: calc(100% - 12rem); */
 		border-radius: .8rem;
 		background-color: var(--transparent-gray-2);
 		--backdrop-filter: blur(2rem);
@@ -398,4 +400,11 @@
 			block-size: var(--halfway-size);
 		}
 	}
+}
+
+
+@property --blur-radius {
+	syntax: "<length>";
+	initial-value: 0rem;
+	inherits: true;
 }

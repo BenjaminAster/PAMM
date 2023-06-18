@@ -8,7 +8,7 @@
 	"display_override": ["window-controls-overlay"],
 	"categories": ["education"],
 	"lang": "en",
-	"theme_color": "#2b2a33",
+	"theme_color": "oklch(0.29 0.02 290deg)",
 	"background_color": "#2f3034",
 	"icons": [
 		{
@@ -20,7 +20,7 @@
 		{
 			"src": "./assets/maskable.png",
 			"type": "image/png",
-			"sizes": "768x768",
+			"sizes": "1024x1024",
 			"purpose": "maskable"
 		}
 	],

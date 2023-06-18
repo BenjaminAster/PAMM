@@ -191,13 +191,13 @@
 		:is([data-action=my-files], [data-action=recently-opened], [data-action=install]) {
 			color-scheme: dark;
 			--lightness: var(--accent-lightness);
-			background-color: hsl(var(--accent-hue) var(--accent-saturation) var(--lightness));
+			background-color: oklch(var(--lightness) var(--accent-chroma) var(--accent-hue));
 			color: white;
 			box-shadow: 0 1px .3rem #0002;
 		}
 
 		:is([data-action=my-files], [data-action=recently-opened], [data-action=install]):hover {
-			--lightness: calc(var(--accent-lightness) + 5%);
+			--lightness: calc(var(--accent-lightness) + 0.05);
 		}
 
 		a[data-action=my-files]:has(~ [data-action=install]:not([hidden])) {

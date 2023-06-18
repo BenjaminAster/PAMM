@@ -468,14 +468,13 @@ export const elements = {
 // @ts-ignore
 window.elements = elements;
 
-if (navigator.windowControlsOverlay?.visible) {
+if (navigator.windowControlsOverlay) {
 	document.documentElement.classList.add("no-wco-animation");
-	const onGeometryChange = (/** @type {{ visible: boolean }} */ { visible }) => {
-		if (visible) return;
+	const mediaMatch = window.matchMedia("(display-mode: window-controls-overlay)");
+	const onGeometryChange = (/** @type {{ matches: boolean }} */ { matches }) => {
 		document.documentElement.classList.remove("no-wco-animation");
-		navigator.windowControlsOverlay.removeEventListener("geometrychange", onGeometryChange);
 	};
-	navigator.windowControlsOverlay.addEventListener("geometrychange", onGeometryChange);
+	mediaMatch.addEventListener("change", onGeometryChange, { once: true });
 }
 
 {

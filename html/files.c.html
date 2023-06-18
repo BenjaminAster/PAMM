@@ -264,6 +264,7 @@
 			flex-direction: column;
 			justify-content: space-between;
 			gap: var(--padding);
+			-webkit-user-select: text;
 			user-select: text;
 		}
 
@@ -277,8 +278,9 @@
 		}
 
 		.items > li > button[data-action] {
-			--alpha: 30%;
-			background-color: hsl(calc(var(--accent-hue) - 10deg) 100% 65% / var(--alpha));
+			--modified-accent: oklch(calc(var(--accent-lightness) + 0.2) calc(var(--accent-chroma) + 0.1) calc(var(--accent-hue) - 3deg));
+			--mix: 40%;
+			background-color: color-mix(in srgb, var(--modified-accent) var(--mix), var(--gray-1));
 			display: flex;
 			flex-direction: column;
 			gap: .4rem;
@@ -295,7 +297,7 @@
 		}
 
 		.items > li > button[data-action]:hover {
-			--alpha: 50%;
+			--mix: 60%;
 		}
 
 		.item > .buttons {
@@ -355,7 +357,7 @@
 		}
 
 		.recently-opened > ul > li {
-			transition: background-color .2s, border-color .2s;
+			transition: border-color .2s;
 			position: relative;
 		}
 
@@ -367,6 +369,12 @@
 			padding: .5rem .75rem;
 			inline-size: 100%;
 			outline-offset: -3px;
+			border-radius: .5rem;
+			transition: background-color .2s;
+		}
+
+		.recently-opened > ul > li:hover > a {
+			background-color: var(--transparent-gray-2);
 		}
 
 		.recently-opened > ul > li[data-storagetype=indexeddb] > a {
@@ -382,8 +390,6 @@
 		}
 
 		.recently-opened > ul > li:hover {
-			background-color: var(--transparent-gray-2);
-			border-radius: .5rem;
 			border-block-start-color: transparent;
 		}
 
@@ -431,7 +437,6 @@
 		.recently-opened > ul > li > .buttons > .permalink:hover {
 			background-color: var(--transparent-gray-3);
 		}
-
 
 		:host::-webkit-scrollbar-button:start:decrement {
 			--margin-block-start: .2rem;

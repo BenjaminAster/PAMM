@@ -8,7 +8,7 @@
 	<meta name="author" content="Benjamin Aster" />
 	<meta name="description" content="Pretty Awesome Math Markup – A user-friendly LaTeX alternative with a live editor" />
 	<meta name="repository" content="https://github.com/BenjaminAster/PAMM" />
-	<meta name="theme-color" content="hsl(247deg 10% 18%)" />
+	<meta name="theme-color" content="oklch(0.29 0.02 290deg)" />
 	<meta property="og:image" content="https://benjaminaster.com/pamm/assets/icon.png" />
 
 	<title>PAMM</title>
@@ -44,7 +44,7 @@
 	<link rel="preload" as="font" crossorigin href="./assets/computer-modern/bold-italic.otf" />
 
 	<script type="module">
-		if ((!window.MathMLElement || !CSS.supports("(block-size: 100cqb)")) && localStorage.getItem(`${location.pathname}:force`) !== "true") {
+		if (!CSS.supports("(color: color-mix(in srgb, red, tan))") && localStorage.getItem(`${location.pathname}:force`) !== "true") {
 			window.open("/update-your-browser/?source=" + location.pathname, "_self");
 		}
 	</script>
