@@ -21,8 +21,8 @@
 			color-scheme: dark;
 
 			--color: #fbfbfe;
-			--hue: 290deg;
-			--chroma: 0.02;
+			--hue: 290.4deg;
+			--chroma: 0.016;
 			--background-lightness: 0.20;
 			--gray-lightness-step: 0.09;
 			--shadow-color: #0004;
@@ -38,7 +38,7 @@
 		color-scheme: light;
 
 		--color: black;
-		--hue: 290deg;
+		--hue: 290.4deg;
 		--chroma: 0.01;
 		--background-lightness: 1;
 		--gray-lightness-step: -0.05;
