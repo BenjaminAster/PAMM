@@ -22,15 +22,15 @@
 
 			--color: #fbfbfe;
 			--hue: 290.4deg;
-			--chroma: 0.016;
-			--background-lightness: 0.20;
-			--gray-lightness-step: 0.09;
+			--chroma: 4%;
+			--background-lightness: 20%;
+			--gray-lightness-step: 9%;
 			--shadow-color: #0004;
 			--item-shadow-color: #0004;
 
 			--accent-hue: 277deg;
-			--accent-chroma: 0.23;
-			--accent-lightness: 0.48;
+			--accent-chroma: 57%;
+			--accent-lightness: 48%;
 		}
 	}
 
@@ -39,15 +39,15 @@
 
 		--color: black;
 		--hue: 290.4deg;
-		--chroma: 0.01;
-		--background-lightness: 1;
-		--gray-lightness-step: -0.05;
+		--chroma: 2.5%;
+		--background-lightness: 100%;
+		--gray-lightness-step: -5%;
 		--shadow-color: var(--transparent-gray-3);
 		--item-shadow-color: transparent;
 
 		--accent-hue: 277deg;
-		--accent-lightness: 0.6;
-		--accent-chroma: 0.25;
+		--accent-lightness: 60%;
+		--accent-chroma: 62%;
 	}
 	
 	:root {
@@ -72,7 +72,7 @@
 		--px: calc(1rem / 16);
 
 		--scrollbar-color: oklch(var(--accent-lightness) var(--accent-chroma) var(--accent-hue));
-		--scrollbar-hover-color: oklch(calc(var(--accent-lightness) + 0.1) var(--accent-chroma) var(--accent-hue));
+		--scrollbar-hover-color: oklch(calc(var(--accent-lightness) + 10%) var(--accent-chroma) var(--accent-hue));
 		scrollbar-color: var(--scrollbar-color) transparent;
 
 		font-family: system-ui, sans-serif;
@@ -168,7 +168,7 @@
 			margin: 0;
 		}
 	}
-
+	
 	dialog.messagebox {
 		display: flex;
 		flex-direction: column;
@@ -177,59 +177,59 @@
 		border-radius: .5rem;
 		background-color: var(--gray-2);
 		box-shadow: 0 0 4rem var(--shadow-color);
-		max-inline-size: calc(min(100% - 6rem, 40rem))
-	}
+		max-inline-size: calc(min(100% - 6rem, 40rem));
 
-	dialog.messagebox .message {
-		white-space: pre-wrap;
-	}
+		& .message {
+			white-space: pre-wrap;
+		}
 
-	dialog.messagebox .input {
-		border: 2px solid royalBlue;
-		padding: .4em .6em;
-		border-radius: .3rem;
-	}
+		& .input {
+			border: 2px solid royalBlue;
+			padding: .4em .6em;
+			border-radius: .3rem;
 
-	dialog.messagebox .input:focus-visible {
-		outline: none;
-		background-color: var(--gray-1);
-	}
+			&:focus-visible {
+				outline: none;
+				background-color: var(--gray-1);
+			}
+		}
 
-	dialog.messagebox .buttons {
-		display: flex;
-		gap: .5rem;
-		justify-content: end;
-	}
+		& .buttons {
+			display: flex;
+			gap: .5rem;
+			justify-content: end;
+		}
 
-	dialog.messagebox button:focus-visible {
-		outline: 2px solid var(--button-color);
-		outline-offset: 2px;
-	}
+		& button.ok {
+			color-scheme: dark;
+			--button-color: royalBlue;
+			color: white;
+		}
 
-	dialog.messagebox button.ok {
-		color-scheme: dark;
-		--button-color: royalBlue;
-		color: white;
-	}
+		& button.cancel {
+			--button-color: var(--gray-3);
+			outline-color: var(--gray-5);
+		}
 
-	dialog.messagebox button.cancel {
-		--button-color: var(--gray-3);
-		outline-color: var(--gray-5);
-	}
+		& button {
+			background-color: var(--button-color);
+			padding: .4em .8em;
+			border-radius: .2rem;
 
-	dialog.messagebox button {
-		background-color: var(--button-color);
-		padding: .4em .8em;
-		border-radius: .2rem;
-	}
+			&:focus-visible {
+				outline: 2px solid var(--button-color);
+				outline-offset: 2px;
+			}	
+		}
 
-	dialog.messagebox::backdrop {
-		background: none;
-		--blur-radius: .2rem;
-		--backdrop-filter: blur(var(--blur-radius));
-		-webkit-backdrop-filter: var(--backdrop-filter);
-		backdrop-filter: var(--backdrop-filter);
-		animation: blur-radius .3s;
+		&::backdrop {
+			background: none;
+			--blur-radius: .2rem;
+			--backdrop-filter: blur(var(--blur-radius));
+			-webkit-backdrop-filter: var(--backdrop-filter);
+			backdrop-filter: var(--backdrop-filter);
+			animation: blur-radius .3s;
+		}
 	}
 
 	@keyframes blur-radius {
@@ -239,159 +239,155 @@
 		}
 	}
 
-	dialog.export[open] {
-		display: flex;
-		flex-direction: column;
-		gap: .6rem;
-		inline-size: min(100% - 6rem, 50rem);
-		border-radius: .8rem;
-		background-color: var(--transparent-gray-2);
-		--backdrop-filter: blur(2rem);
-		-webkit-backdrop-filter: var(--backdrop-filter);
-		backdrop-filter: var(--backdrop-filter);
-		box-shadow: 0 0 4rem var(--shadow-color);
-	}
+	dialog.export {
+		&[open] {
+			display: flex;
+			flex-direction: column;
+			gap: .6rem;
+			inline-size: min(100% - 6rem, 50rem);
+			border-radius: .8rem;
+			background-color: var(--transparent-gray-2);
+			--backdrop-filter: blur(2rem);
+			-webkit-backdrop-filter: var(--backdrop-filter);
+			backdrop-filter: var(--backdrop-filter);
+			box-shadow: 0 0 4rem var(--shadow-color);
+		}
 
-	dialog.export::backdrop {
-		background: none;
-	}
+		&::backdrop {
+			background: none;
+		}
 
-	dialog.export h2 {
-		font-weight: 500;
-		font-size: 1.2rem;
-	}
+		& h2 {
+			font-weight: 500;
+			font-size: 1.2rem;
+		}
 
-	dialog.export > ul {
-		display: flex;
-	}
+		& > ul {
+			display: flex;
 
-	dialog.export > ul > li {
-		flex-grow: 1;
-		flex-shrink: 1;
-		flex-basis: 0;
-		position: relative;
-		transition: background-color .1s, border-color .1s;
-	}
+			& > li {
+				flex-grow: 1;
+				flex-shrink: 1;
+				flex-basis: 0;
+				position: relative;
+				transition: background-color .1s, border-color .1s;
 
-	dialog.export > ul > li:not(:first-of-type) {
-		border-inline-start: 1px solid var(--transparent-gray-3);
-	}
+				&:not(:first-of-type) {
+					border-inline-start: 1px solid var(--transparent-gray-3);
+				}
+		
+				&:hover {
+					background-color: var(--transparent-gray-2);
+					border-radius: .5rem;
+					border-inline-start-color: transparent;
 
-	dialog.export > ul > li:hover {
-		background-color: var(--transparent-gray-2);
-		border-radius: .5rem;
-		border-inline-start-color: transparent;
-	}
+					& + li {
+						border-inline-start-color: transparent;
+					}
+				}
 
-	dialog.export > ul > li:hover + li {
-		border-inline-start-color: transparent;
-	}
+				& button {
+					display: flex;
+					flex-direction: column;
+					gap: 1rem;
+					align-items: center;
+					block-size: 100%;
+					padding: .6rem;
+					inline-size: 100%;
+					block-size: 100%;
+					box-sizing: border-box;
+					/* --icon-size: min(6rem, 80%); */
+					--icon-size: min(3rem, 80%);
+			
+					&::before {
+						opacity: 80%;
+					}
+				}
+			}
+	
+		}
 
-	dialog.export > ul > li button {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		align-items: center;
-		block-size: 100%;
-		padding: .6rem;
-		inline-size: 100%;
-		block-size: 100%;
-		box-sizing: border-box;
-		/* --icon-size: min(6rem, 80%); */
-		--icon-size: min(3rem, 80%);
-	}
 
-	dialog.export > ul > li button::before {
-		opacity: .8;
-	}
+		& button.close {
+			display: grid;
+			place-content: center;
+			float: right;
+			float: inline-end;
+			inline-size: 2rem;
+			block-size: 2rem;
+			border-radius: .3rem;
+			transition: background-color .2s;
 
-	dialog.export button.close {
-		display: grid;
-		place-content: center;
-		float: right;
-		float: inline-end;
-		inline-size: 2rem;
-		block-size: 2rem;
-		border-radius: .3rem;
-		transition: background-color .2s;
-	}
-
-	dialog.export button.close:hover {
-		background-color: var(--transparent-gray-3);
+			&:hover {
+				background-color: var(--transparent-gray-3);
+			}
+		}
 	}
 
 	:root {
 		--transition-direction: 1;
-	}
 
-	:root:is([data-transition=toggling-view], [data-transition=changing-folder]):is([data-view=editor], .transition-reverse) {
-		--transition-direction: -1;
-	}
-
-	:root:is([data-transition=toggling-view], [data-transition=changing-folder])::view-transition-group(*) {
-		animation-duration: .2s;
-		animation-timing-function: ease;
-	}
-
-	:root:is([data-transition=toggling-view], [data-transition=changing-folder])::view-transition-old(main-content) {
-		animation-name: fade-out;
-	}
-
-	:root:is([data-transition=toggling-view], [data-transition=changing-folder])::view-transition-new(main-content) {
-		animation-name: fade-in;
-	}
-
-	@keyframes fade-out {
-		to {
-			translate: calc(var(--transition-direction) * -1 * 20%) 0;
-			opacity: 0;
+		&:is([data-transition=toggling-view], [data-transition=changing-folder]) {
+			&:is([data-view=editor], .transition-reverse) {
+				--transition-direction: -1;
+			}
+		
+			&::view-transition-group(*) {
+				animation-duration: .2s;
+				animation-timing-function: ease;
+			}
+		
+			&::view-transition-old(main-content) {
+				animation-name: fade-out;
+			}
+		
+			&::view-transition-new(main-content) {
+				animation-name: fade-in;
+			}
+			
 		}
-	}
 
-	@keyframes fade-in {
-		from {
-			translate: calc(var(--transition-direction) * 1 * 20%) 0;
-			opacity: 0;
+		&[data-transition="toggling-layout"] {
+			& c-header {
+				view-transition-name: header;
+			}
+
+			&::view-transition-group(*) {
+				animation-duration: .3s;
+				animation-timing-function: ease-in-out;
+			}
+
+			&::view-transition-image-pair(*) {
+				inline-size: 100%;
+				block-size: 100%;
+				--halfway-size: 80%;
+			}
+
+			&::view-transition-image-pair(text-input),
+			&::view-transition-image-pair(html-output) {
+				inset: auto;
+				animation-name: layout-toggle;
+			}
+
+			&::view-transition-image-pair(text-input) {
+				inset-block-start: 0;
+				inset-inline-start: 0;
+			}
+			
+			&::view-transition-image-pair(html-output) {
+				inset-block-end: 0;
+				inset-inline-end: 0;
+
+			}
+
+			&::view-transition-old(*),
+			&::view-transition-new(*) {
+				inset: 0;
+				inline-size: 100%;
+				block-size: 100%;
+			}
+			
 		}
-	}
-
-	:root[data-transition="toggling-layout"] c-header {
-		view-transition-name: header;
-	}
-
-	:root[data-transition="toggling-layout"]::view-transition-group(*) {
-		animation-duration: .3s;
-		animation-timing-function: ease-in-out;
-	}
-
-	:root[data-transition="toggling-layout"]::view-transition-image-pair(*) {
-		inline-size: 100%;
-		block-size: 100%;
-		--halfway-size: 80%;
-	}
-
-	:root[data-transition="toggling-layout"]::view-transition-image-pair(text-input),
-	:root[data-transition="toggling-layout"]::view-transition-image-pair(html-output) {
-		inset: auto;
-		animation-name: layout-toggle;
-	}
-
-	:root[data-transition="toggling-layout"]::view-transition-image-pair(text-input) {
-		inset-block-start: 0;
-		inset-inline-start: 0;
-	}
-	
-	:root[data-transition="toggling-layout"]::view-transition-image-pair(html-output) {
-		inset-block-end: 0;
-		inset-inline-end: 0;
-
-	}
-
-	:root[data-transition="toggling-layout"]::view-transition-old(*),
-	:root[data-transition="toggling-layout"]::view-transition-new(*) {
-		inset: 0;
-		inline-size: 100%;
-		block-size: 100%;
 	}
 
 	@keyframes layout-toggle {
@@ -400,8 +396,21 @@
 			block-size: var(--halfway-size);
 		}
 	}
-}
 
+	@keyframes fade-out {
+		to {
+			translate: calc(var(--transition-direction) * -1 * 20%) 0;
+			opacity: 0%;
+		}
+	}
+
+	@keyframes fade-in {
+		from {
+			translate: calc(var(--transition-direction) * 1 * 20%) 0;
+			opacity: 0%;
+		}
+	}
+}
 
 @property --blur-radius {
 	syntax: "<length>";

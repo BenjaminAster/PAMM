@@ -21,7 +21,7 @@
 
 <style>
 	@layer elements {
-		:host {
+		& {
 			/* background-color: blueViolet; */
 			/* color-scheme: dark; */
 			/* color: white; */
@@ -37,11 +37,11 @@
 			contain: paint;
 		}
 
-		:root[data-transition=toggling-view] :host {
+		:root[data-transition=toggling-view] & {
 			/* view-transition-name: header; */
 		}
 
-		header {
+		& header {
 			display: flex;
 			flex-wrap: wrap;
 			align-items: center;
@@ -53,57 +53,57 @@
 		}
 
 		@container header (inline-size < 32rem) {
-			img.logo {
+			& img.logo {
 				display: none;
 			}
 		}
 
 		@container header (inline-size < 43rem) {
-			:root[data-view=editor] :host :is(button, a)[data-action] .text {
+			:root[data-view=editor] & :is(button, a)[data-action] .text {
 				display: none;
 			}
 		}
 
 		@container header (inline-size < 38rem) {
-			:root[data-view=files] :host :is(button, a)[data-action] .text {
+			:root[data-view=files] & :is(button, a)[data-action] .text {
 				display: none;
 			}
 		}
 
 		@container header (inline-size < 47rem) {
-			a.github {
+			& a.github {
 				display: none;
 			}
 		}
 
-		:root[data-view=files] :host .editor-only {
+		:root[data-view=files] & .editor-only {
 			display: none;
 		}
 
-		:root[data-view=editor] :host .files-only {
+		:root[data-view=editor] & .files-only {
 			display: none;
 		}
 
 		@media (display-mode: standalone), (display-mode: window-controls-overlay) {
-			header {
+			& header {
 				padding-block-start: 0;
 			}
 		}
 
 		@media (display-mode: window-controls-overlay) {
-			:host {
+			& {
 				min-block-size: var(--titlebar-area-block-size);
 				padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding));
 				padding-inline-start: max(var(--titlebar-area-inline-start));
 				padding-inline-end: max(var(--titlebar-area-inline-end));
 			}
 
-			:root:not(.no-wco-animation) :host {
+			:root:not(.no-wco-animation) & {
 				animation: collapse .5s;
 				/* animation: collapse 50s; */
 			}
 
-			header {
+			& header {
 				padding-inline-end: max(var(--padding) - var(--titlebar-area-inline-end), 0px);
 			}
 		}
@@ -127,14 +127,14 @@
 			}
 		}
 
-		img.logo {
+		& img.logo {
 			--size: 1.5rem;
 			inline-size: var(--size);
 			block-size: var(--size);
 			margin-inline-start: .3rem;
 		}
 
-		input.file-name {
+		& input.file-name {
 			background: none;
 			border: 1px solid var(--gray-3);
 			border-radius: .4rem;
@@ -145,22 +145,22 @@
 			flex-basis: 0;
 			min-inline-size: 1rem;
 			max-inline-size: 15rem;
+
+			&:focus-visible {
+				background-color: var(--background);
+			}
 		}
 
-		input.file-name:focus-visible {
-			background-color: var(--background);
-		}
-
-		input.file-name, [data-action=recently-opened] {
+		& input.file-name, & [data-action=recently-opened] {
 			margin-inline-end: auto;
 		}
 
-		:root[data-editor-layout="stacked"] :host [data-action=toggle-editor-layout] {
+		:root[data-editor-layout="stacked"] & [data-action=toggle-editor-layout] {
 			--icon: var(--icon-layout-rows);
 		}
 
 		@layer {
-			:is(button, a)[data-action] {
+			& :is(button, a)[data-action] {
 				padding: .3rem .8em;
 				min-block-size: 2.2rem;
 				border-radius: .4rem;
@@ -172,50 +172,50 @@
 				--icon-size: 1.125rem;
 				transition: background-color .2s;
 				box-sizing: border-box;
-			}
 
-			:is(button, a)[data-action]:hover {
-				background-color: var(--gray-3);
+				&:hover {
+					background-color: var(--gray-3);
+				}
 			}
 		}
 
-		:root.light-theme :host [data-action=toggle-theme] {
+		:root.light-theme & [data-action=toggle-theme] {
 			--icon: var(--icon-sun);
 		}
 
-		button[data-action=print]::after {
+		& button[data-action=print]::after {
 			content: "";
 			--icon: var(--icon-printer);
 		}
 
-		:is([data-action=my-files], [data-action=recently-opened], [data-action=install]) {
+		& :is([data-action=my-files], [data-action=recently-opened], [data-action=install]) {
 			color-scheme: dark;
 			--lightness: var(--accent-lightness);
 			background-color: oklch(var(--lightness) var(--accent-chroma) var(--accent-hue));
 			color: white;
 			box-shadow: 0 1px .3rem #0002;
+
+			&:hover {
+				--lightness: calc(var(--accent-lightness) + 5%);
+			}
 		}
 
-		:is([data-action=my-files], [data-action=recently-opened], [data-action=install]):hover {
-			--lightness: calc(var(--accent-lightness) + 0.05);
-		}
-
-		a[data-action=my-files]:has(~ [data-action=install]:not([hidden])) {
+		& a[data-action=my-files]:has(~ [data-action=install]:not([hidden])) {
 			color-scheme: revert-layer;
 			background-color: revert-layer;
 			box-shadow: revert-layer;
 			color: revert-layer;
 		}
 
-		:root.file-dirty :host button[data-action=save] .saved-d {
-			display: none;
-		}
-
-		:root.file-dirty :host button[data-action=save] {
+		:root.file-dirty & button[data-action=save] {
 			--icon: var(--icon-save-outline);
+
+			& .saved-d {
+				display: none;
+			}
 		}
 
-		a.github {
+		& a.github {
 			app-region: no-drag;
 			--icon-size: 1.5rem;
 			margin-inline: .2rem;

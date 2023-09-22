@@ -381,27 +381,27 @@ navigator.serviceWorker?.register("./service-worker.js", { scope: "./", updateVi
 		"files",
 	];
 
-	const tempDocument = document.implementation.createHTMLDocument();
+	// const tempDocument = document.implementation.createHTMLDocument();
 
-	const hostRegex = /:host\b/g;
-	const editRule = (/** @type {any} */ rule, /** @type {string} */ name) => {
-		const selector = rule.selectorText;
-		rule.selectorText = hostRegex.test(selector) ? selector.replaceAll(hostRegex, `c-${name}`) : `c-${name} ${selector}`;
-	};
-	const editRulesRecursively = (/** @type {any} */ rules, /** @type {string} */ name) => {
-		for (const rule of rules) {
-			switch (rule.constructor.name) {
-				case ("CSSStyleRule"): {
-					editRule(rule, name);
-					break;
-				}
-				case ("CSSMediaRule"): case ("CSSSupportsRule"): case ("CSSLayerBlockRule"): case ("CSSContainerRule"): {
-					editRulesRecursively(rule.cssRules, name);
-					break;
-				}
-			}
-		}
-	};
+	// const hostRegex = /:host\b/g;
+	// const editRule = (/** @type {any} */ rule, /** @type {string} */ name) => {
+	// 	const selector = rule.selectorText;
+	// 	rule.selectorText = hostRegex.test(selector) ? selector.replaceAll(hostRegex, `c-${name}`) : `c-${name} ${selector}`;
+	// };
+	// const editRulesRecursively = (/** @type {any} */ rules, /** @type {string} */ name) => {
+	// 	for (const rule of rules) {
+	// 		switch (rule.constructor.name) {
+	// 			case ("CSSStyleRule"): {
+	// 				editRule(rule, name);
+	// 				break;
+	// 			}
+	// 			case ("CSSMediaRule"): case ("CSSSupportsRule"): case ("CSSLayerBlockRule"): case ("CSSContainerRule"): {
+	// 				editRulesRecursively(rule.cssRules, name);
+	// 				break;
+	// 			}
+	// 		}
+	// 	}
+	// };
 
 	await Promise.all(customElements.map(async (name) => {
 		const html = await (await window.fetch(`./html/${name}.c.html`)).text();
@@ -410,15 +410,9 @@ navigator.serviceWorker?.register("./service-worker.js", { scope: "./", updateVi
 		)).content;
 
 		const styleElement = content.querySelector("style");
-		styleElement.remove();
+		const css = `c-${name} { ${styleElement.textContent} }`;
 
-		tempDocument.body.append(styleElement);
-
-		const rules = styleElement.sheet.cssRules;
-
-		editRulesRecursively(rules, name);
-
-		styleElement.textContent = [...rules].map((rule) => rule.cssText).join("\n") + (
+		styleElement.textContent = css + (
 			`\n/*# sourceMappingURL=data:application/json,${window.encodeURIComponent(JSON.stringify({
 				version: 3,
 				mappings: "",

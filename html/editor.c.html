@@ -10,7 +10,7 @@
 
 <style>
 	@layer elements {
-		:host {
+		& {
 			block-size: 100%;
 			display: flex;
 			box-sizing: border-box;
@@ -20,43 +20,41 @@
 			--full-length: 100cqi;
 			--dragger-cursor: ew-resize;
 			container-type: size;
-		}
 
-		@media (hover: none) {
-			:host {
+			@media (hover: none) {
 				--dragger-width: 16px;
 			}
 		}
 
-		:root[data-editor-layout="stacked"] :host {
+		:root[data-editor-layout="stacked"] & {
 			flex-direction: column;
 			--dragger-cursor: ns-resize;
 			--full-length: 100cqb;
 		}
 
-		:host.dragging {
+		&.dragging {
 			cursor: var(--dragger-cursor);
 			-webkit-user-select: none;
 			user-select: none;
 		}
 
-		:root[data-editor-layout="aside"] :host .text-input {
+		:root[data-editor-layout="aside"] & .text-input {
 			border-start-end-radius: .3rem;
 		}
 		
-		:root[data-editor-layout="aside"] :host .html-output {
+		:root[data-editor-layout="aside"] & .html-output {
 			border-start-start-radius: .3rem;
 		}
 		
-		:root[data-transition="toggling-layout"] :host .text-input {
+		:root[data-transition="toggling-layout"] & .text-input {
 			view-transition-name: text-input;
 		}
 		
-		:root[data-transition="toggling-layout"] :host .html-output {
+		:root[data-transition="toggling-layout"] & .html-output {
 			view-transition-name: html-output;
 		}
 
-		.text-input {
+		& .text-input {
 			flex-grow: 0;
 			flex-shrink: 0;
 			--clamped-split-proportion: clamp(0, var(--split-proportion), 1);
@@ -67,20 +65,20 @@
 			overflow: hidden;
 			contain: layout;
 			/* view-transition-name: text-input; */
+
+			& textarea {
+				padding: .8rem 1rem;
+				resize: none;
+				inline-size: 100%;
+				block-size: 100%;
+				box-sizing: border-box;
+				outline: none;
+				overflow: auto;
+				min-block-size: 0;
+			}
 		}
 
-		.text-input textarea {
-			padding: .8rem 1rem;
-			resize: none;
-			inline-size: 100%;
-			block-size: 100%;
-			box-sizing: border-box;
-			outline: none;
-			overflow: auto;
-			min-block-size: 0;
-		}
-
-		.dragger {
+		& .dragger {
 			flex-shrink: 0;
 			flex-basis: var(--dragger-width);
 			cursor: var(--dragger-cursor);
@@ -91,36 +89,40 @@
 			transition: background-color .2s;
 		}
 
-		:root[data-editor-layout="stacked"] :host .dragger {
+		:root[data-editor-layout="stacked"] & .dragger {
 			flex-direction: column;
 		}
 
-		.dragger:hover {
-			background-color: var(--gray-2);
+		& .dragger {
+			&:hover {
+				background-color: var(--gray-2);
+			}
+
+			&::before, &::after {
+				content: "";
+				--width: 2px;
+				--length: 1rem;
+				inline-size: var(--width);
+				block-size: var(--length);
+				border-radius: 1px;
+				background-color: var(--color);
+				opacity: 50%;
+			}
 		}
 
-		.dragger::before, .dragger::after {
-			content: "";
-			--width: 2px;
-			--length: 1rem;
-			inline-size: var(--width);
-			block-size: var(--length);
-			border-radius: 1px;
-			background-color: var(--color);
-			opacity: .5;
+		:root[data-editor-layout="stacked"] & .dragger {
+			&::before, &::after {
+				inline-size: var(--length);
+				block-size: var(--width);
+			}
 		}
 
-		:root[data-editor-layout="stacked"] :host .dragger::before, :root[data-editor-layout="stacked"] :host .dragger::after {
-			inline-size: var(--length);
-			block-size: var(--width);
-		}
-
-		:root[data-editor-layout="aside"] :host .dragger {
+		:root[data-editor-layout="aside"] & .dragger {
 			border-start-start-radius: .15rem;
 			border-start-end-radius: .15rem;
 		}
 
-		.html-output {
+		& .html-output {
 			flex-grow: 1;
 			flex-shrink: 1;
 			flex-basis: 0;
@@ -135,39 +137,39 @@
 			line-height: 1.5rem;
 			contain: layout;
 			/* view-transition-name: html-output; */
+
+			& .section {
+				content-visibility: auto;
+				contain-intrinsic-block-size: auto 10rem;
+			}
+	
+			& code {
+				white-space: pre-wrap;
+				font-family: "FreeMono", "Courier New", ui-monospace, monospace;
+				padding-inline: .2em;
+				background-color: var(--gray-1);
+				font-size: .9rem;
+			}
 		}
 
-		.html-output .section {
-			content-visibility: auto;
-			contain-intrinsic-block-size: auto 10rem;
-		}
-
-		.html-output code {
-			white-space: pre-wrap;
-			font-family: "FreeMono", "Courier New", ui-monospace, monospace;
-			padding-inline: .2em;
-			background-color: var(--gray-1);
-			font-size: .9rem;
-		}
-
-		:root[data-engine=blink] :host .html-output :is(msqrt > *, mroot > :first-child) {
+		:root[data-engine=blink] & .html-output :is(msqrt > *, mroot > :first-child) {
 			/* translate: 0 calc(3 * 1em / 16); */
 			padding-block-start: calc(3 * 1em / 16);
 			padding-inline: calc(2 * 1em / 16);
 		}
 
-		:root[data-engine=blink] :host .html-output mfrac > :last-child {
+		:root[data-engine=blink] & .html-output mfrac > :last-child {
 			/* translate: 0 calc(1 * 1em / 16); */
 			/* padding-block-start: calc(1 * 1em / 16) */
 			/* translate: 0 .2em; */
 			/* translate: 0 2px; */
 		}
 
-		math {
+		& math {
 			/* margin-block: .2em; */
 		}
 
-		math[display=block] {
+		& math[display=block] {
 			margin-block: .5em;
 		}
 
@@ -175,7 +177,7 @@
 			margin-block: .8em .5em;
 		}
 
-		p.bottom-margin {
+		& p.bottom-margin {
 			margin-block-end: .7em;
 		}
 
@@ -184,16 +186,16 @@
 		}
 
 		@media print {
-			:host {
+			& {
 				display: block;
 				container-type: normal;
 			}
 
-			.dragger, .text-input {
+			& .dragger, .text-input {
 				display: none;
 			}
 
-			.html-output {
+			& .html-output {
 				overflow: unset;
 				padding: 0;
 			}

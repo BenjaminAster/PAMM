@@ -53,6 +53,10 @@ h1, h2, h3, h4, h5, h6, strong, b {
 	font-weight: 600;
 }
 
+button, input, textarea, select, option {
+	all: unset;
+}
+
 label, button, summary, select, option {
 	cursor: pointer;
 }
@@ -65,17 +69,9 @@ h1 {
 	font-size: 1.8em;
 }
 
-button, input, textarea, select, option {
-	font: unset;
-	background: unset;
-	color: unset;
-	margin: unset;
-	border: unset;
-	padding: unset;
-}
-
 input, textarea {
 	cursor: auto;
+	white-space: revert;
 }
 
 ul {
