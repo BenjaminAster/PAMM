@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="loading" data-view="files" data-editor-layout="aside">
+<html lang="en" class="no-transitions" data-view="files" data-editor-layout="aside">
 
 <head>
 	<meta charset="UTF-8" />
@@ -13,9 +13,8 @@
 
 	<title>PAMM</title>
 	<base href="./" />
-
-	<link rel="icon" href="./assets/icon.png" type="image/png" sizes="512x512" />
 	<link rel="icon" href="./assets/icon.svg" type="image/svg+xml" sizes="any" />
+	<link rel="icon" href="./assets/icon.png" type="image/png" sizes="512x512" />
 	<link rel="manifest" href="./app.webmanifest" />
 	<link rel="canonical" href="https://benjaminaster.com/pamm/" />
 
@@ -51,56 +50,60 @@
 </head>
 
 <body>
-	<noscript>
-		<dialog open>
-			Please enable JavaScript to view this site.
-		</dialog>
-	</noscript>
+	<noscript>Please enable JavaScript to view this site.</noscript>
 
 	<template id="messageboxes">
 		<dialog class="messagebox alert">
-			<p class="message"></p>
-			<div class="buttons">
-				<button class="ok">OK</button>
-			</div>
+			<form method="dialog">
+				<p class="message"></p>
+				<div class="buttons">
+					<button class="ok">OK</button>
+				</div>
+			</form>
 		</dialog>
 
 		<dialog class="messagebox confirm">
-			<p class="message"></p>
-			<div class="buttons" focusgroup="wrap">
-				<button class="ok">OK</button>
-				<button class="cancel">Cancel</button>
-			</div>
+			<form method="dialog">
+				<p class="message"></p>
+				<div class="buttons" focusgroup="wrap">
+					<button value="ok" class="ok">OK</button>
+					<button value="cancel" class="cancel">Cancel</button>
+				</div>
+			</form>
 		</dialog>
 
 		<dialog class="messagebox prompt">
-			<p class="message"></p>
-			<input type="text" class="input" spellcheck="false" />
-			<div class="buttons" focusgroup="wrap">
-				<button class="ok">OK</button>
-				<button class="cancel">Cancel</button>
-			</div>
+			<form method="dialog">
+				<p class="message"></p>
+				<input type="text" class="input" name="input" spellcheck="false" autocomplete="off" />
+				<div class="buttons" focusgroup="wrap">
+					<button value="ok" class="ok">OK</button>
+					<button value="cancel" class="cancel">Cancel</button>
+				</div>
+			</form>
 		</dialog>
 	</template>
 
 	<template id="export-dialog">
 		<dialog class="export">
-			<div>
-				<button class="close icon:x" title="Close"></button>
-				<h2>Export</h2>
-			</div>
+			<form method="dialog">
+				<div>
+					<button class="close icon:x" value="cancel" title="Close"></button>
+					<h2>Export</h2>
+				</div>
 
-			<ul focusgroup="wrap">
-				<li data-action="download" focusgroup="extend">
-					<button class="icon:download">Download PAMM file</button>
-				</li>
-				<li data-action="print" focusgroup="extend">
-					<button class="icon:file-earmark-pdf">Print or save as PDF</button>
-				</li>
-				<li data-action="export-html" focusgroup="extend">
-					<button class="icon:code">Export as HTML</button>
-				</li>
-			</ul>
+				<ul focusgroup="wrap">
+					<li focusgroup="extend">
+						<button value="download" class="icon:download">Download PAMM file</button>
+					</li>
+					<li focusgroup="extend">
+						<button value="print" class="icon:file-earmark-pdf">Print or save as PDF</button>
+					</li>
+					<li focusgroup="extend">
+						<button value="export-html" class="icon:code">Export as HTML</button>
+					</li>
+				</ul>
+			</form>
 		</dialog>
 	</template>
 

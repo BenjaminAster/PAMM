@@ -1,5 +1,12 @@
 
-/// <reference types="better-typescript" />
+{
+	// Promise.withResolvers() polyfill until browser support is better
+	Promise.withResolvers ??= function () {
+		let resolve, reject;
+		let promise = new Promise((res, rej) => (resolve = res, reject = rej));
+		return { promise, resolve, reject };
+	};
+}
 
 import { elements, $$, storage, transition } from "./app.js";
 import parseDocument from "./parse/document/parseDocument.js";
@@ -9,7 +16,7 @@ import { keyDown } from "./files.js";
 export const { startRendering } = (() => {
 	let previousSectionsArray = [];
 
-	const handleInput = function (/** @type {InputEvent} */ { data } = /** @type {any} */ ({})) {
+	const handleInput = function (/** @type {Partial<InputEvent>} */ { data } = ({})) {
 		const { value, selectionStart, selectionEnd } = this;
 
 		document.documentElement.classList.add("file-dirty");

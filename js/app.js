@@ -1,7 +1,4 @@
 
-/// <reference types="better-typescript" />
-/// <reference path="./global.d.ts" />
-
 export const $ = /** @template {string} K */ (/** @type {K} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
 	root.querySelector(selector)
 );
@@ -20,6 +17,8 @@ export const encodeFile = (/** @type {{ text: string, data?: Record<string, any>
 	return `version 1\n-----\n${text}\n-----\n${JSON.stringify(data, null, "\t")}`
 };
 
+export const parseHTML = Range.prototype.createContextualFragment.bind(new Range());
+
 export const decodeFile = (/** @type {{ fileContent: string }} */ { fileContent }) => {
 	const { data: dataString, text } = fileContent.match(/^version 1\n-----\n(?<text>.*)\n-----\n(?<data>{(?:(?!\n-----\n).)*})$/s)?.groups ?? {};
 	const data = (() => {
@@ -31,6 +30,31 @@ export const decodeFile = (/** @type {{ fileContent: string }} */ { fileContent 
 	})();
 	return { text, data };
 }
+
+const executeOnTransitionEnd = async (/** @type {Element} */ element, /** @type {Function} */ callback) => {
+	await Promise.allSettled(
+		element.getAnimations().filter((animation) => animation instanceof CSSTransition).map(({ finished }) => finished)
+	);
+	callback();
+
+	// const onTransitionEnd = () => {
+	// 	element.removeEventListener("transitionend", onTransitionEnd);
+	// 	element.removeEventListener("transitioncancel", onTransitionEnd);
+	// 	callback();
+	// };
+	// if (element.getAnimations().some((animation) => animation instanceof CSSTransition)) {
+	// 	element.addEventListener("transitionend", onTransitionEnd);
+	// 	element.addEventListener("transitioncancel", onTransitionEnd);
+	// } else onTransitionEnd();
+};
+
+export const removeAfterTransition = (/** @type {HTMLElement} */ element) => {
+	executeOnTransitionEnd(element, () => element.remove());
+};
+
+export const _expose = (/** @type {Record<string, any>} */ object) => {
+	for (const [key, value] of Object.entries(object)) self[key] = value;
+};
 
 export const database = await new class {
 	#database;
@@ -220,7 +244,7 @@ export const database = await new class {
 
 
 {
-	const introductionFileText = decodeFile({ fileContent: await (await window.fetch("./assets/introduction.pamm")).text() }).text;
+	const introductionFileText = decodeFile({ fileContent: await (await window.fetch(import.meta.resolve("../assets/introduction.pamm"))).text() }).text;
 	await database.put({ store: "files", data: { ...await database.get({ store: "files", key: "b-introduction" }), content: introductionFileText } });
 }
 
@@ -229,7 +253,7 @@ export const database = await new class {
 	if (navigator.userAgentData?.brands?.find(({ brand }) => brand === "Chromium")) engine = "blink";
 	else if (navigator.userAgent.match(/\bFirefox\//)) engine = "gecko";
 	else if (navigator.userAgent.match(/\bChrome\//)) engine = "blink";
-	else if (navigator.userAgent.match(/\bVersion\//)) engine = "webkit";
+	else if (navigator.userAgent.match(/\bAppleWebKit\//)) engine = "webkit";
 	else engine = "unknown";
 	document.documentElement.dataset.engine = engine;
 }
@@ -260,11 +284,13 @@ export const alert = async (/** @type {{ message: string, userGestureCallback?: 
 	$(".message", dialog).textContent = message;
 	document.body.append(dialog);
 	dialog.showModal();
-	await new Promise((resolve) => $("button.ok", dialog).addEventListener("click", async () => {
+	const { promise, resolve } = Promise.withResolvers();
+	dialog.addEventListener("close", async () => {
 		await userGestureCallback?.();
 		resolve();
-	}, { once: true }));
-	dialog.remove();
+	});
+	await promise;
+	removeAfterTransition(dialog);
 };
 
 export const confirm = async (/** @type {{ message: string, userGestureCallback?: Function }} */ { message, userGestureCallback }) => {
@@ -272,16 +298,17 @@ export const confirm = async (/** @type {{ message: string, userGestureCallback?
 	$(".message", dialog).textContent = message;
 	document.body.append(dialog);
 	dialog.showModal();
-	const accepted = await new Promise((resolve) => {
-		$("button.ok", dialog).addEventListener("click", async () => {
-			await userGestureCallback?.();
-			resolve(true);
-		}, { once: true });
-		$("button.cancel", dialog).addEventListener("click", () => resolve(false), { once: true });
+	const { promise, resolve } = Promise.withResolvers();
+	dialog.addEventListener("close", async () => {
+		await userGestureCallback?.();
+		resolve();
 	});
-	dialog.remove();
-	return { accepted };
+	await promise;
+	removeAfterTransition(dialog);
+	return { accepted: dialog.returnValue === "ok" };
 };
+
+_expose({ alert })
 
 export const prompt = async (/** @type {{ message: string, defaultValue?: string }} */ { message, defaultValue = "" }) => {
 	const dialog = $("dialog.prompt", messageboxesTemplate).cloneNode(true);
@@ -289,31 +316,38 @@ export const prompt = async (/** @type {{ message: string, defaultValue?: string
 	$("input.input", dialog).value = defaultValue;
 	document.body.append(dialog);
 	dialog.showModal();
-	const accepted = await new Promise((resolve) => {
-		$(".input", dialog).addEventListener("keydown", ({ key }) => { if (key === "Enter") resolve(true) });
-		$("button.ok", dialog).addEventListener("click", () => resolve(true), { once: true });
-		$("button.cancel", dialog).addEventListener("click", () => resolve(false), { once: true });
-	});
-	const value = accepted ? $("input.input", dialog).value : undefined;
-	dialog.remove();
+	const { promise, resolve } = Promise.withResolvers();
+	dialog.addEventListener("close", resolve);
+	await promise;
+	const accepted = dialog.returnValue === "ok";
+	const value = accepted ? /** @type {string} */ (new FormData($("form", dialog)).get("input")) : undefined;
+	removeAfterTransition(dialog);
 	return { accepted, value };
+
+
+	// const accepted = await new Promise((resolve) => {
+	// 	$(".input", dialog).addEventListener("keydown", (event) => {
+	// 		if (event.key === "Enter") {
+	// 			event.preventDefault();
+	// 			resolve(true);
+	// 		}
+	// 	});
+	// 	$("button.ok", dialog).addEventListener("click", () => resolve(true), { once: true });
+	// 	$("button.cancel", dialog).addEventListener("click", () => resolve(false), { once: true });
+	// });
 };
 
 export const setTitle = (/** @type {string} */ title) => {
-	const titleArray = [
-		title,
-		" – ",
-		appMeta.shortName,
-	];
+	const titleArray = [title, appMeta.shortName];
 	if (window.matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay)").matches) titleArray.reverse();
-	document.title = titleArray.join("");
+	document.title = titleArray.join(" – ");
 };
 
 const useTransitions = Boolean(document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 // const useTransitions = false;
 
-export const transition = async (/** @type {() => Promise<any>} */ callback, /** @type {{ name?: string, resolveWhenFinished?: boolean }} */ { name, resolveWhenFinished = false } = {}) => {
-	if (!useTransitions || document.documentElement.classList.contains("loading")) {
+export const transition = async (/** @type {() => Promise<any>} */ callback, /** @type {{ name: string, resolveWhenFinished?: boolean }} */ { name, resolveWhenFinished = false }) => {
+	if (!useTransitions || document.documentElement.classList.contains("no-transitions")) {
 		await callback();
 		return;
 	}
@@ -371,15 +405,12 @@ export const appMeta = {
 	mimeType: "text/pretty-awesome-math-markup",
 };
 
-navigator.serviceWorker?.register("./service-worker.js", { scope: "./", updateViaCache: "all" });
-
-
 {
-	const customElements = [
-		"editor",
-		"header",
-		"files",
-	];
+	const customElements = {
+		editor: import.meta.resolve("../html/editor.c.html"),
+		header: import.meta.resolve("../html/header.c.html"),
+		files: import.meta.resolve("../html/files.c.html"),
+	};
 
 	// const tempDocument = document.implementation.createHTMLDocument();
 
@@ -403,11 +434,9 @@ navigator.serviceWorker?.register("./service-worker.js", { scope: "./", updateVi
 	// 	}
 	// };
 
-	await Promise.all(customElements.map(async (name) => {
-		const html = await (await window.fetch(`./html/${name}.c.html`)).text();
-		const content = (/** @type {HTMLTemplateElement} */ (
-			new DOMParser().parseFromString(`<template>${html}</template>`, "text/html").head.firstElementChild
-		)).content;
+	await Promise.all(Object.entries(customElements).map(async ([name, path]) => {
+		const html = await (await window.fetch(path)).text();
+		const content = parseHTML(html);
 
 		const styleElement = content.querySelector("style");
 		const css = `c-${name} { ${styleElement.textContent} }`;
@@ -450,7 +479,7 @@ export const elements = {
 	get foldersUL() { return $("c-files ul.folders") },
 	get filesUL() { return $("c-files ul.files") },
 	get breadcrumbUL() { return $("c-files nav.breadcrumb ul") },
-	get fileNameInput() { return $("c-header input.file-name") },
+	get fileNameInput() { return $("c-header input[name=file-name]") },
 	get toggleThemeButton() { return ($("c-header button[data-action=toggle-theme]")) },
 	get toggleLayoutButton() { return ($("c-header button[data-action=toggle-editor-layout]")) },
 	files: document.querySelector("c-files"),
@@ -459,16 +488,12 @@ export const elements = {
 	get htmlOutput() { return $("section.html-output", this.editor) },
 };
 
-// @ts-ignore
-window.elements = elements;
-
 if (navigator.windowControlsOverlay) {
 	document.documentElement.classList.add("no-wco-animation");
 	const mediaMatch = window.matchMedia("(display-mode: window-controls-overlay)");
-	const onGeometryChange = (/** @type {{ matches: boolean }} */ { matches }) => {
+	mediaMatch.addEventListener("change", () => {
 		document.documentElement.classList.remove("no-wco-animation");
-	};
-	mediaMatch.addEventListener("change", onGeometryChange, { once: true });
+	}, { once: true });
 }
 
 {
@@ -493,17 +518,25 @@ if (navigator.windowControlsOverlay) {
 	const mediaMatch = window.matchMedia("(prefers-color-scheme: light)");
 	const themeInStorage = storage.get("color-theme") ?? "os-default";
 	let currentTheme = ((themeInStorage === "os-default" && mediaMatch.matches) || themeInStorage === "light") ? "light" : "dark";
+	let mouseX = 0;
+	let mouseY = 0;
 
-	const updateTheme = () => {
-		document.documentElement.classList.toggle("light-theme", currentTheme === "light");
-		const themeColor = window.getComputedStyle(document.querySelector("c-header")).backgroundColor.trim();
+	const updateTheme = async () => {
+		document.documentElement.style.setProperty("--mouse-x", mouseX || button.offsetLeft);
+		document.documentElement.style.setProperty("--mouse-y", mouseY || button.offsetTop);
+		await transition(async () => {
+			document.documentElement.classList.toggle("light-theme", currentTheme === "light");
+		}, { name: "theme-change", resolveWhenFinished: false });
+		const themeColor = window.getComputedStyle(document.documentElement).backgroundColor.trim();
 		document.querySelector("meta[name=theme-color]").content = themeColor;
 	};
 	updateTheme();
 
-	button.addEventListener("click", async () => {
+	button.addEventListener("click", async (event) => {
 		currentTheme = currentTheme === "dark" ? "light" : "dark";
 		storage.set("color-theme", ((currentTheme === "light") === mediaMatch.matches) ? "os-default" : currentTheme);
+		mouseX = event.clientX;
+		mouseY = event.clientY;
 		updateTheme();
 	});
 

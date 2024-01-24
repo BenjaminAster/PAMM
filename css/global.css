@@ -55,6 +55,7 @@ h1, h2, h3, h4, h5, h6, strong, b {
 
 button, input, textarea, select, option {
 	all: unset;
+	outline: revert;
 }
 
 label, button, summary, select, option {
@@ -89,7 +90,8 @@ dialog {
 	inset: 0;
 	margin: auto;
 	border: none;
-	padding: 1rem;
+	padding: 0;
+	color: inherit;
 }
 
 ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) {
@@ -101,31 +103,27 @@ dialog {
 	color: var(--background);
 }
 
-@media (hover: none) {
-	::-webkit-scrollbar {
+@media (hover) {
+	::-webkit-scrollbar, ::-webkit-scrollbar-corner {
+		inline-size: .8rem;
+		block-size: .8rem;
+		background: none;
+	}
+
+	::-webkit-scrollbar-button:start:increment, ::-webkit-scrollbar-button:end:decrement {
 		display: none;
 	}
-}
 
-::-webkit-scrollbar, ::-webkit-scrollbar-corner {
-	inline-size: .8rem;
-	block-size: .8rem;
-	background: none;
-}
+	::-webkit-scrollbar-thumb, ::-webkit-scrollbar-button {
+		inline-size: .8rem;
+		block-size: .8rem;
+		background-color: var(--scrollbar-color);
+		border: .2rem solid transparent;
+		border-radius: .4rem;
+		background-clip: padding-box;
+	}
 
-::-webkit-scrollbar-button:start:increment, ::-webkit-scrollbar-button:end:decrement {
-	display: none;
-}
-
-::-webkit-scrollbar-thumb, ::-webkit-scrollbar-button {
-	background-color: var(--scrollbar-color);
-	inline-size: .8rem;
-	block-size: .8rem;
-	border: .2rem solid transparent;
-	border-radius: .4rem;
-	background-clip: padding-box;
-}
-
-::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-button:hover {
-	background-color: var(--scrollbar-hover-color);
+	::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-button:hover {
+		background-color: var(--scrollbar-hover-color);
+	}
 }

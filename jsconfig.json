@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"module": "ESNext",
+		"target": "ESNext",
+		"moduleResolution": "Bundler",
+		"noEmit": true,
+		"allowJs": true,
+		"checkJs": true,
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+		"types": [
+			"better-typescript",
+			// "../better-ts",
+			"./js/global.d.ts",
+		],
+	},
+}

@@ -6,3 +6,5 @@ type ItemType = "folder" | "file";
 type EditorLayout = "aside" | "stacked";
 
 declare function log<T>(data: T, trace?: boolean): T;
+
+declare var FileSystemObserver: any;

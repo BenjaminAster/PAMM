@@ -1,6 +1,5 @@
 {
 	"name": "PAMM",
-	"short_name": "PAMM",
 	"description": "Pretty Awesome Math Markup – A user-friendly LaTeX alternative with a live editor.",
 	"start_url": "./",
 	"scope": "./",

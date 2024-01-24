@@ -1,10 +1,10 @@
 <div class="text-input">
-	<textarea spellcheck="false" aria-label="math formula input"></textarea>
+	<textarea spellcheck="false" name="text-input" aria-label="math formula input"></textarea>
 </div>
 
 <div class="dragger"></div>
 
-<section class="html-output" aria-label="live preview of mathematical document">
+<section class="html-output" aria-label="live preview of mathematical document" tabindex="0">
 	<div class="end-element"></div>
 </section>
 
@@ -64,7 +64,6 @@
 			background-color: var(--background);
 			overflow: hidden;
 			contain: layout;
-			/* view-transition-name: text-input; */
 
 			& textarea {
 				padding: .8rem 1rem;
@@ -130,13 +129,9 @@
 			padding: 1rem;
 			padding-block-start: 0;
 			background-color: var(--background);
-			/* overflow-y: auto; */
 			overflow: auto;
-			overflow-wrap: break-word;
 			font-size: 1.1rem;
-			line-height: 1.5rem;
 			contain: layout;
-			/* view-transition-name: html-output; */
 
 			& .section {
 				content-visibility: auto;
@@ -153,20 +148,8 @@
 		}
 
 		:root[data-engine=blink] & .html-output :is(msqrt > *, mroot > :first-child) {
-			/* translate: 0 calc(3 * 1em / 16); */
 			padding-block-start: calc(3 * 1em / 16);
 			padding-inline: calc(2 * 1em / 16);
-		}
-
-		:root[data-engine=blink] & .html-output mfrac > :last-child {
-			/* translate: 0 calc(1 * 1em / 16); */
-			/* padding-block-start: calc(1 * 1em / 16) */
-			/* translate: 0 .2em; */
-			/* translate: 0 2px; */
-		}
-
-		& math {
-			/* margin-block: .2em; */
 		}
 
 		& math[display=block] {

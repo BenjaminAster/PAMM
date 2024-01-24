@@ -3,7 +3,7 @@
 	<img src="./assets/icon.svg" class="logo" alt="icon of PAMM" width="1" height="1" />
 	<a href="https://github.com/BenjaminAster/PAMM" class="github icon:github" title="View on GitHub"></a>
 
-	<input type="text" class="file-name editor-only" title="File name" spellcheck="false" />
+	<input type="text" class="editor-only" title="File name" spellcheck="false" autocomplete="off" name="file-name" />
 	<button data-action="recently-opened" class="files-only icon:clock" title="Recently opened"><span class="text">Recently opened</span></button>
 
 	<button data-action="toggle-editor-layout" class="editor-only icon:layout-columns" title="Toggle vertical / horizontal layout"></button>
@@ -11,7 +11,7 @@
 
 	<button data-action="save" class="editor-only icon:save-fill" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
 	<button data-action="export" class="editor-only icon:file-export" title="Export"><span class="text">Export</span></button>
-	<a data-action="my-files" href="?folder=home" class="editor-only icon:view-grid" title="Your files"><span class="text">Files</span></a>
+	<a data-action="my-files" href="?folder=home" class="editor-only icon:view-grid" draggable="true" title="Your files"><span class="text">Files</span></a>
 
 	<button data-action="open" class="files-only icon:folder-open" title="Open"><span class="text">Open</span></button>
 	<button data-action="upload" class="files-only icon:upload" title="Upload"><span class="text">Upload</span></button>
@@ -22,23 +22,12 @@
 <style>
 	@layer elements {
 		& {
-			/* background-color: blueViolet; */
-			/* color-scheme: dark; */
-			/* color: white; */
+			-webkit-app-region: drag;
 			app-region: drag;
 			--padding: .5rem;
-			/* border-radius: .7rem; */
-			/* margin: .7rem; */
-			/* margin-block-end: 0; */
 			transition: padding-inline .5s;
 			box-sizing: border-box;
-			grid-area: titlebar;
-			background-color: var(--gray-1);
 			contain: paint;
-		}
-
-		:root[data-transition=toggling-view] & {
-			/* view-transition-name: header; */
 		}
 
 		& header {
@@ -94,36 +83,16 @@
 			& {
 				min-block-size: var(--titlebar-area-block-size);
 				padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding));
-				padding-inline-start: max(var(--titlebar-area-inline-start));
-				padding-inline-end: max(var(--titlebar-area-inline-end));
+				padding-inline-start: var(--titlebar-area-inline-start);
+				padding-inline-end: var(--titlebar-area-inline-end);
 			}
 
 			:root:not(.no-wco-animation) & {
 				animation: collapse .5s;
-				/* animation: collapse 50s; */
 			}
 
 			& header {
 				padding-inline-end: max(var(--padding) - var(--titlebar-area-inline-end), 0px);
-			}
-		}
-
-		@keyframes collapse {
-			0% {
-				padding-block-start: calc(var(--titlebar-area-block-start) + var(--titlebar-area-block-size));
-				padding-inline: 0;
-			}
-			40% {
-				padding-block-start: calc(var(--titlebar-area-block-start) + var(--titlebar-area-block-size));
-			}
-			60% {
-				inline-size: 100dvi;
-				padding-inline-start: var(--titlebar-area-inline-start);
-				padding-inline-end: var(--titlebar-area-inline-end);
-			}
-			100% {
-				padding-block-start: calc(var(--titlebar-area-block-start) + var(--padding));
-				min-block-size: var(--titlebar-area-block-size);
 			}
 		}
 
@@ -134,12 +103,13 @@
 			margin-inline-start: .3rem;
 		}
 
-		& input.file-name {
+		& input[name=file-name] {
 			background: none;
 			border: 1px solid var(--gray-3);
 			border-radius: .4rem;
 			padding: .3rem .4rem;
 			outline: none;
+			-webkit-app-region: no-drag;
 			app-region: no-drag;
 			flex-grow: 1;
 			flex-basis: 0;
@@ -151,7 +121,7 @@
 			}
 		}
 
-		& input.file-name, & [data-action=recently-opened] {
+		& input[name=file-name], & [data-action=recently-opened] {
 			margin-inline-end: auto;
 		}
 
@@ -168,6 +138,7 @@
 				display: flex;
 				align-items: center;
 				gap: .5rem;
+				-webkit-app-region: no-drag;
 				app-region: no-drag;
 				--icon-size: 1.125rem;
 				transition: background-color .2s;
@@ -216,9 +187,11 @@
 		}
 
 		& a.github {
+			-webkit-app-region: no-drag;
 			app-region: no-drag;
 			--icon-size: 1.5rem;
 			margin-inline: .2rem;
 		}
 	}
+
 </style>

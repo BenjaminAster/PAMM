@@ -1,8 +1,5 @@
 
-/// <reference types="better-typescript" />
-/// <reference path="./global.d.ts" />
-
-import { $, $$, database, fileSystemAccessSupported, isApple, alert, confirm, prompt, setTitle, transition, elements, appMeta, encodeFile, decodeFile, storage } from "./app.js";
+import { $, $$, database, fileSystemAccessSupported, isApple, alert, confirm, prompt, setTitle, transition, elements, appMeta, encodeFile, decodeFile, storage, removeAfterTransition } from "./app.js";
 import { startRendering } from "./main.js";
 import parseDocument from "./parse/document/parseDocument.js";
 import renderDocument from "./render/document/renderDocument.js";
@@ -85,6 +82,15 @@ const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string
 			if (!fileContent) return {};
 			const { data, text } = decodeFile({ fileContent });
 			elements.textInput.value = text;
+			if (window.FileSystemObserver) {
+				const observer = new FileSystemObserver(async (records) => {
+					let fileContent = await (await fileHandle.getFile()).text();
+					const { data, text } = decodeFile({ fileContent });
+					elements.textInput.value = text;
+					startRendering();
+				});
+				observer.observe(fileHandle);
+			}
 			startRendering();
 			elements.textInput.focus();
 			window.requestAnimationFrame(async () => (await 0, elements.textInput.scrollTo({ top: 0 })));
@@ -470,61 +476,65 @@ const fileUtils = new class {
 		renderFileArguments,
 	} = {}) {
 		const dialog = /** @type {HTMLDialogElement} */ ($("template#export-dialog").content.firstElementChild.cloneNode(true));
-		$("button.close", dialog).addEventListener("click", () => dialog.remove());
-		$("[data-action=download]", dialog).addEventListener("click", async () => {
-			dialog.remove();
-			this.downloadFile({ name, content });
-		});
-		$("[data-action=print]", dialog).addEventListener("click", async () => {
-			if (renderFileArguments) {
-				await renderFile(renderFileArguments);
-
-				window.addEventListener("afterprint", async () => {
-					await 0; // https://crbug.com/1316315
-					await toggleView({ filesView: true });
-					await displayFolder({ id: currentFolder.id });
-				}, { once: true });
-			}
-			dialog.remove();
-			this.printFile();
-		});
-		$("[data-action=export-html]", dialog).addEventListener("click", async () => {
-			dialog.remove();
-			const tempDiv = document.createElement("div");
-			const tree = parseDocument(content ?? elements.textInput.value.normalize())
-			for (const item of tree) {
-				tempDiv.append(renderDocument([item]));
-				tempDiv.append(document.createTextNode("\n"));
-			}
-			const anchor = document.createElement("a");
-			const html = [
-				`<!DOCTYPE html>`,
-				`<html lang="en">`,
-				`<head>`,
-				`<meta charset="UTF-8" />`,
-				`<meta name="viewport" content="width=device-width, initial-scale=1" />`,
-				`<meta name="color-scheme" content="dark light" />`,
-				Object.assign(document.createElement("title"), { textContent: name ?? currentFile.name }).outerHTML,
-				`<style>`,
-				`body { margin: 0 max(1rem, 50dvi - 30rem); font-family: "Computer Modern", "Noto Serif", ui-serif, serif; }`,
-				`@media print { body { margin: 0; } }`,
-				`math[display=block] { margin-block: .5rem; }`,
-				`code { white-space: pre-wrap; }`,
-				`</style>`,
-				`</head>`,
-				`<body>`,
-				``,
-				tempDiv.innerHTML,
-				`</body>`,
-				`</html>`,
-			].join("\n");
-			anchor.href = URL.createObjectURL(new Blob([html], { type: appMeta.mimeType }));
-			anchor.download = (name ?? currentFile.name) + ".html";
-			anchor.click();
-			URL.revokeObjectURL(anchor.href);
-		});
 		document.body.append(dialog);
 		dialog.showModal();
+		dialog.addEventListener("close", async () => {
+			removeAfterTransition(dialog);
+			switch (dialog.returnValue) {
+				case ("download"): {
+					this.downloadFile({ name, content });
+					break;
+				}
+				case ("print"): {
+					if (renderFileArguments) {
+						await renderFile(renderFileArguments);
+
+						window.addEventListener("afterprint", async () => {
+							await 0; // https://crbug.com/1316315
+							await toggleView({ filesView: true });
+							await displayFolder({ id: currentFolder.id });
+						}, { once: true });
+					}
+					this.printFile();
+					break;
+				}
+				case ("export-html"): {
+					const tempDiv = document.createElement("div");
+					const tree = parseDocument(content ?? elements.textInput.value.normalize())
+					for (const item of tree) {
+						tempDiv.append(renderDocument([item]));
+						tempDiv.append(document.createTextNode("\n"));
+					}
+					const anchor = document.createElement("a");
+					const html = [
+						`<!DOCTYPE html>`,
+						`<html lang="en">`,
+						`<head>`,
+						`<meta charset="UTF-8" />`,
+						`<meta name="viewport" content="width=device-width, initial-scale=1" />`,
+						`<meta name="color-scheme" content="dark light" />`,
+						Object.assign(document.createElement("title"), { textContent: name ?? currentFile.name }).outerHTML,
+						`<style>`,
+						`body { margin: 0 max(1rem, 50dvi - 30rem); font-family: "Computer Modern", "Noto Serif", ui-serif, serif; }`,
+						`@media print { body { margin: 0; } }`,
+						`math[display=block] { margin-block: .5rem; }`,
+						`code { white-space: pre-wrap; }`,
+						`</style>`,
+						`</head>`,
+						`<body>`,
+						``,
+						tempDiv.innerHTML,
+						`</body>`,
+						`</html>`,
+					].join("\n");
+					anchor.href = URL.createObjectURL(new Blob([html], { type: appMeta.mimeType }));
+					anchor.download = (name ?? currentFile.name) + ".html";
+					anchor.click();
+					URL.revokeObjectURL(anchor.href);
+					break;
+				}
+			}
+		});
 	};
 };
 
@@ -539,12 +549,7 @@ const fileUtils = new class {
 
 	elements.recentlyOpenedButton.addEventListener("click", async () => {
 		const dialog = elements.recentlyOpenedDialog;
-		const closeDialog = () => {
-			dialog.close();
-			for (const element of $$(":scope > ul > li", dialog)) {
-				element.remove();
-			}
-		};
+		// const closeDialog = () => dialog.close();
 		const recentlyOpenedFiles = await Promise.all((await database.get({ store: "key-value", key: "recently-opened" })).value.map(async ({ id, storageType }) => {
 			const store = {
 				"indexeddb": "files",
@@ -558,7 +563,7 @@ const fileUtils = new class {
 		}));
 		const UL = $("ul", dialog);
 		const listItem = $(":scope > template", UL).content;
-		$("button.close", dialog).addEventListener("click", closeDialog, { once: true });
+		for (const element of $$(":scope > form > ul > li", dialog)) element.remove();
 		for (const { id, storageType, name, fileHandle } of recentlyOpenedFiles) {
 			const clone = listItem.cloneNode(true);
 			$("[data-storagetype]", clone).dataset.storagetype = storageType;
@@ -567,7 +572,7 @@ const fileUtils = new class {
 			for (const [selectorString, changeURL] of /** @type {const} */ ([["a.link", false], ["a.permalink", true]])) {
 				if (storageType === "indexeddb") {
 					$(selectorString, clone).addEventListener("click", (event) => {
-						closeDialog();
+						dialog.close();
 						itemClickHandler({ id, type: "file", storageType, changeURL })(event);
 					});
 				} else if (storageType === "file-system") {
@@ -577,7 +582,7 @@ const fileUtils = new class {
 						if (await fileHandle.queryPermission({ mode: "read" }) !== "granted") {
 							if (await fileHandle.requestPermission({ mode: "readwrite" }) !== "granted") return;
 						}
-						closeDialog();
+						dialog.close();
 						await itemClickHandler({ id, type: "file", storageType, fileHandle, changeURL })();
 					});
 				} else throw new Error(`Unknown storage type (${storageType})`);
@@ -696,7 +701,7 @@ window.addEventListener("beforeunload", (event) => {
 		}
 
 		window.setTimeout(() => {
-			document.documentElement.classList.remove("loading");
+			document.documentElement.classList.remove("no-transitions");
 		}, 500);
 	})();
 }
