@@ -1,12 +1,31 @@
 <div class="text-input">
-	<textarea spellcheck="false" name="text-input" aria-label="math formula input"></textarea>
+	<pre class="textarea" contenteditable spellcheck="false" name="text-input" aria-label="math formula input"></pre>
 </div>
 
 <div class="dragger"></div>
 
+<div id="paper-size-measurement"></div>
+
+<div class="print-header-placeholder">&nbsp;</div>
+
+<div id="headers-and-footers">
+	<template>
+		<div>
+			<div class="header">
+				<div class="author"></div>
+				<div class="title"></div>
+				<div class="date"></div>
+			</div>
+			<div class="footer"></div>
+		</div>
+	</template>
+</div>
+
 <section class="html-output" aria-label="live preview of mathematical document" tabindex="0">
-	<div class="end-element"></div>
+	<div id="content-end-element"></div>
 </section>
+
+<div class="print-footer-placeholder">&nbsp;</div>
 
 <style>
 	@layer elements {
@@ -20,6 +39,12 @@
 			--full-length: 100cqi;
 			--dragger-cursor: ew-resize;
 			container-type: size;
+
+			--page-inline-margin: 5rem;
+			--page-top-margin: 7rem;
+			--page-bottom-margin: 5rem;
+			--page-header-top-offset: 4.5rem;
+			--page-footer-bottom-offset: 2.5rem;
 
 			@media (hover: none) {
 				--dragger-width: 16px;
@@ -59,21 +84,28 @@
 			flex-shrink: 0;
 			--clamped-split-proportion: clamp(0, var(--split-proportion), 1);
 			flex-basis: calc(var(--clamped-split-proportion) * (var(--full-length) - var(--dragger-width)));
-			font-family: ui-monospace, monospace;
 			font-size: 1.1rem;
 			background-color: var(--background);
-			overflow: hidden;
+			/* overflow: hidden; */
 			contain: layout;
+			overflow: auto;
 
-			& textarea {
+			& .textarea {
 				padding: .8rem 1rem;
 				resize: none;
-				inline-size: 100%;
-				block-size: 100%;
+				/* inline-size: 100%; */
+				/* block-size: 100%; */
 				box-sizing: border-box;
 				outline: none;
-				overflow: auto;
-				min-block-size: 0;
+				/* overflow: auto; */
+				min-block-size: 100%;
+				white-space: pre-wrap;
+				margin: 0;
+				font-family: ui-monospace, monospace;
+			}
+
+			& ::highlight(heading) {
+				color: var(--highlight-heading);
 			}
 		}
 
@@ -93,6 +125,8 @@
 		}
 
 		& .dragger {
+			touch-action: none;
+
 			&:hover {
 				background-color: var(--gray-2);
 			}
@@ -125,17 +159,25 @@
 			flex-grow: 1;
 			flex-shrink: 1;
 			flex-basis: 0;
-			font-family: "Computer Modern Serif", "Noto Serif", ui-serif, serif;
-			padding: 1rem;
-			padding-block-start: 0;
-			background-color: var(--background);
-			overflow: auto;
-			font-size: 1.1rem;
-			contain: layout;
+			font-family: var(--document-font);
+			line-height: 1.4;
+			font-size: 1rem;
+			box-sizing: border-box;
 
-			& .section {
-				content-visibility: auto;
-				contain-intrinsic-block-size: auto 10rem;
+			@media not print {
+				:root:not(.print-simulation) & {
+					font-size: 1.1rem;
+					contain: layout;
+					overflow: auto;
+					background-color: var(--background);
+					padding: 1rem;
+					padding-block-start: 2rem;
+
+					& .section {
+						content-visibility: auto;
+						contain-intrinsic-block-size: auto 10em;
+					}
+				}
 			}
 	
 			& code {
@@ -143,7 +185,12 @@
 				font-family: "FreeMono", "Courier New", ui-monospace, monospace;
 				padding-inline: .2em;
 				background-color: var(--gray-1);
-				font-size: .9rem;
+				font-size: .9em;
+			}
+
+			& h1 {
+				margin-block-start: 0;
+				text-align: center;
 			}
 		}
 
@@ -168,19 +215,152 @@
 			white-space: pre-wrap;
 		}
 
+		@media not print {
+			& .print-header-placeholder, & .print-footer-placeholder, & #headers-and-footers {
+				display: none;
+			}
+		}
+
+		/* :root[data-state=estimating-page-count] & .html-output { */
+		:root.print-simulation & {
+			& .html-output {
+				position: absolute;
+				inline-size: var(--page-width);
+				block-size: var(--page-height);
+				column-width: var(--page-width);
+				column-fill: auto;
+				column-count: auto;
+				padding: 0;
+				padding-block-start: var(--page-top-margin);
+				padding-block-end: var(--page-bottom-margin);
+
+				& > .section {
+					margin-inline: var(--page-inline-margin);
+				}
+			}
+		}
+
+		& #paper-size-measurement {
+			position: absolute;
+			inline-size: var(--page-width);
+			block-size: var(--page-height);
+
+			:root:not(.print-simulation) & {
+				display: none;
+			}
+		}
+
 		@media print {
 			& {
-				display: block;
+				box-sizing: border-box;
+				display: table;
 				container-type: normal;
+				background: none;
 			}
 
-			& .dragger, .text-input {
+			& .dragger, & .text-input {
 				display: none;
 			}
 
+			& .print-header-placeholder, & .print-footer-placeholder {
+				break-inside: avoid-page;
+				box-sizing: border-box;
+				/* background-color: #00f3; */
+			}
+
+			& .print-header-placeholder {
+				/* outline: 1px solid blue;
+				outline-offset: -2px; */
+				display: table-header-group;
+				block-size: var(--page-top-margin);
+			}
+
+			& .print-footer-placeholder {
+				/* outline: 1px solid cyan;
+				outline-offset: -2px; */
+				display: table-footer-group;
+				block-size: var(--page-bottom-margin);
+			}
+
 			& .html-output {
-				overflow: unset;
-				padding: 0;
+				display: table-row-group;
+				/* outline: 1px solid lime;
+				outline-offset: -6px; */
+
+				& > .section {
+					margin-inline: var(--page-inline-margin);
+				}
+
+				/* & > * {
+					outline: 1px dotted fuchsia;
+					outline-offest: 0px;
+				} */
+
+				& code {
+					background: none;
+					padding-inline: .1em;
+				}
+			}
+
+			& #headers-and-footers {
+				pointer-events: none;
+				z-index: -1;
+				position: absolute;
+				inset-block-start: 0;
+				inset-inline: 0;
+				box-sizing: border-box;
+				font-family: var(--document-font);
+
+				& > div {
+					/* outline: 1px solid red;
+					outline-offset: -4px; */
+
+					box-sizing: border-box;
+					block-size: calc(var(--page-height) - var(--page-footer-bottom-offset));
+					/* display: flex; */
+					/* flex-direction: column; */
+					/* justify-content: space-between; */
+					break-after: page;
+					break-inside: avoid-page;
+					/* padding-block-start: var(--page-top-margin); */
+					/* padding-inline: var(--page-inline-margin); */
+					position: relative;
+
+					& > * {
+						pointer-events: all;
+						position: absolute;
+						inset-inline: 0;
+					}
+
+					& > .footer {
+						text-align: center;
+						inset-block-end: 0;
+					}
+
+					& > .header {
+						text-align: start;
+						inset-block-start: var(--page-header-top-offset);
+						margin-inline: var(--page-inline-margin);
+						display: flex;
+						/* justify-content: space-between; */
+						& > * {
+							flex-basis: 0;
+							flex-grow: 1;
+							flex-shrink: 1;
+
+							&:nth-child(2) {
+								flex-shrink: 0;
+								text-align: center;
+							}
+
+							&:nth-child(3) {
+								text-align: end;
+							}
+						}
+						border-block-end: 1px solid #555;
+						/* font-style: italic; */
+					}
+				}
 			}
 		}
 	}

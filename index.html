@@ -39,14 +39,20 @@
 	<link rel="preload" as="font" crossorigin href="./assets/latinmodern-math/normal.otf" />
 	<link rel="preload" as="font" crossorigin href="./assets/computer-modern/normal.otf" />
 	<link rel="preload" as="font" crossorigin href="./assets/computer-modern/bold.otf" />
-	<link rel="preload" as="font" crossorigin href="./assets/computer-modern/italic.otf" />
-	<link rel="preload" as="font" crossorigin href="./assets/computer-modern/bold-italic.otf" />
+	<!-- <link rel="preload" as="font" crossorigin href="./assets/computer-modern/italic.otf" /> -->
+	<!-- <link rel="preload" as="font" crossorigin href="./assets/computer-modern/bold-italic.otf" /> -->
 
 	<script type="module">
 		if (!CSS.supports("(color: color-mix(in srgb, oklch(1% 1% 1deg), red))") && localStorage.getItem(`${location.pathname}:force`) !== "true") {
 			location.assign("/update-your-browser/?source=" + location.pathname);
 		}
 	</script>
+
+	<style id="paper-size-style">
+		@page {
+			size: A4 portrait;
+		}
+	</style>
 </head>
 
 <body>

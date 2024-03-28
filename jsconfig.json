@@ -3,14 +3,11 @@
 		"module": "ESNext",
 		"target": "ESNext",
 		"moduleResolution": "Bundler",
+		"moduleDetection": "force",
 		"noEmit": true,
 		"allowJs": true,
 		"checkJs": true,
 		"lib": ["ESNext", "DOM", "DOM.Iterable"],
-		"types": [
-			"better-typescript",
-			// "../better-ts",
-			"./js/global.d.ts",
-		],
+		"types": ["better-typescript", "./js/global.d.ts"],
 	},
 }

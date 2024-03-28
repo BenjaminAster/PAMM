@@ -16,29 +16,33 @@
 
 	@media print {
 		:root {
-			-webkit-print-color-adjust: exact;
-			print-color-adjust: exact;
+			background: none;
+			--chroma: 2.5%;
 		}
 
 		body {
 			display: block;
 			block-size: unset;
 			overflow: unset;
+			overscroll-behavior: unset;
+			/* padding-inline: 2rem; */
 		}
 
 		main {
 			display: block;
 			overflow: unset;
+			background: none;
 		}
 
 		c-header, dialog {
 			display: none;
 		}
+	}
 
-		@page {
-			size: A4 portrait;
-			margin: 0;
-		}
+	@page {
+		/* size: A4 portrait; */
+		margin: 0px;
+		bleed: 0px;
 	}
 }
 
@@ -47,7 +51,7 @@
 		:root:not(.light-theme) {
 			color-scheme: dark;
 
-			--color: #fbfbfe;
+			--color: #ffffff;
 			--hue: 290.4deg;
 			--chroma: 4%;
 			--background-lightness: 20%;
@@ -58,6 +62,8 @@
 			--accent-hue: 277deg;
 			--accent-chroma: 57%;
 			--accent-lightness: 48%;
+
+			--highlight-heading: oklch(calc(var(--accent-lightness) + 30%) var(--accent-chroma) var(--accent-hue));
 		}
 	}
 
@@ -75,8 +81,10 @@
 		--accent-hue: 277deg;
 		--accent-lightness: 60%;
 		--accent-chroma: 62%;
+
+		--highlight-heading: blue;
 	}
-	
+
 	:root {
 		--background: oklch(var(--background-lightness) var(--chroma) var(--hue));
 		--gray-1: oklch(calc(var(--background-lightness) + 1 * var(--gray-lightness-step)) var(--chroma) var(--hue));
@@ -100,6 +108,8 @@
 
 		--scrollbar-color: oklch(var(--accent-lightness) var(--accent-chroma) var(--accent-hue));
 		--scrollbar-hover-color: oklch(calc(var(--accent-lightness) + 10%) var(--accent-chroma) var(--accent-hue));
+
+		--document-font: "Computer Modern Serif", "Noto Serif", ui-serif, serif;
 
 		font-family: system-ui, sans-serif;
 		background-color: var(--gray-1);
@@ -129,6 +139,17 @@
 		display: flex;
 		flex-direction: column;
 		overscroll-behavior: none;
+	}
+
+	:root {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+
+		--page-size-A4-width: 210mm;
+		--page-size-A4-height: 297mm;
+
+		--page-width: var(--page-size-A4-width);
+		--page-height: var(--page-size-A4-height);
 	}
 
 	main {
@@ -419,10 +440,10 @@
 
 	@keyframes circular-portal {
 		from {
-			clip-path: circle(0px at calc(var(--mouse-x) * 1px) calc(var(--mouse-y) * 1px));
+			clip-path: circle(0px at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px));
 		}
 		to {
-			clip-path: circle(hypot(100dvb, 100dvi) at calc(var(--mouse-x) * 1px) calc(var(--mouse-y) * 1px));
+			clip-path: circle(hypot(100dvb, 100dvi) at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px));
 		}
 	}
 

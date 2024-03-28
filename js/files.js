@@ -1,5 +1,23 @@
 
-import { $, $$, database, fileSystemAccessSupported, isApple, alert, confirm, prompt, setTitle, transition, elements, appMeta, encodeFile, decodeFile, storage, removeAfterTransition } from "./app.js";
+import {
+	$,
+	$$,
+	database,
+	fileSystemAccessSupported,
+	isApple,
+	alert,
+	confirm,
+	prompt,
+	setTitle,
+	transition,
+	elements,
+	appMeta,
+	encodeFile,
+	decodeFile,
+	storage,
+	removeAfterTransition,
+	removeRealChildren,
+} from "./app.js";
 import { startRendering } from "./main.js";
 import parseDocument from "./parse/document/parseDocument.js";
 import renderDocument from "./render/document/renderDocument.js";
@@ -44,7 +62,7 @@ const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string
 				storageType,
 				...await database.get({ store: "files", key: id }),
 			};
-			elements.textInput.value = currentFile.content;
+			elements.textInput.textContent = currentFile.content;
 			setTitle(`${currentFile.name} 📄`);
 			elements.fileNameInput.value = currentFile.name;
 			await addToRecentlyOpened({ id, storageType });
@@ -81,12 +99,12 @@ const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string
 			})();
 			if (!fileContent) return {};
 			const { data, text } = decodeFile({ fileContent });
-			elements.textInput.value = text;
+			elements.textInput.textContent = text;
 			if (window.FileSystemObserver) {
 				const observer = new FileSystemObserver(async (records) => {
 					let fileContent = await (await fileHandle.getFile()).text();
 					const { data, text } = decodeFile({ fileContent });
-					elements.textInput.value = text;
+					elements.textInput.textContent = text;
 					startRendering();
 				});
 				observer.observe(fileHandle);
@@ -300,7 +318,7 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 		const breadcrumbUL = elements.breadcrumbUL;
 		const template = $(":scope > template", breadcrumbUL);
 
-		for (const child of [...breadcrumbUL.childNodes].filter(({ nodeName }) => nodeName !== "TEMPLATE")) child.remove();
+		removeRealChildren(breadcrumbUL);
 
 		const fragment = new DocumentFragment();
 		let folder = currentFolder;
@@ -353,7 +371,7 @@ export let /** @type {(event: KeyboardEvent) => void} */ keyDown;
 
 const fileUtils = new class {
 	async saveFile() {
-		currentFile.content = elements.textInput.value.normalize();
+		currentFile.content = elements.textInput.textContent.normalize();
 		switch (currentFile.storageType) {
 			case ("indexeddb"): {
 				await database.put({
@@ -377,7 +395,7 @@ const fileUtils = new class {
 	};
 	downloadFile(/** @type {{ name?: string, content?: string }?} */ {
 		name = currentFile.name + appMeta.fileExtension,
-		content = elements.textInput.value.normalize(),
+		content = elements.textInput.textContent.normalize(),
 	} = {}) {
 		const anchor = document.createElement("a");
 		const fileContent = encodeFile({ text: content });
@@ -478,6 +496,9 @@ const fileUtils = new class {
 		const dialog = /** @type {HTMLDialogElement} */ ($("template#export-dialog").content.firstElementChild.cloneNode(true));
 		document.body.append(dialog);
 		dialog.showModal();
+		dialog.addEventListener("click", ({ target }) => {
+			if (target === dialog) dialog.close("cancel");
+		});
 		dialog.addEventListener("close", async () => {
 			removeAfterTransition(dialog);
 			switch (dialog.returnValue) {
@@ -500,7 +521,7 @@ const fileUtils = new class {
 				}
 				case ("export-html"): {
 					const tempDiv = document.createElement("div");
-					const tree = parseDocument(content ?? elements.textInput.value.normalize())
+					const tree = parseDocument(content ?? elements.textInput.textContent.normalize())
 					for (const item of tree) {
 						tempDiv.append(renderDocument([item]));
 						tempDiv.append(document.createTextNode("\n"));
@@ -591,6 +612,9 @@ const fileUtils = new class {
 		}
 		dialog.showModal();
 	});
+	elements.recentlyOpenedDialog.addEventListener("click", function ({ target }) {
+		if (target === this) this.close("cancel");
+	});
 
 	elements.newFolderButton.addEventListener("click", async () => {
 		const name = (await prompt({ message: "Folder name:" })).value?.trim();
@@ -657,6 +681,43 @@ window.addEventListener("beforeunload", (event) => {
 		event.returnValue = true;
 	}
 });
+
+{
+	// printing:
+	let /** @type {string} */ previousTitle;
+	window.addEventListener("beforeprint", () => {
+		previousTitle = document.title;
+		if (!currentFile) return;
+		document.title = currentFile.name;
+
+		document.documentElement.classList.add("print-simulation");
+
+		const contentWidth = elements.contentEndElement.offsetLeft - elements.htmlOutput.offsetLeft;
+		const paperWidth = elements.paperSizeMeasurement.offsetWidth;
+		const pageCount = Math.round(contentWidth / paperWidth) + 1;
+
+		document.documentElement.classList.remove("print-simulation");
+
+		removeRealChildren(elements.headersAndFooters);
+		const templateContent = $(":scope > template", elements.headersAndFooters).content;
+
+		for (let page = 1; page <= pageCount; ++page) {
+			const clone = templateContent.cloneNode(true);
+			if (page === 1) {
+				$(".header", clone).remove();
+			} else {
+				$(".author", clone).textContent = "John Doe"; // TODO
+				$(".title", clone).textContent = currentFile.name;
+				$(".date", clone).textContent = Intl.DateTimeFormat("en", { month: "long", year: "numeric" }).format();
+			}
+			$(".footer", clone).textContent = page.toString();
+			elements.headersAndFooters.append(clone);
+		}
+	});
+	window.addEventListener("afterprint", () => {
+		document.title = previousTitle;
+	});
+}
 
 {
 	const handleHistoryStateFile = async () => {

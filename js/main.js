@@ -13,11 +13,15 @@ import parseDocument from "./parse/document/parseDocument.js";
 import renderDocument from "./render/document/renderDocument.js";
 import { keyDown } from "./files.js";
 
+CSS.highlights?.set("heading", new Highlight());
+const selection = document.getSelection();
+
 export const { startRendering } = (() => {
 	let previousSectionsArray = [];
 
 	const handleInput = function (/** @type {Partial<InputEvent>} */ { data } = ({})) {
-		const { value, selectionStart, selectionEnd } = this;
+		// console.log('handle')
+		const { textContent } = elements.textInput;
 
 		document.documentElement.classList.add("file-dirty");
 
@@ -38,7 +42,7 @@ export const { startRendering } = (() => {
 		let sectionBracesDepth = 0;
 		let currentSectionArray = [];
 		// const initialStringSections = value.split(/(?:\n(?=(?:#|-?{)))|(?:(?:(?<=})|\n)\n(?!(?:\n|#)))/g);
-		const initialStringSections = value.split(/\n(?!\n)/g);
+		const initialStringSections = textContent.split(/\n(?!\n)/g);
 		let codeMode = false;
 		let backslashEscaped = false;
 		for (let index = 0; index < initialStringSections.length; index++) {
@@ -106,10 +110,47 @@ export const { startRendering } = (() => {
 			}
 		}
 
+		if (CSS.highlights) {
+			const highlight = CSS.highlights.get("heading");
+			highlight.clear();
+			for (const { 1: { length }, index } of textContent.matchAll(/^(#.*)$/gm)) {
+				const range = new Range();
+				range.setStart(elements.textInput.firstChild, index);
+				range.setEnd(elements.textInput.firstChild, index + length);
+				highlight.add(range);
+			}
+		}
+
 		previousSectionsArray = sectionsArray;
 	};
 
 	elements.textInput.addEventListener("input", handleInput);
+
+	elements.textInput.addEventListener("beforeinput", (event) => {
+		if (!event.inputType.startsWith("format")) {
+			const [{ startContainer: container, startOffset, endOffset }] = event.getTargetRanges();
+			const replaceText = (/** @type {string} */ text) => {
+				container.replaceData(startOffset, endOffset - startOffset, text);
+				selection.collapse(container, startOffset + text.length);
+				const { top } = selection.getRangeAt(0).getBoundingClientRect();
+				const bottomEdge = elements.textInput.offsetTop + elements.textInput.offsetHeight;
+				if (top > bottomEdge) elements.textInput.scrollBy(0, top - bottomEdge);
+			};
+			if (event.inputType === "insertParagraph") {
+				event.preventDefault();
+				replaceText("\n");
+				handleInput()
+			} else if (event.dataTransfer) {
+				event.preventDefault();
+				const insertedText = event.dataTransfer.getData("text/plain").replaceAll("\r", "");
+				replaceText(insertedText);
+				handleInput()
+			} else return;
+		}
+
+		event.preventDefault();
+		handleInput()
+	});
 
 	return {
 		startRendering() {
@@ -141,18 +182,18 @@ export const { startRendering } = (() => {
 		keyDown(event);
 	});
 
-	window.addEventListener("keyup", (event) => {
-		if (event.key === "Shift" && onlyShiftPressed) {
-			onlyShiftPressed = false;
-			const { value, selectionStart, selectionEnd } = elements.textInput;
-			if (value.slice(selectionStart, selectionStart + 2) === " }") {
-				elements.textInput.selectionStart = elements.textInput.selectionEnd = selectionStart + 2;
-			} else {
-				elements.textInput.value = value.slice(0, selectionStart) + "{  }" + value.slice(selectionEnd);
-				elements.textInput.selectionStart = elements.textInput.selectionEnd = selectionStart + 2;
-			}
-		}
-	});
+	// window.addEventListener("keyup", (event) => {
+	// 	if (event.key === "Shift" && onlyShiftPressed) {
+	// 		onlyShiftPressed = false;
+	// 		const { value, selectionStart, selectionEnd } = elements.textInput;
+	// 		if (value.slice(selectionStart, selectionStart + 2) === " }") {
+	// 			elements.textInput.selectionStart = elements.textInput.selectionEnd = selectionStart + 2;
+	// 		} else {
+	// 			elements.textInput.value = value.slice(0, selectionStart) + "{  }" + value.slice(selectionEnd);
+	// 			elements.textInput.selectionStart = elements.textInput.selectionEnd = selectionStart + 2;
+	// 		}
+	// 	}
+	// });
 }
 
 
@@ -178,7 +219,7 @@ export const { startRendering } = (() => {
 	let /** @type {number} */ containerCoordinate;
 	let /** @type {number} */ containerSize;
 
-	dragger.addEventListener("mousedown", ({ clientX, clientY }) => {
+	dragger.addEventListener("pointerdown", ({ clientX, clientY }) => {
 		editor.classList.add("dragging");
 		dragging = true;
 		const stacked = currentLayout === "stacked";
@@ -188,32 +229,17 @@ export const { startRendering } = (() => {
 		({ [stacked ? "y" : "x"]: containerCoordinate, [stacked ? "height" : "width"]: containerSize } = editor.getBoundingClientRect());
 	});
 
-	window.addEventListener("mouseup", () => {
+	window.addEventListener("pointerup", () => {
 		if (!dragging) return;
 		editor.classList.remove("dragging");
 		dragging = false;
 	});
 
-	window.addEventListener("mousemove", ({ clientX, clientY }) => {
+	window.addEventListener("pointermove", ({ clientX, clientY }) => {
 		if (!dragging) return;
 		const stacked = currentLayout === "stacked";
 		const splitProportion = ((stacked ? clientY : clientX) - relativeDraggerCoordinate - containerCoordinate) / (containerSize - draggerSize);
 		editor.style.setProperty("--split-proportion", splitProportion);
 	});
-
-	dragger.addEventListener("touchstart", (event) => {
-		if (event.touches.length !== 1) return;
-		dragger.dispatchEvent(new MouseEvent("mousedown", event.touches[0]))
-	}, { passive: false });
-
-	window.addEventListener("touchend", (event) => {
-		if (event.touches.length !== 0) return;
-		window.dispatchEvent(new MouseEvent("mouseup"))
-	}, { passive: false });
-
-	window.addEventListener("touchmove", (event) => {
-		if (event.touches.length !== 1) return;
-		window.dispatchEvent(new MouseEvent("mousemove", event.touches[0]))
-	}, { passive: false });
 }
 

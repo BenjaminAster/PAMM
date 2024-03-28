@@ -11,7 +11,7 @@ export const fileSystemAccessSupported = Boolean(window.showSaveFilePicker && wi
 
 export const isApple = navigator.userAgentData?.platform ? ["macOS", "iOS"].includes(navigator.userAgentData.platform) : /^(Mac|iP)/.test(navigator.platform);
 
-export const createMathElement = (/** @type {string} */ name) => document.createElementNS("http://www.w3.org/1998/Math/MathML", name);
+export const createMathElement = Document.prototype.createElementNS.bind(document, "http://www.w3.org/1998/Math/MathML");
 
 export const encodeFile = (/** @type {{ text: string, data?: Record<string, any> }} */ { text, data = {} }) => {
 	return `version 1\n-----\n${text}\n-----\n${JSON.stringify(data, null, "\t")}`
@@ -36,16 +36,6 @@ const executeOnTransitionEnd = async (/** @type {Element} */ element, /** @type 
 		element.getAnimations().filter((animation) => animation instanceof CSSTransition).map(({ finished }) => finished)
 	);
 	callback();
-
-	// const onTransitionEnd = () => {
-	// 	element.removeEventListener("transitionend", onTransitionEnd);
-	// 	element.removeEventListener("transitioncancel", onTransitionEnd);
-	// 	callback();
-	// };
-	// if (element.getAnimations().some((animation) => animation instanceof CSSTransition)) {
-	// 	element.addEventListener("transitionend", onTransitionEnd);
-	// 	element.addEventListener("transitioncancel", onTransitionEnd);
-	// } else onTransitionEnd();
 };
 
 export const removeAfterTransition = (/** @type {HTMLElement} */ element) => {
@@ -54,6 +44,12 @@ export const removeAfterTransition = (/** @type {HTMLElement} */ element) => {
 
 export const _expose = (/** @type {Record<string, any>} */ object) => {
 	for (const [key, value] of Object.entries(object)) self[key] = value;
+};
+
+export const removeRealChildren = (/** @type {HTMLElement} */ element) => {
+	for (const child of [...element.childNodes].filter(({ nodeName }) => nodeName !== "TEMPLATE")) {
+		child.remove();
+	}
 };
 
 export const database = await new class {
@@ -285,6 +281,9 @@ export const alert = async (/** @type {{ message: string, userGestureCallback?: 
 	document.body.append(dialog);
 	dialog.showModal();
 	const { promise, resolve } = Promise.withResolvers();
+	dialog.addEventListener("click", ({ target }) => {
+		if (target === dialog) dialog.close();
+	});
 	dialog.addEventListener("close", async () => {
 		await userGestureCallback?.();
 		resolve();
@@ -299,6 +298,9 @@ export const confirm = async (/** @type {{ message: string, userGestureCallback?
 	document.body.append(dialog);
 	dialog.showModal();
 	const { promise, resolve } = Promise.withResolvers();
+	dialog.addEventListener("click", ({ target }) => {
+		if (target === dialog) dialog.close("cancel");
+	});
 	dialog.addEventListener("close", async () => {
 		await userGestureCallback?.();
 		resolve();
@@ -317,30 +319,21 @@ export const prompt = async (/** @type {{ message: string, defaultValue?: string
 	document.body.append(dialog);
 	dialog.showModal();
 	const { promise, resolve } = Promise.withResolvers();
+	dialog.addEventListener("click", ({ target }) => {
+		if (target === dialog) dialog.close("cancel");
+	});
 	dialog.addEventListener("close", resolve);
 	await promise;
 	const accepted = dialog.returnValue === "ok";
 	const value = accepted ? /** @type {string} */ (new FormData($("form", dialog)).get("input")) : undefined;
 	removeAfterTransition(dialog);
 	return { accepted, value };
-
-
-	// const accepted = await new Promise((resolve) => {
-	// 	$(".input", dialog).addEventListener("keydown", (event) => {
-	// 		if (event.key === "Enter") {
-	// 			event.preventDefault();
-	// 			resolve(true);
-	// 		}
-	// 	});
-	// 	$("button.ok", dialog).addEventListener("click", () => resolve(true), { once: true });
-	// 	$("button.cancel", dialog).addEventListener("click", () => resolve(false), { once: true });
-	// });
 };
 
 export const setTitle = (/** @type {string} */ title) => {
 	const titleArray = [title, appMeta.shortName];
 	if (window.matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay)").matches) titleArray.reverse();
-	document.title = titleArray.join(" – ");
+	document.title = titleArray.join(" - ");
 };
 
 const useTransitions = Boolean(document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -412,28 +405,6 @@ export const appMeta = {
 		files: import.meta.resolve("../html/files.c.html"),
 	};
 
-	// const tempDocument = document.implementation.createHTMLDocument();
-
-	// const hostRegex = /:host\b/g;
-	// const editRule = (/** @type {any} */ rule, /** @type {string} */ name) => {
-	// 	const selector = rule.selectorText;
-	// 	rule.selectorText = hostRegex.test(selector) ? selector.replaceAll(hostRegex, `c-${name}`) : `c-${name} ${selector}`;
-	// };
-	// const editRulesRecursively = (/** @type {any} */ rules, /** @type {string} */ name) => {
-	// 	for (const rule of rules) {
-	// 		switch (rule.constructor.name) {
-	// 			case ("CSSStyleRule"): {
-	// 				editRule(rule, name);
-	// 				break;
-	// 			}
-	// 			case ("CSSMediaRule"): case ("CSSSupportsRule"): case ("CSSLayerBlockRule"): case ("CSSContainerRule"): {
-	// 				editRulesRecursively(rule.cssRules, name);
-	// 				break;
-	// 			}
-	// 		}
-	// 	}
-	// };
-
 	await Promise.all(Object.entries(customElements).map(async ([name, path]) => {
 		const html = await (await window.fetch(path)).text();
 		const content = parseHTML(html);
@@ -484,8 +455,11 @@ export const elements = {
 	get toggleLayoutButton() { return ($("c-header button[data-action=toggle-editor-layout]")) },
 	files: document.querySelector("c-files"),
 	editor: document.createElement("c-editor"),
-	get textInput() { return $(".text-input textarea", this.editor) },
+	get textInput() { return $(".text-input .textarea", this.editor) },
 	get htmlOutput() { return $("section.html-output", this.editor) },
+	get headersAndFooters() { return $("#headers-and-footers") },
+	get paperSizeMeasurement() { return $("#paper-size-measurement") },
+	get contentEndElement() { return $("#content-end-element") },
 };
 
 if (navigator.windowControlsOverlay) {
@@ -522,13 +496,15 @@ if (navigator.windowControlsOverlay) {
 	let mouseY = 0;
 
 	const updateTheme = async () => {
-		document.documentElement.style.setProperty("--mouse-x", mouseX || button.offsetLeft);
-		document.documentElement.style.setProperty("--mouse-y", mouseY || button.offsetTop);
+		document.documentElement.style.setProperty("--animation-origin-x", button.offsetLeft + button.offsetWidth / 2);
+		document.documentElement.style.setProperty("--animation-origin-y", button.offsetTop + button.offsetHeight / 2);
 		await transition(async () => {
 			document.documentElement.classList.toggle("light-theme", currentTheme === "light");
-		}, { name: "theme-change", resolveWhenFinished: false });
-		const themeColor = window.getComputedStyle(document.documentElement).backgroundColor.trim();
-		document.querySelector("meta[name=theme-color]").content = themeColor;
+			const themeColor = window.getComputedStyle(document.documentElement).backgroundColor.trim();
+			document.querySelector("meta[name=theme-color]").content = themeColor;
+		}, { name: "theme-change", resolveWhenFinished: true });
+		document.documentElement.style.removeProperty("--animation-origin-x");
+		document.documentElement.style.removeProperty("--animation-origin-y");
 	};
 	updateTheme();
 
@@ -546,4 +522,3 @@ if (navigator.windowControlsOverlay) {
 		updateTheme();
 	});
 }
-
