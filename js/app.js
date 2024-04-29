@@ -487,6 +487,15 @@ if (navigator.windowControlsOverlay) {
 }
 
 {
+	const canHoverMatch = window.matchMedia("(hover)");
+	const update = () => {
+		document.documentElement.classList.toggle("can-hover", canHoverMatch.matches);
+	};
+	update();
+	canHoverMatch.addEventListener("change", update);
+}
+
+{
 	// color theme
 	const button = elements.toggleThemeButton;
 	const mediaMatch = window.matchMedia("(prefers-color-scheme: light)");
@@ -499,6 +508,7 @@ if (navigator.windowControlsOverlay) {
 		document.documentElement.style.setProperty("--animation-origin-x", button.offsetLeft + button.offsetWidth / 2);
 		document.documentElement.style.setProperty("--animation-origin-y", button.offsetTop + button.offsetHeight / 2);
 		await transition(async () => {
+			await 0;
 			document.documentElement.classList.toggle("light-theme", currentTheme === "light");
 			const themeColor = window.getComputedStyle(document.documentElement).backgroundColor.trim();
 			document.querySelector("meta[name=theme-color]").content = themeColor;

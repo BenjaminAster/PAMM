@@ -146,7 +146,7 @@
 						outline-offset: -2px;
 						pointer-events: all;
 
-						&:hover {
+						:root.can-hover &:hover, &:active {
 							--background-color: var(--gray-2);
 						}
 		
@@ -250,14 +250,14 @@
 			gap: var(--padding);
 			-webkit-user-select: text;
 			user-select: text;
+
+			:root.can-hover &:hover, &:active {
+				background-color: var(--gray-2);
+			}
 		}
 
 		& .item > a > h3 {
 			font-weight: normal;
-		}
-
-		& .item > a:hover {
-			background-color: var(--gray-2);
 		}
 
 		& .items > li > button[data-action] {
@@ -271,16 +271,16 @@
 			justify-content: center;
 			--icon-size: 1.5rem;
 			transition: background-color .2s, border-color .2s;
+
+			:root.can-hover &:hover, &:active {
+				--mix: 60%;
+			}
 		}
 
 
 		& .items > li > button[data-action] > h3 {
 			font-weight: 400;
 			font-size: 1.1rem;
-		}
-
-		& .items > li > button[data-action]:hover {
-			--mix: 60%;
 		}
 
 		& .item > .buttons {
@@ -309,13 +309,13 @@
 			place-content: center;
 			transition: background-color .2s, border-color .2s;
 			pointer-events: auto;
+
+			:root.can-hover &:hover, &:active {
+				background-color: var(--gray-3);
+			}
 		}
 
 		& .item:hover > .buttons:not(:hover) > :is(button, a) {
-			background-color: var(--gray-3);
-		}
-
-		& .item > .buttons > :is(button, a):hover {
 			background-color: var(--gray-3);
 		}
 
@@ -353,6 +353,18 @@
 				& > ul > li {
 					transition: border-color .2s;
 					position: relative;
+
+					:root.can-hover &:hover, &:active {
+						border-block-start-color: transparent;
+
+						& + li {
+							border-block-start-color: transparent;
+						}
+
+						& > a {
+							background-color: var(--transparent-gray-2);
+						}
+					}
 				}
 
 				& > ul > li > a {
@@ -367,10 +379,6 @@
 					transition: background-color .2s;
 				}
 
-				& > ul > li:hover > a {
-					background-color: var(--transparent-gray-2);
-				}
-
 				& > ul > li[data-storagetype=indexeddb] > a {
 					--icon: var(--icon-desktop-computer)
 				}
@@ -383,14 +391,6 @@
 					border-block-start: 1px solid var(--transparent-gray-3);
 				}
 
-				& > ul > li:hover {
-					border-block-start-color: transparent;
-				}
-
-				& > ul > li:hover + li {
-					border-block-start-color: transparent;
-				}
-
 				& > ul > li > .buttons {
 					display: flex;
 					gap: .3rem;
@@ -400,19 +400,19 @@
 					inset-inline-end: 0;
 					inset-block: 0;
 					margin: .25rem;
-				}
 
-				& > ul > li > .buttons > .permalink {
-					display: grid;
-					place-content: center;
-					block-size: 100%;
-					aspect-ratio: 1;
-					border-radius: .3rem;
-					transition: background-color .2s;
-				}
+					& > .permalink {
+						display: grid;
+						place-content: center;
+						block-size: 100%;
+						aspect-ratio: 1;
+						border-radius: .3rem;
+						transition: background-color .2s;
 
-				& > ul > li > .buttons > .permalink:hover {
-					background-color: var(--transparent-gray-3);
+						:root.can-hover &:hover, &:active {
+							background-color: var(--transparent-gray-3);
+						}
+					}
 				}
 			}
 
@@ -429,10 +429,10 @@
 				block-size: 2rem;
 				border-radius: .3rem;
 				transition: background-color .2s;
-			}
 
-			& button.close:hover {
-				background-color: var(--transparent-gray-2);
+				:root.can-hover &:hover, &:active {
+					background-color: var(--transparent-gray-2);
+				}
 			}
 		}
 

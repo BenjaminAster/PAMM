@@ -40,9 +40,7 @@
 	}
 
 	@page {
-		/* size: A4 portrait; */
 		margin: 0px;
-		bleed: 0px;
 	}
 }
 
@@ -56,7 +54,7 @@
 			--chroma: 4%;
 			--background-lightness: 20%;
 			--gray-lightness-step: 9%;
-			--shadow-color: #0004;
+			--shadow-color: #0005;
 			--item-shadow-color: #0004;
 
 			--accent-hue: 277deg;
@@ -173,28 +171,50 @@
 	}
 
 	dialog {
-		transition: opacity, display, translate, scale;
-		transition-duration: .1s;
+		transition: opacity, display, translate, scale, overlay, --blur-radius;
+		transition-duration: .15s;
 		transition-behavior: allow-discrete;
 		transition-timing-function: ease-out;
+		--blur-radius: .3rem;
+		background-color: transparent;
+
+		&::backdrop {
+			transition: background-color;
+			transition-duration: inherit;
+			--backdrop-filter: blur(var(--blur-radius));
+			-webkit-backdrop-filter: var(--backdrop-filter);
+			backdrop-filter: var(--backdrop-filter);
+			background-color: #0003;
+		}
 
 		@starting-style {
 			opacity: 0%;
 			scale: 50%;
-		}
+			--blur-radius: 0rem;
 
+			&::backdrop {
+				background-color: transparent;
+			}
+		}
+		
 		&:not(:modal) {
 			display: none;
 			opacity: 0%;
 			scale: 50%;
+			--blur-radius: 0rem;
+
+			&::backdrop {
+				background-color: transparent;
+			}
 		}
 	}
 
 	dialog.messagebox {
+		max-inline-size: calc(min(100% - 6rem, 40rem));
 		border-radius: .5rem;
 		background-color: var(--gray-2);
-		box-shadow: 0 0 4rem var(--shadow-color);
-		max-inline-size: calc(min(100% - 6rem, 40rem));
+		background-color: light-dark(var(--gray-1), var(--gray-2));
+		box-shadow: 0 0 3rem var(--shadow-color);
 
 		& > form {
 			display: flex;
@@ -245,22 +265,6 @@
 				outline-offset: 2px;
 			}	
 		}
-
-		&::backdrop {
-			background: none;
-			--blur-radius: .2rem;
-			--backdrop-filter: blur(var(--blur-radius));
-			-webkit-backdrop-filter: var(--backdrop-filter);
-			backdrop-filter: var(--backdrop-filter);
-			animation: blur-radius .3s;
-		}
-	}
-
-	@keyframes blur-radius {
-		from {
-			-webkit-backdrop-filter: blur(0rem);
-			backdrop-filter: blur(0rem);
-		}
 	}
 
 	dialog.export {
@@ -299,7 +303,7 @@
 						transition: inherit;
 					}
 
-					&:hover {
+					:root.can-hover &:hover, &:active {
 						background-color: var(--transparent-gray-2);
 						border-radius: .5rem;
 
@@ -352,7 +356,7 @@
 			border-radius: .3rem;
 			transition: background-color .2s;
 
-			&:hover {
+			:root.can-hover &:hover, &:active {
 				background-color: var(--transparent-gray-3);
 			}
 		}
@@ -360,6 +364,9 @@
 
 	:root {
 		--transition-direction: 1;
+		/* transform-box: content-box; */
+		/* position: relative; */
+		/* margin-block-start: 3rem; */
 
 		&:is([data-transition=toggling-view], [data-transition=changing-folder]) {
 			&:is([data-view=editor], .transition-reverse) {
@@ -423,27 +430,67 @@
 		}
 
 		&[data-transition=theme-change] {
+			/* view-transition-name: none; */
+
+			& body {
+				/* view-transition-name: body; */
+			}
+
 			&::view-transition-group(*) {
-				animation-duration: .4s;
+				animation-duration: .5s;
 				animation-timing-function: ease-in;
 			}
 
+			&::view-transition {
+				/* inset: 0; */
+				/* inset-block-start: auto; */
+				/* block-size: 90dvb; */
+				/* inset-block-end: auto; */
+				/* position: absolute; */
+				/* height: 100dvh; */
+				/* display: block; */
+			}
+			
+			&::view-transition-group(root) {
+				/* display: block; */
+				/* width: 100%; */
+				/* height: 100%; */
+				/* width: auto; */
+				/* height: auto; */
+				/* inset: 0; */
+				/* inset-block-end: auto; */
+				/* transform: none; */
+				/* position: absolute; */
+				/* animation: none; */
+				/* animation-name: none; */
+			}
+			
+			&::view-transition-image-pair(root) {
+				isolation: auto;
+				/* display: block; */
+			}
+
 			&::view-transition-old(root) {
-				animation: none;
+				mix-blend-mode: normal;
+				/* animation: none; */
+				animation-name: none;
+				/* display: block; */
 			}
 
 			&::view-transition-new(root) {
-				animation-name: circular-portal
+				mix-blend-mode: normal;
+				animation-name: circular-portal;
+				/* display: block; */
 			}
 		}
 	}
 
 	@keyframes circular-portal {
 		from {
-			clip-path: circle(0px at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px));
+			clip-path: circle(0px at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px + (100lvb - 100dvb))) content-box;
 		}
 		to {
-			clip-path: circle(hypot(100dvb, 100dvi) at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px));
+			clip-path: circle(hypot(100dvb, 100dvi) at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px + (100lvb - 100dvb))) content-box;
 		}
 	}
 

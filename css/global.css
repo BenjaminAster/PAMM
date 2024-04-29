@@ -8,7 +8,7 @@
 	font-family: "Latin Modern Math";
 	font-display: swap;
 	src: local("Latin Modern Math"), local("LatinModernMath-Regular"), url("../assets/latinmodern-math/normal.otf");
-	/* Source: https://tug.org/svn/texlive/trunk/Master/texmf-dist/fonts/opentype/public/lm-math/latinmodern-math.otf?revision=36915 */
+	/* Source: https://ctan.org/tex-archive/fonts/lm-math/opentype/latinmodern-math.otf */
 }
 
 /* Computer Modern Serif font: */

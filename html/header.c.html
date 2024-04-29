@@ -141,10 +141,10 @@
 				-webkit-app-region: no-drag;
 				app-region: no-drag;
 				--icon-size: 1.125rem;
-				transition: background-color .2s;
+				transition: background-color .1s;
 				box-sizing: border-box;
 
-				&:hover {
+				:root.can-hover &:hover, &:active {
 					background-color: var(--gray-3);
 				}
 			}
@@ -166,7 +166,7 @@
 			color: white;
 			box-shadow: 0 1px .3rem #0002;
 
-			&:hover {
+			:root.can-hover &:hover, &:active {
 				--lightness: calc(var(--accent-lightness) + 5%);
 			}
 		}
