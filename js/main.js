@@ -14,6 +14,8 @@ import renderDocument from "./render/document/renderDocument.js";
 import { keyDown } from "./files.js";
 
 CSS.highlights?.set("heading", new Highlight());
+CSS.highlights?.set("code", new Highlight());
+CSS.highlights?.set("math", new Highlight());
 const selection = document.getSelection();
 
 export const { startRendering } = (() => {
@@ -45,18 +47,41 @@ export const { startRendering } = (() => {
 		const initialStringSections = textContent.split(/\n(?!\n)/g);
 		let codeMode = false;
 		let backslashEscaped = false;
+		let currentCharIndex = 0;
+		CSS.highlights?.get("code").clear();
+		CSS.highlights?.get("math").clear();
+		let /** @type {Range} */ currentCodeRange;
+		let /** @type {Range} */ currentMathRange;
 		for (let index = 0; index < initialStringSections.length; index++) {
 			const stringSection = initialStringSections[index];
 			for (const character of stringSection) {
 				if (character === "`" && sectionBracesDepth === 0 && !backslashEscaped) {
 					codeMode = !codeMode;
+
+					if (codeMode) {
+						currentCodeRange = new Range();
+						currentCodeRange.setStart(elements.textInput.firstChild, currentCharIndex);
+					} else {
+						currentCodeRange.setEnd(elements.textInput.firstChild, currentCharIndex + 1);
+						CSS.highlights?.get("code").add(currentCodeRange);
+						currentCodeRange = undefined;
+					}
 				}
 
 				if (!codeMode && !backslashEscaped) {
 					if (character === "{") {
 						sectionBracesDepth++;
+						if (sectionBracesDepth === 1) {
+							currentMathRange = new Range();
+							currentMathRange.setStart(elements.textInput.firstChild, currentCharIndex);
+						}
 					} else if (character === "}" && sectionBracesDepth > 0) {
 						sectionBracesDepth--;
+						if (sectionBracesDepth === 0) {
+							currentMathRange.setEnd(elements.textInput.firstChild, currentCharIndex + 1);
+							CSS.highlights?.get("math").add(currentMathRange);
+							currentMathRange = undefined;
+						}
 					}
 				}
 
@@ -64,12 +89,15 @@ export const { startRendering } = (() => {
 				if (character === "\\" && !codeMode) {
 					backslashEscaped = true;
 				}
+
+				currentCharIndex += character.length;
 			}
 			currentSectionArray.push(stringSection);
 			if ((sectionBracesDepth === 0 && !codeMode) || index === initialStringSections.length - 1) {
 				sectionsArray.push({ string: currentSectionArray.join("\n") });
 				currentSectionArray = [];
 			}
+			++currentCharIndex;
 		}
 
 		const sectionCountDifference = sectionsArray.length - previousSectionsArray.length;

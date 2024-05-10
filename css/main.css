@@ -61,7 +61,11 @@
 			--accent-chroma: 57%;
 			--accent-lightness: 48%;
 
-			--highlight-heading: oklch(calc(var(--accent-lightness) + 30%) var(--accent-chroma) var(--accent-hue));
+			--highlight-code-background: var(--gray-1);
+			/* --highlight-heading: oklch(calc(var(--accent-lightness) + 30%) var(--accent-chroma) var(--accent-hue)); */
+			/* --highlight-math: palegreen; */
+			--highlight-heading: palegreen;
+			--highlight-math: oklch(calc(var(--accent-lightness) + 35%) var(--accent-chroma) var(--accent-hue));
 		}
 	}
 
@@ -81,6 +85,11 @@
 		--accent-chroma: 62%;
 
 		--highlight-heading: blue;
+		--highlight-math: #0a0;
+		--highlight-code-background: var(--gray-1);
+
+		--highlight-math: blue;
+		--highlight-heading: #090;
 	}
 
 	:root {
@@ -102,6 +111,11 @@
 		--titlebar-area-block-size: env(titlebar-area-height, 0px);
 		--titlebar-area-block-end: calc(100dvb - var(--titlebar-area-block-start) - var(--titlebar-area-block-size));
 
+		--safe-area-inline-start: env(safe-area-inset-left, 0px);
+		--safe-area-inline-end: env(safe-area-inset-right, 0px);
+		--safe-area-block-start: env(safe-area-inset-top, 0px);
+		--safe-area-block-end: env(safe-area-inset-bottom, 0px);
+
 		--px: calc(1rem / 16);
 
 		--scrollbar-color: oklch(var(--accent-lightness) var(--accent-chroma) var(--accent-hue));
@@ -118,6 +132,7 @@
 		text-size-adjust: none;
 		-webkit-tap-highlight-color: transparent;
 		overscroll-behavior: none;
+		touch-action: manipulation;
 
 		@media (hover) {
 			@supports not selector(::-webkit-scrollbar) {
@@ -128,6 +143,14 @@
 		@media not (hover) {
 			scrollbar-color: var(--transparent-gray-1) transparent;
 		}
+
+		&.translated-rtl {
+			direction: rtl;
+			--titlebar-area-inline-start: calc(100dvi - env(titlebar-area-x, 0px) - env(titlebar-area-width, 0px));
+			--titlebar-area-inline-end: env(titlebar-area-x, 0px);
+			--safe-area-inline-start: env(safe-area-inset-right, 0px);
+			--safe-area-inline-end: env(safe-area-inset-left, 0px);
+		}
 	}
 
 	body {
@@ -137,6 +160,10 @@
 		display: flex;
 		flex-direction: column;
 		overscroll-behavior: none;
+
+		:root:active-view-transition-type(page-navigation) & {
+			view-transition-name: pamm-body;
+		}
 	}
 
 	:root {
@@ -158,17 +185,14 @@
 		overflow: hidden;
 		box-sizing: border-box;
 		background-color: var(--background);
+		/* padding-inline-start: var(--safe-area-inline-start); */
+		/* padding-inline-end: var(--safe-area-inline-end); */
 	}
 
 	:root:is([data-transition=toggling-view]) main {
 		view-transition-name: main-content;
 	}
 
-	:root.translated-rtl {
-		direction: rtl;
-		--titlebar-area-inline-start: calc(100dvi - env(titlebar-area-x, 0px) - env(titlebar-area-width, 0px));
-		--titlebar-area-inline-end: env(titlebar-area-x, 0px);
-	}
 
 	dialog {
 		transition: opacity, display, translate, scale, overlay, --blur-radius;
@@ -430,10 +454,11 @@
 		}
 
 		&[data-transition=theme-change] {
-			/* view-transition-name: none; */
+			view-transition-name: none;
 
 			& body {
-				/* view-transition-name: body; */
+				view-transition-name: body;
+				isolation: isolate;
 			}
 
 			&::view-transition-group(*) {
@@ -466,20 +491,29 @@
 			}
 			
 			&::view-transition-image-pair(root) {
-				isolation: auto;
+				/* isolation: auto; */
 				/* display: block; */
 			}
 
-			&::view-transition-old(root) {
+			&::view-transition-old(body) {
 				mix-blend-mode: normal;
 				/* animation: none; */
 				animation-name: none;
 				/* display: block; */
+				/* opacity: 1; */
+				/* animation: none; */
 			}
 
-			&::view-transition-new(root) {
+			&::view-transition-new(body) {
 				mix-blend-mode: normal;
 				animation-name: circular-portal;
+				clip-path: circle(
+					var(--circular-portal-radius) 
+					at calc(var(--animation-origin-x) * 1px + env(safe-area-inset-left, 0px))
+					calc(var(--animation-origin-y) * 1px + env(safe-area-inset-top, 0px))
+				) content-box;
+				/* animation: none; */
+				/* opacity: 0; */
 				/* display: block; */
 			}
 		}
@@ -487,10 +521,14 @@
 
 	@keyframes circular-portal {
 		from {
-			clip-path: circle(0px at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px + (100lvb - 100dvb))) content-box;
+			/* clip-path: circle(0px at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px + (100lvb - 100dvb))) content-box; */
+			/* clip-path: circle(0px at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px)) content-box; */
+			--circular-portal-radius: 0px;
 		}
 		to {
-			clip-path: circle(hypot(100dvb, 100dvi) at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px + (100lvb - 100dvb))) content-box;
+			/* clip-path: circle(hypot(100dvb, 100dvi) at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px + (100lvb - 100dvb))) content-box; */
+			/* clip-path: circle(hypot(100dvb, 100dvi) at calc(var(--animation-origin-x) * 1px) calc(var(--animation-origin-y) * 1px)) content-box; */
+			--circular-portal-radius: hypot(100dvb, 100dvi);
 		}
 	}
 
@@ -520,6 +558,21 @@
 	syntax: "<length>";
 	inherits: true;
 	initial-value: 0px;
+}
+
+@property --circular-portal-radius {
+	syntax: "<length>";
+	inherits: true;
+	initial-value: 0px;
+}
+
+@view-transition {
+	navigation: auto;
+	types: page-navigation;
+}
+
+:root:active-view-transition-type(page-navigation)::view-transition-group(*) {
+	/* animation-duration: 1s; */
 }
 
 @keyframes collapse {

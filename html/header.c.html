@@ -1,15 +1,16 @@
 
 <header focusgroup="wrap">
 	<img src="./assets/icon.svg" class="logo" alt="icon of PAMM" width="1" height="1" />
+	<h1 class="title">PAMM</h1>
 	<a href="https://github.com/BenjaminAster/PAMM" class="github icon:github" title="View on GitHub"></a>
 
 	<input type="text" class="editor-only" title="File name" spellcheck="false" autocomplete="off" name="file-name" />
 	<button data-action="recently-opened" class="files-only icon:clock" title="Recently opened"><span class="text">Recently opened</span></button>
 
-	<button data-action="toggle-editor-layout" class="editor-only icon:layout-columns" title="Toggle vertical / horizontal layout"></button>
-	<button data-action="toggle-theme" class="icon:moon" title="Toggle color theme"></button>
+	<button data-action="toggle-editor-layout" class="keep-focus editor-only icon:layout-columns" title="Toggle vertical / horizontal layout"></button>
+	<button data-action="toggle-theme" class="keep-focus icon:moon" title="Toggle color theme"></button>
 
-	<button data-action="save" class="editor-only icon:save-fill" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
+	<button data-action="save" class="keep-focus editor-only icon:save-fill" title="Save"><span class="text">Save<span class="saved-d">d</span></span></button>
 	<button data-action="export" class="editor-only icon:file-export" title="Export"><span class="text">Export</span></button>
 	<a data-action="my-files" href="?folder=home" class="editor-only icon:view-grid" draggable="true" title="Your files"><span class="text">Files</span></a>
 
@@ -28,6 +29,10 @@
 			transition: padding-inline .5s;
 			box-sizing: border-box;
 			contain: paint;
+			padding-inline-start: var(--safe-area-inline-start);
+			padding-inline-end: var(--safe-area-inline-end);
+			padding-block-start: var(--safe-area-block-start);
+			background-color: var(--gray-1);
 		}
 
 		& header {
@@ -41,6 +46,15 @@
 			transition: padding-inline .5s;
 		}
 
+		& .title {
+			font-size: 1rem;
+			margin-inline-start: .3em;
+
+			/* :root:active-view-transition-type(page-navigation) & {
+				view-transition-name: pamm-title;
+			} */
+		}
+
 		@container header (inline-size < 32rem) {
 			& img.logo {
 				display: none;
@@ -49,6 +63,12 @@
 
 		@container header (inline-size < 43rem) {
 			:root[data-view=editor] & :is(button, a)[data-action] .text {
+				display: none;
+			}
+		}
+
+		@container header (inline-size < 55rem) {
+			& .title {
 				display: none;
 			}
 		}
@@ -101,6 +121,10 @@
 			inline-size: var(--size);
 			block-size: var(--size);
 			margin-inline-start: .3rem;
+
+			/* :root:active-view-transition-type(page-navigation) & {
+				view-transition-name: pamm-icon;
+			} */
 		}
 
 		& input[name=file-name] {

@@ -437,6 +437,7 @@ export const appMeta = {
 }
 
 export const elements = {
+	get header() { return $("c-header header") },
 	get myFilesLink() { return $("c-header a[data-action=my-files]") },
 	get saveButton() { return $("c-header button[data-action=save]") },
 	get exportButton() { return $("c-header button[data-action=export]") },
@@ -496,6 +497,14 @@ if (navigator.windowControlsOverlay) {
 }
 
 {
+	for (const button of $$("button[data-action].keep-focus", elements.header)) {
+		button.addEventListener("pointerdown", (event) => {
+			event.preventDefault();
+		});
+	}
+}
+
+{
 	// color theme
 	const button = elements.toggleThemeButton;
 	const mediaMatch = window.matchMedia("(prefers-color-scheme: light)");
@@ -508,7 +517,7 @@ if (navigator.windowControlsOverlay) {
 		document.documentElement.style.setProperty("--animation-origin-x", button.offsetLeft + button.offsetWidth / 2);
 		document.documentElement.style.setProperty("--animation-origin-y", button.offsetTop + button.offsetHeight / 2);
 		await transition(async () => {
-			await 0;
+			await new Promise(res => setTimeout(res));
 			document.documentElement.classList.toggle("light-theme", currentTheme === "light");
 			const themeColor = window.getComputedStyle(document.documentElement).backgroundColor.trim();
 			document.querySelector("meta[name=theme-color]").content = themeColor;
@@ -530,5 +539,12 @@ if (navigator.windowControlsOverlay) {
 		currentTheme = matches ? "light" : "dark";
 		storage.set("color-theme", "os-default");
 		updateTheme();
+	});
+}
+
+{
+	$("img.logo").addEventListener("dblclick", async () => {
+		if (document.fullscreenElement) await document.exitFullscreen();
+		else await document.documentElement.requestFullscreen();
 	});
 }
