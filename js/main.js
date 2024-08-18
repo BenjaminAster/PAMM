@@ -18,7 +18,8 @@ CSS.highlights?.set("code", new Highlight());
 CSS.highlights?.set("math", new Highlight());
 const selection = document.getSelection();
 
-export const { startRendering } = (() => {
+// export const { startRendering } = (() => {
+export const startRendering = (() => {
 	let previousSectionsArray = [];
 
 	const handleInput = function (/** @type {Partial<InputEvent>} */ { data } = ({})) {
@@ -142,9 +143,12 @@ export const { startRendering } = (() => {
 			const highlight = CSS.highlights.get("heading");
 			highlight.clear();
 			for (const { 1: { length }, index } of textContent.matchAll(/^(#.*)$/gm)) {
-				const range = new Range();
-				range.setStart(elements.textInput.firstChild, index);
-				range.setEnd(elements.textInput.firstChild, index + length);
+				const range = new StaticRange({
+					startContainer: elements.textInput.firstChild,
+					startOffset: index,
+					endContainer: elements.textInput.firstChild,
+					endOffset: index + length,
+				});
 				highlight.add(range);
 			}
 		}
@@ -180,6 +184,24 @@ export const { startRendering } = (() => {
 		handleInput()
 	});
 
+	for (const element of [elements.textInput, elements.htmlOutput]) {
+		let zoom = 1;
+		element.addEventListener("wheel", (event) => {
+			if (event.ctrlKey) {
+				event.preventDefault();
+				zoom *= (1 - Math.sqrt(Math.abs(event.deltaY)) * Math.sign(event.deltaY) / 100);
+				element.style.setProperty("--zoom", zoom);
+			}
+		}, { passive: false });
+		element.addEventListener("keydown", (event) => {
+			if (event.ctrlKey && event.key === "0") {
+				event.preventDefault();
+				zoom = 1;
+				element.style.setProperty("--zoom", zoom);
+			}
+		});
+	}
+
 	return {
 		startRendering() {
 			previousSectionsArray = [];
@@ -193,7 +215,7 @@ export const { startRendering } = (() => {
 			document.documentElement.classList.remove("file-dirty");
 		},
 	};
-})();
+})().startRendering;
 
 {
 	let onlyShiftPressed = false;

@@ -93,6 +93,7 @@
 			}
 		
 			& .textarea {
+				--zoom: 1;
 				padding: .8rem 1rem;
 				resize: none;
 				/* inline-size: 100%; */
@@ -104,6 +105,7 @@
 				white-space: pre-wrap;
 				margin: 0;
 				font-family: ui-monospace, monospace;
+				font-size: calc(.95rem * var(--zoom));
 			}
 
 			& ::highlight(heading) {
@@ -181,6 +183,7 @@
 			flex-basis: 0;
 			font-family: var(--document-font);
 			line-height: 1.4;
+			--zoom: 1;
 			font-size: 1rem;
 			box-sizing: border-box;
 			margin-block-end: var(--safe-area-block-end);
@@ -192,7 +195,7 @@
 		
 			@media not print {
 				:root:not(.print-simulation) & {
-					font-size: 1.1rem;
+					font-size: calc(1rem * var(--zoom));
 					contain: layout;
 					overflow: auto;
 					background-color: var(--background);
@@ -211,7 +214,7 @@
 				font-family: "FreeMono", "Courier New", ui-monospace, monospace;
 				padding-inline: .2em;
 				background-color: var(--gray-1);
-				font-size: .9em;
+				font-size: .75em;
 			}
 
 			& h1 {
@@ -226,7 +229,9 @@
 		}
 
 		& math[display=block] {
-			margin-block: .5em;
+			/* margin-block: .5em; */
+			padding-block: .5em;
+			overflow-y: auto;
 		}
 
 		:is(h1, h2, h3, h4, h5, h6) {

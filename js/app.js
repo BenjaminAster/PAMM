@@ -43,7 +43,7 @@ export const removeAfterTransition = (/** @type {HTMLElement} */ element) => {
 };
 
 export const _expose = (/** @type {Record<string, any>} */ object) => {
-	for (const [key, value] of Object.entries(object)) self[key] = value;
+	for (const [key, value] of Object.entries(object)) /** @type {any} */ (self)[key] = value;
 };
 
 export const removeRealChildren = (/** @type {HTMLElement} */ element) => {
@@ -461,6 +461,7 @@ export const elements = {
 	get headersAndFooters() { return $("#headers-and-footers") },
 	get paperSizeMeasurement() { return $("#paper-size-measurement") },
 	get contentEndElement() { return $("#content-end-element") },
+	appTitleMeta: document.querySelector("meta[name=app-title]"),
 };
 
 if (navigator.windowControlsOverlay) {

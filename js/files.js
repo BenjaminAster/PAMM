@@ -221,6 +221,10 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 	const onDragStart = (/** @type {{ type: ItemType, id: string }} */ { type, id }) => async (/** @type {DragEvent} */ event) => {
 		event.dataTransfer.effectAllowed = "move";
 		event.dataTransfer.setData("text/plain", JSON.stringify({ type, id }));
+		// event.dataTransfer.setDragImage(event.target, 0, 0);
+		// event.dataTransfer.setDragImage(document.querySelector("div#dummy"), 0, 0);
+		// setTimeout(() => {
+		// }, 1000);
 	};
 
 	const onDrop = (/** @type {{ folder: any }} */ { folder }) => async (/** @type {DragEvent} */ event) => {
@@ -270,6 +274,17 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 				clone.addEventListener("dragover", (event) => event.preventDefault());
 				clone.addEventListener("drop", onDrop({ folder: item }));
 			}
+			// $("a", clone).addEventListener("drag", (event) => {
+			// 	if (Math.random() < 0.01) {
+			// 		console.log("drag", event);
+			// 		event.dataTransfer.setDragImage(document.querySelector("div#dummy"), 0, 0);
+			// 	}
+			// });
+			// $("a", clone).addEventListener("dragend", (event) => console.log("dragend", event));
+			// $("a", clone).addEventListener("dragenter", (event) => console.log("dragenter", event));
+			// $("a", clone).addEventListener("dragleave", (event) => console.log("dragleave", event));
+			// $("a", clone).addEventListener("dragover", (event) => console.log("dragover", event));
+			// $("a", clone).addEventListener("drop", (event) => console.log("drop", event));
 			$("[data-action=rename]", clone).addEventListener("click", async () => {
 				const newName = (await prompt({ message: `Rename ${type}`, defaultValue: item.name })).value?.trim();
 				if (!newName) return;

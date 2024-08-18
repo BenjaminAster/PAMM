@@ -133,9 +133,14 @@ dialog {
 		background-clip: padding-box;
 	}
 
-	::-webkit-scrollbar-thumb {
+	::-webkit-scrollbar-thumb:vertical {
 		border-block-width: 0;
 		border-radius: calc(var(--scrollbar-width) / 2) / calc(var(--scrollbar-width) / 2 - var(--padding));
+	}
+
+	::-webkit-scrollbar-thumb:horizontal {
+		border-inline-width: 0;
+		border-radius: calc(var(--scrollbar-width) / 2 - var(--padding)) / calc(var(--scrollbar-width) / 2);
 	}
 
 	::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-button:hover {

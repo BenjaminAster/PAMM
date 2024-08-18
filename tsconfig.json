@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"module": "ESNext",
+		"target": "ESNext",
+		"moduleResolution": "Bundler",
+		"moduleDetection": "force",
+		"allowJs": true,
+		"checkJs": true,
+		"noEmit": true,
+		"strict": false,
+		"isolatedModules": true,
+		"allowImportingTsExtensions": true,
+		"allowArbitraryExtensions": true,
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": false,
+		"esModuleInterop": false,
+		"verbatimModuleSyntax": true,
+		"noImplicitAny": false,
+		"lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
+		"types": ["better-typescript", "node-types-without-globals"],
+	},
+}
