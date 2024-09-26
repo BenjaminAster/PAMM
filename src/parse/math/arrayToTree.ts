@@ -1,5 +1,5 @@
 
-import { categories, keywords, keywordTypes, operators } from "./categorizeArray.js";
+import { categories, keywords, keywordTypes, operators } from "../../constants.ts";
 
 const operatorsWithItemBeforeAndAfter = [
 	operators.fraction,

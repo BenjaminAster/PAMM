@@ -44,6 +44,20 @@
 	}
 }
 
+c-editor {
+	display: block;
+	block-size: 100%;
+	--split-proportion: 0.5;
+}
+
+c-header {
+	display: block;
+}
+
+c-files {
+	display: block;
+}
+
 @layer main {
 	@media not print {
 		:root:not(.light-theme) {

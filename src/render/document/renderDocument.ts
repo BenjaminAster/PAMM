@@ -1,6 +1,6 @@
 
-import { createMathElement } from "../../app.js";
-import renderMath from "../math/renderMath.js";
+import { createMathElement } from "../createMathElement.ts";
+import renderMath from "../math/renderMath.ts";
 
 export default (/** @type {any[]} */ documentTree) => {
 

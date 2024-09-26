@@ -17,10 +17,12 @@ import {
 	storage,
 	removeAfterTransition,
 	removeRealChildren,
-} from "./app.js";
-import { startRendering } from "./main.js";
-import parseDocument from "./parse/document/parseDocument.js";
-import renderDocument from "./render/document/renderDocument.js";
+} from "./app.tsx";
+import { startRendering } from "./input-handler.tsx";
+import parseDocument from "./parse/document/parseDocument.ts";
+import renderDocument from "./render/document/renderDocument.ts";
+
+// await new Promise(setTimeout);
 
 const /** @type {any} */ trace = (/** @type {any[]} */ ...args) => console.trace(...args);
 
@@ -55,6 +57,8 @@ const addToRecentlyOpened = async (/** @type {{ id: string, storageType: FileSto
 
 const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string, fileHandle?: FileSystemFileHandle }} */ { storageType, id, fileHandle }) => {
 	await toggleView({ filesView: false });
+
+	// console.log("rendering file", fileHandle, id);
 
 	switch (storageType) {
 		case ("indexeddb"): {
@@ -152,6 +156,7 @@ const toggleView = (() => {
 	// const editor = document.createElement("c-editor");
 
 	return async (/** @type {{ filesView?: boolean }?} */ { filesView: newFilesView = !filesView } = {}) => {
+		await new Promise(setTimeout);
 		if (newFilesView !== filesView) {
 			filesView = newFilesView;
 			await transition(async () => {
@@ -165,6 +170,7 @@ const toggleView = (() => {
 					elements.editor.replaceWith(elements.files);
 					// initButtonListeners();
 				} else {
+					// console.log(document.documentElement.outerHTML);
 					// const element = document.createElement("c-editor");
 					// $("c-files").replaceWith(element);
 					elements.files.replaceWith(elements.editor);
@@ -736,6 +742,7 @@ window.addEventListener("beforeunload", (event) => {
 
 {
 	const handleHistoryStateFile = async () => {
+		await new Promise(setTimeout);
 		const { storageType, fileId: id } = history.state;
 		switch (storageType) {
 			case ("indexeddb"): {

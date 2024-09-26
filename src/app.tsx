@@ -1,9 +1,58 @@
 
-export const $ = /** @template {string} K */ (/** @type {K} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
+import Header from "./components/header.tsx";
+import Files from "./components/files.tsx";
+import Editor from "./components/editor.tsx";
+
+{
+	HTMLTemplateElement.prototype.append = function (...items) {
+		this.content.append(...items);
+	};
+}
+
+document.documentElement.classList.add("no-transitions");
+
+document.body.replaceChildren(
+	<noscript>Please enable JavaScript to view this site.</noscript>,
+
+	<template id="export-dialog">
+		<dialog className="export">
+			<form method="dialog">
+				<div>
+					<button className="close icon:x" value="cancel" title="Close"></button>
+					<h2>Export</h2>
+				</div>
+
+				<ul>
+					<li>
+						<button value="download" className="icon:download">Download PAMM file</button>
+					</li>
+					<li>
+						<button value="print" className="icon:file-earmark-pdf">Print or save as PDF</button>
+					</li>
+					<li>
+						<button value="export-html" className="icon:code">Export as HTML</button>
+					</li>
+				</ul>
+			</form>
+		</dialog>
+	</template>,
+
+	<c-header></c-header>,
+
+	<main>
+		<c-files></c-files>
+	</main>,
+
+	<div id="dummy"></div>
+);
+
+document.body.replaceChildren = () => { };
+
+export const $ = <K extends string>(selector: K, root: HTMLElement | Document | DocumentFragment = document) => (
 	root.querySelector(selector)
 );
 
-export const $$ = /** @template {string} K */ (/** @type {K} */ selector, /** @type {HTMLElement | Document | DocumentFragment} */ root = document) => (
+export const $$ = <K extends string>(selector: K, root: HTMLElement | Document | DocumentFragment = document) => (
 	[...root.querySelectorAll(selector)]
 );
 
@@ -11,10 +60,8 @@ export const fileSystemAccessSupported = Boolean(window.showSaveFilePicker && wi
 
 export const isApple = navigator.userAgentData?.platform ? ["macOS", "iOS"].includes(navigator.userAgentData.platform) : /^(Mac|iP)/.test(navigator.platform);
 
-export const createMathElement = Document.prototype.createElementNS.bind(document, "http://www.w3.org/1998/Math/MathML");
-
 export const encodeFile = (/** @type {{ text: string, data?: Record<string, any> }} */ { text, data = {} }) => {
-	return `version 1\n-----\n${text}\n-----\n${JSON.stringify(data, null, "\t")}`
+	return `version 1\n-----\n${text}\n-----\n${JSON.stringify(data, null, "\t")}`;
 };
 
 export const parseHTML = Range.prototype.createContextualFragment.bind(new Range());
@@ -29,7 +76,7 @@ export const decodeFile = (/** @type {{ fileContent: string }} */ { fileContent 
 		}
 	})();
 	return { text, data };
-}
+};
 
 const executeOnTransitionEnd = async (/** @type {Element} */ element, /** @type {Function} */ callback) => {
 	await Promise.allSettled(
@@ -53,9 +100,8 @@ export const removeRealChildren = (/** @type {HTMLElement} */ element) => {
 };
 
 export const database = await new class {
-	#database;
+	#database: IDBDatabase;
 	constructor() {
-		this.#database = /** @type {IDBDatabase} */ (null);
 		const constructorPromise = (async () => {
 			const request = window.indexedDB.open(new URL(document.baseURI).pathname, 1);
 
@@ -184,10 +230,10 @@ export const database = await new class {
 			return this;
 		})();
 
-		return /** @type {Awaited<typeof constructorPromise>} */ (constructorPromise);
+		return constructorPromise as Awaited<typeof constructorPromise>;
 	};
 
-	async #operation(/** @type {{ callback: (store: IDBObjectStore) => IDBRequest, transactionMode: IDBTransactionMode, store: string }} */ {
+	async #opration(/** @type {{ callback: (store: IDBObjectStore) => IDBRequest, transactionMode: IDBTransactionMode, store: string }} */ {
 		callback,
 		transactionMode,
 		store: storeName,
@@ -200,14 +246,14 @@ export const database = await new class {
 		return request.result;
 	};
 	async get(/** @type {{ store: string, key: string }} */ { store, key }) {
-		return await this.#operation({
+		return await this.#opration({
 			callback: (store) => store.get(key),
 			transactionMode: "readonly",
 			store,
 		});
 	};
 	add = /** @template {Record<string, any>} T */ async (/** @type {{ store: string, data: T }} */ { store, data }) => {
-		await this.#operation({
+		await this.#opration({
 			callback: (store) => store.add(data),
 			transactionMode: "readwrite",
 			store,
@@ -215,7 +261,7 @@ export const database = await new class {
 		return data;
 	};
 	put = /** @template {Record<string, any>} T */ async (/** @type {{ store: string, data: T }} */ { store, data }) => {
-		await this.#operation({
+		await this.#opration({
 			callback: (store) => store.put(data),
 			transactionMode: "readwrite",
 			store,
@@ -223,14 +269,14 @@ export const database = await new class {
 		return data;
 	};
 	async delete(/** @type {{ store: string, key: string }} */ { store, key }) {
-		await this.#operation({
+		await this.#opration({
 			callback: (store) => store.delete(key),
 			transactionMode: "readwrite",
 			store,
 		});
 	};
 	async getAll(/** @type {{ store: string }} */ { store }) {
-		return await this.#operation({
+		return await this.#opration({
 			callback: (store) => store.getAll(),
 			transactionMode: "readwrite",
 			store,
@@ -272,8 +318,42 @@ export const storage = new class {
 	};
 };
 
+// console.log(document.documentElement.outerHTML);
 
-const messageboxesTemplate = $("template#messageboxes").content;
+// const messageboxesTemplate = $("template#messageboxes").content;
+const messageboxesTemplate = (
+	<template id="messageboxes">
+		<dialog className="messagebox alert">
+			<form method="dialog">
+				<p className="message"></p>
+				<div className="buttons">
+					<button className="ok">OK</button>
+				</div>
+			</form>
+		</dialog>
+
+		<dialog className="messagebox confirm">
+			<form method="dialog">
+				<p className="message"></p>
+				<div className="buttons">
+					<button value="ok" className="ok">OK</button>
+					<button value="cancel" className="cancel">Cancel</button>
+				</div>
+			</form>
+		</dialog>
+
+		<dialog className="messagebox prompt">
+			<form method="dialog">
+				<p className="message"></p>
+				<input type="text" className="input" name="input" spellcheck={false} autocomplete="off" />
+				<div className="buttons">
+					<button value="ok" className="ok">OK</button>
+					<button value="cancel" className="cancel">Cancel</button>
+				</div>
+			</form>
+		</dialog>
+	</template> as any as HTMLTemplateElement
+).content;
 
 export const alert = async (/** @type {{ message: string, userGestureCallback?: Function }} */ { message, userGestureCallback }) => {
 	const dialog = $("dialog.alert", messageboxesTemplate).cloneNode(true);
@@ -303,14 +383,14 @@ export const confirm = async (/** @type {{ message: string, userGestureCallback?
 	});
 	dialog.addEventListener("close", async () => {
 		await userGestureCallback?.();
-		resolve();
+		resolve(undefined);
 	});
 	await promise;
 	removeAfterTransition(dialog);
 	return { accepted: dialog.returnValue === "ok" };
 };
 
-_expose({ alert })
+_expose({ alert });
 
 export const prompt = async (/** @type {{ message: string, defaultValue?: string }} */ { message, defaultValue = "" }) => {
 	const dialog = $("dialog.prompt", messageboxesTemplate).cloneNode(true);
@@ -400,35 +480,37 @@ export const appMeta = {
 
 {
 	const customElements = {
-		editor: import.meta.resolve("../html/editor.c.html"),
-		header: import.meta.resolve("../html/header.c.html"),
-		files: import.meta.resolve("../html/files.c.html"),
+		editor: Editor,
+		header: Header,
+		files: Files,
 	};
 
-	await Promise.all(Object.entries(customElements).map(async ([name, path]) => {
-		const html = await (await window.fetch(path)).text();
-		const content = parseHTML(html);
+	await Promise.all(Object.entries(customElements).map(async ([name, element]) => {
+		// const html = await (await window.fetch(path)).text();
+		// const content = parseHTML(html);
 
-		const styleElement = content.querySelector("style");
-		const css = `c-${name} { ${styleElement.textContent} }`;
+		// const styleElement = content.querySelector("style");
+		// const css = `c-${name} { ${styleElement.textContent} }`;
 
-		styleElement.textContent = css + (
-			`\n/*# sourceMappingURL=data:application/json,${window.encodeURIComponent(JSON.stringify({
-				version: 3,
-				mappings: "",
-				sources: [`./html/${name}.c.html`],
-			}))} */`
-		);
-		styleElement.dataset.customElement = `c-${name}`;
-		document.head.append(styleElement);
+		// styleElement.textContent = css + (
+		// 	`\n/*# sourceMappingURL=data:application/json,${window.encodeURIComponent(JSON.stringify({
+		// 		version: 3,
+		// 		mappings: "",
+		// 		sources: [`./html/${name}.c.html`],
+		// 	}))} */`
+		// );
+		// styleElement.dataset.customElement = `c-${name}`;
+		// document.head.append(styleElement);
 
 		window.customElements.define(`c-${name}`, class extends HTMLElement {
-			#content = content;
+			// #content = content;
 			constructor() {
 				super();
 				queueMicrotask(() => {
-					this.append(this.#content.cloneNode(true));
+					// this.append(this.#content.cloneNode(true));
+					this.append(element());
 				});
+				// this.append(element());
 			};
 			connectedCallback() {
 			};
@@ -437,42 +519,42 @@ export const appMeta = {
 }
 
 export const elements = {
-	get header() { return $("c-header header") },
-	get myFilesLink() { return $("c-header a[data-action=my-files]") },
-	get saveButton() { return $("c-header button[data-action=save]") },
-	get exportButton() { return $("c-header button[data-action=export]") },
-	get recentlyOpenedDialog() { return $("c-files dialog.recently-opened") },
-	get recentlyOpenedButton() { return $("c-header button[data-action=recently-opened]") },
-	get openButton() { return $("c-header button[data-action=open]") },
-	get uploadButton() { return $("c-header button[data-action=upload]") },
-	get newFolderButton() { return $("c-files button[data-action=new-folder]") },
-	get newBrowserFileButton() { return $("c-files button[data-action=new-browser-file]") },
-	get newDiskFileButton() { return $("c-files button[data-action=new-disk-file]") },
-	get foldersUL() { return $("c-files ul.folders") },
-	get filesUL() { return $("c-files ul.files") },
-	get breadcrumbUL() { return $("c-files nav.breadcrumb ul") },
-	get fileNameInput() { return $("c-header input[name=file-name]") },
-	get toggleThemeButton() { return ($("c-header button[data-action=toggle-theme]")) },
-	get toggleLayoutButton() { return ($("c-header button[data-action=toggle-editor-layout]")) },
-	files: document.querySelector("c-files"),
-	editor: document.createElement("c-editor"),
-	get textInput() { return $(".text-input .textarea", this.editor) },
-	get htmlOutput() { return $("section.html-output", this.editor) },
-	get headersAndFooters() { return $("#headers-and-footers") },
-	get paperSizeMeasurement() { return $("#paper-size-measurement") },
-	get contentEndElement() { return $("#content-end-element") },
+	get header() { return $("c-header header"); },
+	get myFilesLink() { return $("c-header a[data-action=my-files]"); },
+	get saveButton() { return $("c-header button[data-action=save]"); },
+	get exportButton() { return $("c-header button[data-action=export]"); },
+	get recentlyOpenedDialog() { return $("c-files dialog.recently-opened"); },
+	get recentlyOpenedButton() { return $("c-header button[data-action=recently-opened]"); },
+	get openButton() { return $("c-header button[data-action=open]"); },
+	get uploadButton() { return $("c-header button[data-action=upload]"); },
+	get newFolderButton() { return $("c-files button[data-action=new-folder]"); },
+	get newBrowserFileButton() { return $("c-files button[data-action=new-browser-file]"); },
+	get newDiskFileButton() { return $("c-files button[data-action=new-disk-file]"); },
+	get foldersUL() { return $("c-files ul.folders"); },
+	get filesUL() { return $("c-files ul.files"); },
+	get breadcrumbUL() { return $("c-files nav.breadcrumb ul"); },
+	get fileNameInput() { return $("c-header input[name=file-name]"); },
+	get toggleThemeButton() { return ($("c-header button[data-action=toggle-theme]")); },
+	get toggleLayoutButton() { return ($("c-header button[data-action=toggle-editor-layout]")); },
+	files: $("c-files"),
+	editor: <c-editor />,
+	get textInput() { return $(".text-input .textarea", this.editor); },
+	get htmlOutput() { return $("section.html-output", this.editor); },
+	get headersAndFooters() { return $("#headers-and-footers"); },
+	get paperSizeMeasurement() { return $("#paper-size-measurement"); },
+	get contentEndElement() { return $("#content-end-element"); },
 	appTitleMeta: document.querySelector("meta[name=app-title]"),
 };
 
 if (navigator.windowControlsOverlay) {
-	document.documentElement.classList.add("no-wco-animation");
+	// document.documentElement.classList.add("no-wco-animation");
 	const mediaMatch = window.matchMedia("(display-mode: window-controls-overlay)");
 	mediaMatch.addEventListener("change", () => {
 		document.documentElement.classList.remove("no-wco-animation");
 	}, { once: true });
 }
 
-{
+setTimeout(() => {
 	let /** @type {BeforeInstallPromptEvent} */ beforeInstallPromptEvent;
 	const button = $("button[data-action=install]");
 	window.addEventListener("beforeinstallprompt", (event) => {
@@ -486,7 +568,7 @@ if (navigator.windowControlsOverlay) {
 		button.hidden = true;
 		beforeInstallPromptEvent = undefined;
 	});
-}
+}, 100);
 
 {
 	const canHoverMatch = window.matchMedia("(hover)");
@@ -497,7 +579,13 @@ if (navigator.windowControlsOverlay) {
 	canHoverMatch.addEventListener("change", update);
 }
 
+// document.body.append(<c-header />);
+// document.body.append(<main><c-files /></main>);
+
+// await new Promise(setTimeout);
+
 {
+	// console.log(document.documentElement.outerHTML);
 	for (const button of $$("button[data-action].keep-focus", elements.header)) {
 		button.addEventListener("pointerdown", (event) => {
 			event.preventDefault();
@@ -514,6 +602,9 @@ if (navigator.windowControlsOverlay) {
 	let mouseX = 0;
 	let mouseY = 0;
 
+	const themeColorMetaElement = <meta name="theme-color" content="oklch(0.29 0.016 290.4)" />;
+	document.head.append(themeColorMetaElement);
+
 	const updateTheme = async () => {
 		document.documentElement.style.setProperty("--animation-origin-x", button.offsetLeft + button.offsetWidth / 2);
 		document.documentElement.style.setProperty("--animation-origin-y", button.offsetTop + button.offsetHeight / 2);
@@ -521,7 +612,7 @@ if (navigator.windowControlsOverlay) {
 			await new Promise(res => setTimeout(res));
 			document.documentElement.classList.toggle("light-theme", currentTheme === "light");
 			const themeColor = window.getComputedStyle(document.documentElement).backgroundColor.trim();
-			document.querySelector("meta[name=theme-color]").content = themeColor;
+			themeColorMetaElement.content = themeColor;
 		}, { name: "theme-change", resolveWhenFinished: true });
 		document.documentElement.style.removeProperty("--animation-origin-x");
 		document.documentElement.style.removeProperty("--animation-origin-y");

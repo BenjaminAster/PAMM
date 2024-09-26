@@ -1,6 +1,6 @@
 
-import { categories, operators, allBracketsSyntaxes, keywords, operatorList } from "../../parse/math/categorizeArray.js";
-import { createMathElement } from "../../app.js";
+import { categories, operators, allBracketsSyntaxes, keywords, operatorList } from "../../constants.ts";
+import { createMathElement } from "../createMathElement.ts";
 
 export default (/** @type {any[]} */ mathTree) => {
 

@@ -1,5 +1,5 @@
 
-import parseMath from "../math/parseMath.js";
+import parseMath from "../math/parseMath.ts";
 
 export default (/** @type {string} */ inputString) => {
 	let currentString = "\n";

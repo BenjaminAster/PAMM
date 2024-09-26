@@ -1,7 +1,7 @@
 
-import arrayToTree from "./arrayToTree.js";
-import categorizeArray, { categories, characterCategories, keywordList, operators, operatorList, allBracketsSyntaxes, allBrackets } from "./categorizeArray.js";
-
+import arrayToTree from "./arrayToTree.ts";
+import categorizeArray, { characterCategories } from "./categorizeArray.ts";
+import { categories, operators, allBrackets } from "../../constants.ts";
 
 export default (/** @type {string} */ mathString) => {
 
@@ -115,7 +115,7 @@ export default (/** @type {string} */ mathString) => {
 					anyBracketType: allBrackets.group,
 				});
 			}
-		}
+		};
 
 		{
 			let /** @type {number} */ index;
