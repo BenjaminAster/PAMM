@@ -1,16 +1,16 @@
 
 import parseMath from "../math/parseMath.ts";
 
-export default (/** @type {string} */ inputString) => {
+export default (inputString: string) => {
 	let currentString = "\n";
-	let stack = [{
+	let stack: any[] = [{
 		type: "base",
-		content: [],
+		content: [] as any[],
 	}];
 	let bracesDepth = 0;
 	let currentType = "text";
 	let backslashEscaped = false;
-	let currentTextFormatting = {
+	let currentTextFormatting: any = {
 		bold: false,
 		italic: false,
 		underline: false,

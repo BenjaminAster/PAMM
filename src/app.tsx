@@ -11,42 +11,6 @@ import Editor from "./components/editor.tsx";
 
 document.documentElement.classList.add("no-transitions");
 
-document.body.replaceChildren(
-	<noscript>Please enable JavaScript to view this site.</noscript>,
-
-	<template id="export-dialog">
-		<dialog className="export">
-			<form method="dialog">
-				<div>
-					<button className="close icon:x" value="cancel" title="Close"></button>
-					<h2>Export</h2>
-				</div>
-
-				<ul>
-					<li>
-						<button value="download" className="icon:download">Download PAMM file</button>
-					</li>
-					<li>
-						<button value="print" className="icon:file-earmark-pdf">Print or save as PDF</button>
-					</li>
-					<li>
-						<button value="export-html" className="icon:code">Export as HTML</button>
-					</li>
-				</ul>
-			</form>
-		</dialog>
-	</template>,
-
-	<c-header></c-header>,
-
-	<main>
-		<c-files></c-files>
-	</main>,
-
-	<div id="dummy"></div>
-);
-
-document.body.replaceChildren = () => { };
 
 export const $ = <K extends string>(selector: K, root: HTMLElement | Document | DocumentFragment = document) => (
 	root.querySelector(selector)
@@ -60,13 +24,13 @@ export const fileSystemAccessSupported = Boolean(window.showSaveFilePicker && wi
 
 export const isApple = navigator.userAgentData?.platform ? ["macOS", "iOS"].includes(navigator.userAgentData.platform) : /^(Mac|iP)/.test(navigator.platform);
 
-export const encodeFile = (/** @type {{ text: string, data?: Record<string, any> }} */ { text, data = {} }) => {
+export const encodeFile = ({ text, data = {} }: { text: string, data?: Record<string, any>; }) => {
 	return `version 1\n-----\n${text}\n-----\n${JSON.stringify(data, null, "\t")}`;
 };
 
 export const parseHTML = Range.prototype.createContextualFragment.bind(new Range());
 
-export const decodeFile = (/** @type {{ fileContent: string }} */ { fileContent }) => {
+export const decodeFile = ({ fileContent }: { fileContent: string; }) => {
 	const { data: dataString, text } = fileContent.match(/^version 1\n-----\n(?<text>.*)\n-----\n(?<data>{(?:(?!\n-----\n).)*})$/s)?.groups ?? {};
 	const data = (() => {
 		try {
@@ -78,22 +42,22 @@ export const decodeFile = (/** @type {{ fileContent: string }} */ { fileContent 
 	return { text, data };
 };
 
-const executeOnTransitionEnd = async (/** @type {Element} */ element, /** @type {Function} */ callback) => {
+const executeOnTransitionEnd = async (element: Element, callback: Function) => {
 	await Promise.allSettled(
 		element.getAnimations().filter((animation) => animation instanceof CSSTransition).map(({ finished }) => finished)
 	);
 	callback();
 };
 
-export const removeAfterTransition = (/** @type {HTMLElement} */ element) => {
+export const removeAfterTransition = (element: HTMLElement) => {
 	executeOnTransitionEnd(element, () => element.remove());
 };
 
-export const _expose = (/** @type {Record<string, any>} */ object) => {
-	for (const [key, value] of Object.entries(object)) /** @type {any} */ (self)[key] = value;
+export const _expose = (object: Record<string, any>) => {
+	for (const [key, value] of Object.entries(object)) (self as any)[key] = value;
 };
 
-export const removeRealChildren = (/** @type {HTMLElement} */ element) => {
+export const removeRealChildren = (element: HTMLElement) => {
 	for (const child of [...element.childNodes].filter(({ nodeName }) => nodeName !== "TEMPLATE")) {
 		child.remove();
 	}
@@ -233,11 +197,11 @@ export const database = await new class {
 		return constructorPromise as Awaited<typeof constructorPromise>;
 	};
 
-	async #opration(/** @type {{ callback: (store: IDBObjectStore) => IDBRequest, transactionMode: IDBTransactionMode, store: string }} */ {
+	async #opration({
 		callback,
 		transactionMode,
 		store: storeName,
-	}) {
+	}: { callback: (store: IDBObjectStore) => IDBRequest, transactionMode: IDBTransactionMode, store: string; }) {
 		const transaction = this.#database.transaction(storeName, transactionMode);
 		const store = transaction.objectStore(storeName);
 		const request = callback(store);
@@ -245,14 +209,14 @@ export const database = await new class {
 		await new Promise((resolve) => request.addEventListener("success", resolve, { once: true }));
 		return request.result;
 	};
-	async get(/** @type {{ store: string, key: string }} */ { store, key }) {
+	async get({ store, key }: { store: string, key: string; }) {
 		return await this.#opration({
 			callback: (store) => store.get(key),
 			transactionMode: "readonly",
 			store,
 		});
 	};
-	add = /** @template {Record<string, any>} T */ async (/** @type {{ store: string, data: T }} */ { store, data }) => {
+	add = async <T extends Record<string, any>>({ store, data }: { store: string, data: T; }) => {
 		await this.#opration({
 			callback: (store) => store.add(data),
 			transactionMode: "readwrite",
@@ -260,7 +224,7 @@ export const database = await new class {
 		});
 		return data;
 	};
-	put = /** @template {Record<string, any>} T */ async (/** @type {{ store: string, data: T }} */ { store, data }) => {
+	put = async <T extends Record<string, any>>({ store, data }: { store: string, data: T; }) => {
 		await this.#opration({
 			callback: (store) => store.put(data),
 			transactionMode: "readwrite",
@@ -268,14 +232,14 @@ export const database = await new class {
 		});
 		return data;
 	};
-	async delete(/** @type {{ store: string, key: string }} */ { store, key }) {
+	async delete({ store, key }: { store: string, key: string; }) {
 		await this.#opration({
 			callback: (store) => store.delete(key),
 			transactionMode: "readwrite",
 			store,
 		});
 	};
-	async getAll(/** @type {{ store: string }} */ { store }) {
+	async getAll({ store }: { store: string; }) {
 		return await this.#opration({
 			callback: (store) => store.getAll(),
 			transactionMode: "readwrite",
@@ -291,7 +255,7 @@ export const database = await new class {
 }
 
 {
-	let /** @type {string} */ engine;
+	let engine: string;
 	if (navigator.userAgentData?.brands?.find(({ brand }) => brand === "Chromium")) engine = "blink";
 	else if (navigator.userAgent.match(/\bFirefox\//)) engine = "gecko";
 	else if (navigator.userAgent.match(/\bChrome\//)) engine = "blink";
@@ -302,7 +266,7 @@ export const database = await new class {
 
 export const storage = new class {
 	#pathname = new URL(document.baseURI).pathname;
-	get(/** @type {string} */ key) {
+	get(key: string) {
 		try {
 			return JSON.parse(localStorage.getItem(`${this.#pathname}:${key}`));
 		} catch (error) {
@@ -310,107 +274,94 @@ export const storage = new class {
 			return null;
 		}
 	};
-	set(/** @type {string} */ key, /** @type {any} */ value) {
+	set(key: string, value: any) {
 		localStorage.setItem(`${this.#pathname}:${key}`, JSON.stringify(value));
 	};
-	remove(/** @type {string} */ key) {
+	remove(key: string) {
 		localStorage.removeItem(`${this.#pathname}:${key}`);
 	};
 };
 
-// console.log(document.documentElement.outerHTML);
-
-// const messageboxesTemplate = $("template#messageboxes").content;
-const messageboxesTemplate = (
-	<template id="messageboxes">
+export const alert = async ({ message, userGestureCallback }: { message: string, userGestureCallback?: Function; }) => {
+	const alertDialog =
 		<dialog className="messagebox alert">
 			<form method="dialog">
-				<p className="message"></p>
+				<p className="message">{message}</p>
 				<div className="buttons">
 					<button className="ok">OK</button>
 				</div>
 			</form>
-		</dialog>
-
-		<dialog className="messagebox confirm">
-			<form method="dialog">
-				<p className="message"></p>
-				<div className="buttons">
-					<button value="ok" className="ok">OK</button>
-					<button value="cancel" className="cancel">Cancel</button>
-				</div>
-			</form>
-		</dialog>
-
-		<dialog className="messagebox prompt">
-			<form method="dialog">
-				<p className="message"></p>
-				<input type="text" className="input" name="input" spellcheck={false} autocomplete="off" />
-				<div className="buttons">
-					<button value="ok" className="ok">OK</button>
-					<button value="cancel" className="cancel">Cancel</button>
-				</div>
-			</form>
-		</dialog>
-	</template> as any as HTMLTemplateElement
-).content;
-
-export const alert = async (/** @type {{ message: string, userGestureCallback?: Function }} */ { message, userGestureCallback }) => {
-	const dialog = $("dialog.alert", messageboxesTemplate).cloneNode(true);
-	$(".message", dialog).textContent = message;
-	document.body.append(dialog);
-	dialog.showModal();
-	const { promise, resolve } = Promise.withResolvers();
-	dialog.addEventListener("click", ({ target }) => {
-		if (target === dialog) dialog.close();
+		</dialog> as any as HTMLDialogElement;
+	document.body.append(alertDialog);
+	alertDialog.showModal();
+	const { promise, resolve } = Promise.withResolvers<void>();
+	alertDialog.addEventListener("click", ({ target }) => {
+		if (target === alertDialog) alertDialog.close();
 	});
-	dialog.addEventListener("close", async () => {
+	alertDialog.addEventListener("close", async () => {
 		await userGestureCallback?.();
 		resolve();
 	});
 	await promise;
-	removeAfterTransition(dialog);
+	removeAfterTransition(alertDialog);
 };
 
-export const confirm = async (/** @type {{ message: string, userGestureCallback?: Function }} */ { message, userGestureCallback }) => {
-	const dialog = $("dialog.confirm", messageboxesTemplate).cloneNode(true);
-	$(".message", dialog).textContent = message;
-	document.body.append(dialog);
-	dialog.showModal();
-	const { promise, resolve } = Promise.withResolvers();
-	dialog.addEventListener("click", ({ target }) => {
-		if (target === dialog) dialog.close("cancel");
+export const confirm = async ({ message, userGestureCallback }: { message: string, userGestureCallback?: Function; }) => {
+	const confirmDialog =
+		<dialog className="messagebox confirm">
+			<form method="dialog">
+				<p className="message">{message}</p>
+				<div className="buttons">
+					<button value="ok" className="ok">OK</button>
+					<button value="cancel" className="cancel">Cancel</button>
+				</div>
+			</form>
+		</dialog> as any as HTMLDialogElement;
+	document.body.append(confirmDialog);
+	confirmDialog.showModal();
+	const { promise, resolve } = Promise.withResolvers<void>();
+	confirmDialog.addEventListener("click", ({ target }) => {
+		if (target === confirmDialog) confirmDialog.close("cancel");
 	});
-	dialog.addEventListener("close", async () => {
+	confirmDialog.addEventListener("close", async () => {
 		await userGestureCallback?.();
-		resolve(undefined);
+		resolve();
 	});
 	await promise;
-	removeAfterTransition(dialog);
-	return { accepted: dialog.returnValue === "ok" };
+	removeAfterTransition(confirmDialog);
+	return { accepted: confirmDialog.returnValue === "ok" };
 };
 
 _expose({ alert });
 
-export const prompt = async (/** @type {{ message: string, defaultValue?: string }} */ { message, defaultValue = "" }) => {
-	const dialog = $("dialog.prompt", messageboxesTemplate).cloneNode(true);
-	$(".message", dialog).textContent = message;
-	$("input.input", dialog).value = defaultValue;
-	document.body.append(dialog);
-	dialog.showModal();
+export const prompt = async ({ message, defaultValue = "" }: { message: string, defaultValue?: string; }) => {
+	let form: HTMLFormElement;
+	const proptDialog =
+		<dialog className="messagebox prompt">
+			<form method="dialog" bind:this={form}>
+				<p className="message">{message}</p>
+				<input type="text" defaultValue={defaultValue} className="input" name="input" spellcheck={false} autocomplete="off" />
+				<div className="buttons">
+					<button value="ok" className="ok">OK</button>
+					<button value="cancel" className="cancel">Cancel</button>
+				</div>
+			</form>
+		</dialog> as any as HTMLDialogElement;
+	document.body.append(proptDialog);
+	proptDialog.showModal();
 	const { promise, resolve } = Promise.withResolvers();
-	dialog.addEventListener("click", ({ target }) => {
-		if (target === dialog) dialog.close("cancel");
+	proptDialog.addEventListener("click", ({ target }) => {
+		if (target === proptDialog) proptDialog.close("cancel");
 	});
-	dialog.addEventListener("close", resolve);
+	proptDialog.addEventListener("close", resolve);
 	await promise;
-	const accepted = dialog.returnValue === "ok";
-	const value = accepted ? /** @type {string} */ (new FormData($("form", dialog)).get("input")) : undefined;
-	removeAfterTransition(dialog);
+	const accepted = proptDialog.returnValue === "ok";
+	const value = accepted ? new FormData(form).get("input") as string : undefined;
+	removeAfterTransition(proptDialog);
 	return { accepted, value };
 };
 
-export const setTitle = (/** @type {string} */ title) => {
+export const setTitle = (title: string) => {
 	const titleArray = [title, appMeta.shortName];
 	if (window.matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay)").matches) titleArray.reverse();
 	document.title = titleArray.join(" - ");
@@ -419,7 +370,10 @@ export const setTitle = (/** @type {string} */ title) => {
 const useTransitions = Boolean(document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 // const useTransitions = false;
 
-export const transition = async (/** @type {() => Promise<any>} */ callback, /** @type {{ name: string, resolveWhenFinished?: boolean }} */ { name, resolveWhenFinished = false }) => {
+export const transition = async (
+	callback: () => Promise<any>,
+	{ name, resolveWhenFinished = false }: { name: string, resolveWhenFinished?: boolean; }
+) => {
 	if (!useTransitions || document.documentElement.classList.contains("no-transitions")) {
 		await callback();
 		return;
@@ -478,66 +432,66 @@ export const appMeta = {
 	mimeType: "text/pretty-awesome-math-markup",
 };
 
-{
-	const customElements = {
-		editor: Editor,
-		header: Header,
-		files: Files,
-	};
+// {
+// const customElements = {
+// 	editor: Editor,
+// 	header: Header,
+// 	files: Files,
+// };
 
-	await Promise.all(Object.entries(customElements).map(async ([name, element]) => {
-		// const html = await (await window.fetch(path)).text();
-		// const content = parseHTML(html);
+// await Promise.all(Object.entries(customElements).map(async ([name, element]) => {
+// 	// const html = await (await window.fetch(path)).text();
+// 	// const content = parseHTML(html);
 
-		// const styleElement = content.querySelector("style");
-		// const css = `c-${name} { ${styleElement.textContent} }`;
+// 	// const styleElement = content.querySelector("style");
+// 	// const css = `c-${name} { ${styleElement.textContent} }`;
 
-		// styleElement.textContent = css + (
-		// 	`\n/*# sourceMappingURL=data:application/json,${window.encodeURIComponent(JSON.stringify({
-		// 		version: 3,
-		// 		mappings: "",
-		// 		sources: [`./html/${name}.c.html`],
-		// 	}))} */`
-		// );
-		// styleElement.dataset.customElement = `c-${name}`;
-		// document.head.append(styleElement);
+// 	// styleElement.textContent = css + (
+// 	// 	`\n/*# sourceMappingURL=data:application/json,${window.encodeURIComponent(JSON.stringify({
+// 	// 		version: 3,
+// 	// 		mappings: "",
+// 	// 		sources: [`./html/${name}.c.html`],
+// 	// 	}))} */`
+// 	// );
+// 	// styleElement.dataset.customElement = `c-${name}`;
+// 	// document.head.append(styleElement);
 
-		window.customElements.define(`c-${name}`, class extends HTMLElement {
-			// #content = content;
-			constructor() {
-				super();
-				queueMicrotask(() => {
-					// this.append(this.#content.cloneNode(true));
-					this.append(element());
-				});
-				// this.append(element());
-			};
-			connectedCallback() {
-			};
-		});
-	}));
-}
+// 	window.customElements.define(`c-${name}`, class extends HTMLElement {
+// 		// #content = content;
+// 		constructor() {
+// 			super();
+// 			queueMicrotask(() => {
+// 				// this.append(this.#content.cloneNode(true));
+// 				this.append(element());
+// 			});
+// 			// this.append(element());
+// 		};
+// 		connectedCallback() {
+// 		};
+// 	});
+// 	}));
+// }
 
 export const elements = {
-	get header() { return $("c-header header"); },
-	get myFilesLink() { return $("c-header a[data-action=my-files]"); },
-	get saveButton() { return $("c-header button[data-action=save]"); },
-	get exportButton() { return $("c-header button[data-action=export]"); },
-	get recentlyOpenedDialog() { return $("c-files dialog.recently-opened"); },
-	get recentlyOpenedButton() { return $("c-header button[data-action=recently-opened]"); },
-	get openButton() { return $("c-header button[data-action=open]"); },
-	get uploadButton() { return $("c-header button[data-action=upload]"); },
-	get newFolderButton() { return $("c-files button[data-action=new-folder]"); },
-	get newBrowserFileButton() { return $("c-files button[data-action=new-browser-file]"); },
-	get newDiskFileButton() { return $("c-files button[data-action=new-disk-file]"); },
-	get foldersUL() { return $("c-files ul.folders"); },
-	get filesUL() { return $("c-files ul.files"); },
-	get breadcrumbUL() { return $("c-files nav.breadcrumb ul"); },
-	get fileNameInput() { return $("c-header input[name=file-name]"); },
-	get toggleThemeButton() { return ($("c-header button[data-action=toggle-theme]")); },
-	get toggleLayoutButton() { return ($("c-header button[data-action=toggle-editor-layout]")); },
-	files: $("c-files"),
-	editor: <c-editor />,
+	header: <Header /> as any as HTMLElement,
+	get myFilesLink() { return $("a[data-action=my-files]", elements.header); },
+	get saveButton() { return $("button[data-action=save]", elements.header); },
+	get exportButton() { return $("button[data-action=export]", elements.header); },
+	get recentlyOpenedDialog() { return $("dialog.recently-opened", this.files); },
+	get recentlyOpenedButton() { return $("button[data-action=recently-opened]", elements.header); },
+	get openButton() { return $("button[data-action=open]", elements.header); },
+	get uploadButton() { return $("button[data-action=upload]", elements.header); },
+	get newFolderButton() { return $("button[data-action=new-folder]", this.files); },
+	get newBrowserFileButton() { return $("button[data-action=new-browser-file]", this.files); },
+	get newDiskFileButton() { return $("button[data-action=new-disk-file]", this.files); },
+	get foldersUL() { return $("ul.folders", this.files); },
+	get filesUL() { return $("ul.files", this.files); },
+	get breadcrumbUL() { return $("nav.breadcrumb ul", this.files); },
+	get fileNameInput() { return $("input[name=file-name]", elements.header); },
+	get toggleThemeButton() { return $("button[data-action=toggle-theme]", elements.header); },
+	get toggleLayoutButton() { return $("button[data-action=toggle-editor-layout]", elements.header); },
+	files: <Files /> as any as HTMLElement,
+	editor: <Editor /> as any as HTMLElement,
 	get textInput() { return $(".text-input .textarea", this.editor); },
 	get htmlOutput() { return $("section.html-output", this.editor); },
 	get headersAndFooters() { return $("#headers-and-footers"); },
@@ -545,6 +499,18 @@ export const elements = {
 	get contentEndElement() { return $("#content-end-element"); },
 	appTitleMeta: document.querySelector("meta[name=app-title]"),
 };
+
+document.body.replaceChildren(
+	<noscript>Please enable JavaScript to view this site.</noscript>,
+
+	elements.header,
+
+	<main>
+		{elements.files}
+	</main>,
+
+	<div id="dummy"></div>
+);
 
 if (navigator.windowControlsOverlay) {
 	// document.documentElement.classList.add("no-wco-animation");
@@ -555,7 +521,7 @@ if (navigator.windowControlsOverlay) {
 }
 
 setTimeout(() => {
-	let /** @type {BeforeInstallPromptEvent} */ beforeInstallPromptEvent;
+	let beforeInstallPromptEvent: BeforeInstallPromptEvent;
 	const button = $("button[data-action=install]");
 	window.addEventListener("beforeinstallprompt", (event) => {
 		beforeInstallPromptEvent = event;

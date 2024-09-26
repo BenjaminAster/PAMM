@@ -5,6 +5,7 @@ winzigConfig: ({
 	output: "../",
 	appfiles: "appfiles",
 	css: "./css/main.css",
+	noCSSScopeRules: true,
 }) satisfies WinzigConfig;
 
 import "./main.tsx";

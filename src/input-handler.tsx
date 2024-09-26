@@ -1,7 +1,7 @@
 
 import { elements, $$, storage, transition } from "./app.tsx";
 import parseDocument from "./parse/document/parseDocument.ts";
-import renderDocument from "./render/document/renderDocument.ts";
+import renderDocument from "./render/document/renderDocument.tsx";
 import { keyDown } from "./files.tsx";
 
 CSS.highlights?.set("heading", new Highlight());
@@ -9,13 +9,11 @@ CSS.highlights?.set("code", new Highlight());
 CSS.highlights?.set("math", new Highlight());
 const selection = document.getSelection();
 
-await new Promise(setTimeout);
-
 // export const { startRendering } = (() => {
 export const startRendering = (() => {
-	let previousSectionsArray = [];
+	let previousSectionsArray: any[] = [];
 
-	const handleInput = function (/** @type {Partial<InputEvent>} */ { data }: any = ({})) {
+	const handleInput = function ({ }: Partial<InputEvent> = {}) {
 		// console.log('handle')
 		const { textContent } = elements.textInput;
 
@@ -33,7 +31,7 @@ export const startRendering = (() => {
 		// 	}
 		// }
 
-		const /** @type {any[]} */ sectionsArray = [];
+		const sectionsArray: any[] = [];
 
 		let sectionBracesDepth = 0;
 		let currentSectionArray = [];
@@ -44,8 +42,8 @@ export const startRendering = (() => {
 		let currentCharIndex = 0;
 		CSS.highlights?.get("code").clear();
 		CSS.highlights?.get("math").clear();
-		let /** @type {Range} */ currentCodeRange;
-		let /** @type {Range} */ currentMathRange;
+		let currentCodeRange: Range;
+		let currentMathRange: Range;
 		for (let index = 0; index < initialStringSections.length; index++) {
 			const stringSection = initialStringSections[index];
 			for (const character of stringSection) {
@@ -154,7 +152,7 @@ export const startRendering = (() => {
 	elements.textInput.addEventListener("beforeinput", (event) => {
 		if (!event.inputType.startsWith("format")) {
 			const [{ startContainer: container, startOffset, endOffset }] = event.getTargetRanges();
-			const replaceText = (/** @type {string} */ text) => {
+			const replaceText = (text: string) => {
 				container.replaceData(startOffset, endOffset - startOffset, text);
 				selection.collapse(container, startOffset + text.length);
 				const { top } = selection.getRangeAt(0).getBoundingClientRect();
@@ -164,17 +162,17 @@ export const startRendering = (() => {
 			if (event.inputType === "insertParagraph") {
 				event.preventDefault();
 				replaceText("\n");
-				handleInput()
+				handleInput();
 			} else if (event.dataTransfer) {
 				event.preventDefault();
 				const insertedText = event.dataTransfer.getData("text/plain").replaceAll("\r", "");
 				replaceText(insertedText);
-				handleInput()
+				handleInput();
 			} else return;
 		}
 
 		event.preventDefault();
-		handleInput()
+		handleInput();
 	});
 
 	for (const element of [elements.textInput, elements.htmlOutput]) {
@@ -195,20 +193,18 @@ export const startRendering = (() => {
 		});
 	}
 
-	return {
-		startRendering() {
-			previousSectionsArray = [];
+	return () => {
+		previousSectionsArray = [];
 
-			for (const element of $$(":scope > .section", elements.htmlOutput)) {
-				element.remove();
-			}
+		for (const element of $$(":scope > .section", elements.htmlOutput)) {
+			element.remove();
+		}
 
-			handleInput.call(elements.textInput);
+		handleInput.call(elements.textInput);
 
-			document.documentElement.classList.remove("file-dirty");
-		},
+		document.documentElement.classList.remove("file-dirty");
 	};
-})().startRendering;
+})();
 
 {
 	let onlyShiftPressed = false;

@@ -36,6 +36,7 @@ export default () => {
 			@layer elements {
 				& {
 					block-size: 100%;
+					--split-proportion: 0.5;
 					display: flex;
 					box-sizing: border-box;
 					/* background-color: var(--gray-1); */

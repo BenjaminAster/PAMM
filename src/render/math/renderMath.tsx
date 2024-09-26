@@ -1,10 +1,9 @@
 
 import { categories, operators, allBracketsSyntaxes, keywords, operatorList } from "../../constants.ts";
-import { createMathElement } from "../createMathElement.ts";
 
-export default (/** @type {any[]} */ mathTree) => {
+export default (mathTree: any[]) => {
 
-	const recursiveRender = (/** @type {any[]} */ tree, { outerElement = false } = {}) => {
+	const recursiveRender = (tree: any[], { outerElement = false } = {}) => {
 
 		const fragment = new DocumentFragment();
 
@@ -19,7 +18,7 @@ export default (/** @type {any[]} */ mathTree) => {
 						const numerator = recursiveRender(item.numerator);
 						const denominator = recursiveRender(item.denominator);
 
-						const element = createMathElement("mfrac");
+						const element = <mfrac></mfrac>;
 						element.append(numerator);
 						element.append(denominator);
 						expressionFragment.append(element);
@@ -31,7 +30,7 @@ export default (/** @type {any[]} */ mathTree) => {
 							const index = recursiveRender(item.base[0][0].index);
 							const exponent = recursiveRender(item.exponent);
 
-							const element = createMathElement("msubsup");
+							const element = <msubsup></msubsup>;
 							element.append(base);
 							element.append(index);
 							element.append(exponent);
@@ -40,7 +39,7 @@ export default (/** @type {any[]} */ mathTree) => {
 							const base = recursiveRender(item.base);
 							const exponent = recursiveRender(item.exponent);
 
-							const element = createMathElement("msup");
+							const element = <msup></msup>;
 							element.append(base);
 							element.append(exponent);
 							expressionFragment.append(element);
@@ -49,10 +48,10 @@ export default (/** @type {any[]} */ mathTree) => {
 					} else if (item.operator === operators.factorial) {
 
 						const expression = recursiveRender(item.expression);
-						const exclamationMark = createMathElement("mo");
+						const exclamationMark = <mo></mo>;
 						exclamationMark.textContent = "!";
 
-						const mathRow = createMathElement("mrow");
+						const mathRow = <mrow></mrow>;
 						mathRow.append(expression);
 						mathRow.append(exclamationMark);
 						expressionFragment.append(mathRow);
@@ -62,7 +61,7 @@ export default (/** @type {any[]} */ mathTree) => {
 						const base = recursiveRender(item.base);
 						const index = recursiveRender(item.index);
 
-						const element = createMathElement("msub");
+						const element = <msub></msub>;
 						element.append(base);
 						element.append(index);
 						expressionFragment.append(element);
@@ -72,7 +71,7 @@ export default (/** @type {any[]} */ mathTree) => {
 						const degree = recursiveRender(item.degree);
 						const radicand = recursiveRender(item.radicand);
 
-						const element = createMathElement("mroot");
+						const element = <mroot></mroot>;
 						element.append(radicand);
 						element.append(degree);
 						expressionFragment.append(element);
@@ -81,132 +80,132 @@ export default (/** @type {any[]} */ mathTree) => {
 
 						const radicand = recursiveRender(item.radicand);
 
-						const element = createMathElement("msqrt");
+						const element = <msqrt></msqrt>;
 						element.append(radicand);
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.plus) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.plusMinus) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.minus) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.times) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.divide) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.colon) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.invisibleTimes) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.innerHTML = "&InvisibleTimes;";
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.equals) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.lessThan) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.greaterThan) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.lessThanOrEqual) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.greaterThanOrEqual) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.doubleLeftArrow) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.doubleRightArrow) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.doubleLeftRightArrow) {
 
-						const element = createMathElement("mo");
+						const element = <mo></mo>;
 						element.textContent = operatorList.find(({ name }) => name === item.operator).character;
 						expressionFragment.append(element);
 
 					} else if (item.operator === operators.sum) {
 
-						const underOverElement = createMathElement("munderover");
+						const underOverElement = <munderover></munderover>;
 						const bottomElement = recursiveRender(item.startExpression);
 						const topElement = recursiveRender(item.endExpression);
-						const sigmaElement = createMathElement("mo");
+						const sigmaElement = <mo></mo>;
 						sigmaElement.textContent = operatorList.find(({ name }) => name === item.operator).character;
 
 						underOverElement.append(sigmaElement, bottomElement, topElement);
 
-						const container = createMathElement("mrow");
+						const container = <mrow></mrow>;
 						container.append(underOverElement, recursiveRender(item.expression));
 						expressionFragment.append(container);
 
 					} else if (item.operator === operators.integral) {
 
-						const underOverElement = createMathElement("msubsup");
+						const underOverElement = <msubsup></msubsup>;
 						const lowerLimitElement = recursiveRender(item.lowerLimit);
 						const upperLimitElement = recursiveRender(item.upperLimit);
-						const integralElement = createMathElement("mo");
+						const integralElement = <mo></mo>;
 						integralElement.textContent = operatorList.find(({ name }) => name === item.operator).character;
 
 						underOverElement.append(integralElement, lowerLimitElement, upperLimitElement);
 
-						const differentialElement = createMathElement("mrow");
-						const dElement = createMathElement("mo");
+						const differentialElement = <mrow></mrow>;
+						const dElement = <mo></mo>;
 						dElement.textContent = "d";
 						dElement.setAttribute("rspace", "0");
 						differentialElement.append(dElement);
 						differentialElement.append(recursiveRender(item.integrationVariable));
 
-						const container = createMathElement("mrow");
+						const container = <mrow></mrow>;
 						container.append(underOverElement, recursiveRender(item.integrand), differentialElement);
 						expressionFragment.append(container);
 
@@ -215,7 +214,7 @@ export default (/** @type {any[]} */ mathTree) => {
 				} else if (item.category === categories.keyword) {
 
 					if (item.keywordName === keywords.pi) {
-						const element = createMathElement("mi");
+						const element = <mi></mi>;
 						element.innerHTML = "&pi;";
 
 						expressionFragment.append(element);
@@ -223,45 +222,45 @@ export default (/** @type {any[]} */ mathTree) => {
 
 				} else if (item.category === categories.variable) {
 
-					const element = createMathElement("mi");
+					const element = <mi></mi>;
 					element.textContent = item.variable;
 
 					expressionFragment.append(element);
 
 				} else if (item.category === categories.number) {
 
-					const element = createMathElement("mn");
+					const element = <mn></mn>;
 					element.textContent = item.number;
 
 					expressionFragment.append(element);
 
 				} else if (item.category === categories.anyBracket) {
 
-					const openingBracket = createMathElement("mo");
+					const openingBracket = <mo></mo>;
 					openingBracket.textContent = allBracketsSyntaxes.find(({ name, type }) => type === categories.anyOpeningBracket && name == item.anyBracketType).syntax;
 
-					const closingBracket = createMathElement("mo");
+					const closingBracket = <mo></mo>;
 					closingBracket.textContent = allBracketsSyntaxes.find(({ name, type }) => type === categories.anyClosingBracket && name == item.anyBracketType).syntax;
 
-					const container = createMathElement("mrow");
+					const container = <mrow></mrow>;
 					container.append(openingBracket, recursiveRender(item.content), closingBracket);
 					expressionFragment.append(container);
 
 				} else if (item.category === categories.function) {
 
-					const mathRow = createMathElement("mrow");
+					const mathRow = <mrow></mrow>;
 
-					const functionNameElement = createMathElement("mi");
+					const functionNameElement = <mi></mi>;
 					functionNameElement.textContent = item.functionName;
 					mathRow.append(functionNameElement);
 
-					const openingBracket = createMathElement("mo");
+					const openingBracket = <mo></mo>;
 					openingBracket.textContent = "(";
 					mathRow.append(openingBracket);
 
 					mathRow.append(recursiveRender(item.parameters));
 
-					const closingBracket = createMathElement("mo");
+					const closingBracket = <mo></mo>;
 					closingBracket.textContent = ")";
 					mathRow.append(closingBracket);
 
@@ -271,13 +270,13 @@ export default (/** @type {any[]} */ mathTree) => {
 			}
 
 			if (expressionIndex >= 1) {
-				const commaElement = createMathElement("mo");
+				const commaElement = <mo></mo>;
 				commaElement.textContent = ",";
 				fragment.append(commaElement);
 			}
 
 			if (expression.length !== 1 && tree.length === 1 && !outerElement) {
-				const mathRow = createMathElement("mrow");
+				const mathRow = <mrow></mrow>;
 				mathRow.append(expressionFragment);
 				fragment.append(mathRow);
 			} else {
@@ -286,7 +285,7 @@ export default (/** @type {any[]} */ mathTree) => {
 		}
 
 		if (tree.length !== 1 && !outerElement) {
-			const mathRow = createMathElement("mrow");
+			const mathRow = <mrow></mrow>;
 			mathRow.append(fragment);
 			return mathRow;
 		} else {

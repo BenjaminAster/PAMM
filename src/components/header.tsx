@@ -2,7 +2,7 @@
 import { css } from "winzig";
 
 export default () => {
-	return <div>
+	return <div className="header">
 		<header>
 			<img src="./assets/icon.svg" className="logo" alt="icon of PAMM" width={1} height={1} />
 			<h1 className="title">PAMM</h1>

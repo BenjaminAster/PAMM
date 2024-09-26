@@ -1,51 +1,50 @@
 
-import { createMathElement } from "../createMathElement.ts";
-import renderMath from "../math/renderMath.ts";
+import renderMath from "../math/renderMath.tsx";
 
-export default (/** @type {any[]} */ documentTree) => {
+export default (documentTree: any[]) => {
 
-	const recursiveRender = (/** @type {any[]} */ tree) => {
+	const recursiveRender = (tree: any[]) => {
 		const fragment = new DocumentFragment();
 
 		for (const item of tree) {
 			switch (item.type) {
 				case ("text"): {
-					fragment.append(document.createTextNode(item.string));
+					fragment.append(new Text(item.string));
 					break;
 				} case ("math"): {
-					const mathElement = createMathElement("math");
+					const mathElement = <math></math>;
 					if (item.displayBlock) mathElement.setAttribute("display", "block");
 					if (item.displayBlock !== item.displayStyle) mathElement.setAttribute("displaystyle", item.displayStyle);
 					mathElement.append(renderMath(item.content));
 					fragment.append(mathElement);
 					break;
 				} case ("newLine"): {
-					const lineBreakElement = document.createElement("br");
+					const lineBreakElement = <br></br>;
 					fragment.append(lineBreakElement);
 					break;
 				} case ("paragraph"): {
-					const paragraphElement = document.createElement("p");
+					const paragraphElement = <p></p>;
 					if (item.bottomMargin) paragraphElement.classList.add("bottom-margin");
 					paragraphElement.append(recursiveRender(item.content))
 					fragment.append(paragraphElement);
 					break;
 				} case ("bold"): {
-					const boldElement = document.createElement("strong");
+					const boldElement = <strong></strong>;
 					boldElement.append(recursiveRender(item.content))
 					fragment.append(boldElement);
 					break;
 				} case ("italic"): {
-					const italicElement = document.createElement("em");
+					const italicElement = <em></em>;
 					italicElement.append(recursiveRender(item.content))
 					fragment.append(italicElement);
 					break;
 				} case ("underline"): {
-					const underlineElement = document.createElement("u");
+					const underlineElement = <u></u>;
 					underlineElement.append(recursiveRender(item.content))
 					fragment.append(underlineElement);
 					break;
 				} case ("code"): {
-					const codeElement = document.createElement("code");
+					const codeElement = <code></code>;
 					codeElement.append(recursiveRender(item.content))
 					fragment.append(codeElement);
 					break;

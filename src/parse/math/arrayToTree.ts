@@ -17,10 +17,10 @@ const operatorsWithItemAfter = [
 	operators.squareRoot,
 ];
 
-const matchAnyBrackets = (/** @type {any[]} */ mathArray) => {
+const matchAnyBrackets = (mathArray: any[]) => {
 	const stack = [{
 		type: "base",
-		contents: [[]],
+		contents: [[] as any[]],
 	}];
 
 	for (const item of mathArray) {
@@ -30,7 +30,7 @@ const matchAnyBrackets = (/** @type {any[]} */ mathArray) => {
 				contents: [[]],
 			});
 		} else if (item.category === categories.anyClosingBracket) {
-			let /** @type {string} */ previousGroupType;
+			let previousGroupType: string;
 			while (stack.length >= 2 && previousGroupType !== item.anyBracketType) {
 				previousGroupType = stack.at(-1).type;
 				stack.at(-2).contents.at(-1).push(stack.pop());
@@ -52,11 +52,11 @@ const matchAnyBrackets = (/** @type {any[]} */ mathArray) => {
 	return stack[0].contents;
 };
 
-export default (/** @type {any[]} */ mathArray) => {
+export default (mathArray: any[]) => {
 
 	const groupedTree = matchAnyBrackets(mathArray);
 
-	const recursiveTree = (/** @type {any[]} */ tree) => {
+	const recursiveTree = (tree: any[]): any[] => {
 		const newTree = [];
 
 		for (const expression of tree) {

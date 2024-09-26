@@ -3,18 +3,18 @@ import arrayToTree from "./arrayToTree.ts";
 import categorizeArray, { characterCategories } from "./categorizeArray.ts";
 import { categories, operators, allBrackets } from "../../constants.ts";
 
-export default (/** @type {string} */ mathString) => {
+export default (mathString: string) => {
 
 	let mathArray = categorizeArray(mathString);
 
 	{
-		const matchGroup = (/** @type {{ index: number, direction: "forwards" | "backwards", removeRedundantParentheses?: boolean, disallowedOperators?: string[], canBehaveLikeFunction?: boolean }} */ {
+		const matchGroup = ({
 			index: startIndex,
 			direction: directionString,
 			removeRedundantParentheses = true,
 			disallowedOperators = [],
 			canBehaveLikeFunction = false,
-		}) => {
+		}: { index: number, direction: "forwards" | "backwards", removeRedundantParentheses?: boolean, disallowedOperators?: string[], canBehaveLikeFunction?: boolean; }) => {
 			let parenthesesDepth = 0;
 			const direction = (directionString === "forwards") ? 1 : -1;
 
@@ -118,7 +118,7 @@ export default (/** @type {string} */ mathString) => {
 		};
 
 		{
-			let /** @type {number} */ index;
+			let index: number;
 
 			while (index = mathArray.findIndex(
 				({ category, groupsNotMatched }) => category === categories.operator && groupsNotMatched

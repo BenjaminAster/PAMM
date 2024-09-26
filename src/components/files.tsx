@@ -14,7 +14,7 @@ export default () => {
 		</nav>
 
 		<div className="main-area">
-			<h2 on:click={() => alert} className="icon:folder">Folders</h2>
+			<h2 className="icon:folder">Folders</h2>
 
 			<ul className="items folders">
 				<template>

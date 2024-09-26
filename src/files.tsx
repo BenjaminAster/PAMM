@@ -20,21 +20,21 @@ import {
 } from "./app.tsx";
 import { startRendering } from "./input-handler.tsx";
 import parseDocument from "./parse/document/parseDocument.ts";
-import renderDocument from "./render/document/renderDocument.ts";
+import renderDocument from "./render/document/renderDocument.tsx";
 
 // await new Promise(setTimeout);
 
-const /** @type {any} */ trace = (/** @type {any[]} */ ...args) => console.trace(...args);
+const trace: any = (...args: any[]) => console.trace(...args);
 
 let currentFolder = {
 	id: "home",
 	name: "home",
-	parentFolder: /** @type {{ id: string }} */ (null),
-	folders: [],
-	files: [],
+	parentFolder: null as { id: string; },
+	folders: [] as any[],
+	files: [] as any[],
 };
 
-let /** @type {{ storageType: FileStorageType, id: string, name: string, content: string, fileHandle?: FileSystemFileHandle }} */ currentFile;
+let currentFile: { storageType: FileStorageType, id: string, name: string, content: string, fileHandle?: FileSystemFileHandle; };
 
 const fileTypesOption = [{
 	accept: { [appMeta.mimeType]: [appMeta.fileExtension] },
@@ -44,18 +44,18 @@ const fileTypesOption = [{
 const fileSystemAccessAPINotSupportedMessage = "Your browser does not support interacting with local files (File System Access API). "
 	+ "Please use a Chromium-based browser like Google Chrome or Microsoft Edge.";
 
-const addToRecentlyOpened = async (/** @type {{ id: string, storageType: FileStorageType }} */ { id, storageType }) => {
+const addToRecentlyOpened = async ({ id, storageType }: { id: string, storageType: FileStorageType; }) => {
 	const recentlyOpenedFils = (await database.get({ store: "key-value", key: "recently-opened" })).value;
 	await database.put({
 		store: "key-value",
 		data: {
 			key: "recently-opened",
-			value: [{ id, storageType }, ...recentlyOpenedFils.filter(({ id: fileId }) => fileId !== id)],
+			value: [{ id, storageType }, ...recentlyOpenedFils.filter(({ id: fileId }: { id: string; }) => fileId !== id)],
 		},
 	});
-}
+};
 
-const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string, fileHandle?: FileSystemFileHandle }} */ { storageType, id, fileHandle }) => {
+const renderFile = async ({ storageType, id, fileHandle }: { storageType: FileStorageType, id?: string, fileHandle?: FileSystemFileHandle; }) => {
 	await toggleView({ filesView: false });
 
 	// console.log("rendering file", fileHandle, id);
@@ -105,7 +105,7 @@ const renderFile = async (/** @type {{ storageType: FileStorageType, id?: string
 			const { data, text } = decodeFile({ fileContent });
 			elements.textInput.textContent = text;
 			if (window.FileSystemObserver) {
-				const observer = new FileSystemObserver(async (records) => {
+				const observer = new FileSystemObserver(async () => {
 					let fileContent = await (await fileHandle.getFile()).text();
 					const { data, text } = decodeFile({ fileContent });
 					elements.textInput.textContent = text;
@@ -155,8 +155,8 @@ const toggleView = (() => {
 	// const files = document.querySelector("c-files");
 	// const editor = document.createElement("c-editor");
 
-	return async (/** @type {{ filesView?: boolean }?} */ { filesView: newFilesView = !filesView } = {}) => {
-		await new Promise(setTimeout);
+	return async ({ filesView: newFilesView = !filesView }: { filesView?: boolean; } = {}) => {
+		// await new Promise(setTimeout);
 		if (newFilesView !== filesView) {
 			filesView = newFilesView;
 			await transition(async () => {
@@ -179,13 +179,13 @@ const toggleView = (() => {
 			}, { name: "toggling-view" });
 		}
 		return { filesView };
-	}
+	};
 })();
 
 
-const itemClickHandler = (/** @type {{ type: ItemType, storageType?: FileStorageType, fileHandle?: FileSystemFileHandle, id: string, changeURL?: boolean }} */ {
+const itemClickHandler = ({
 	type, storageType, fileHandle, id, changeURL = false
-}) => async (/** @type {MouseEvent?} */ event) => {
+}: { type: ItemType, storageType?: FileStorageType, fileHandle?: FileSystemFileHandle, id: string, changeURL?: boolean; }) => async (event?: MouseEvent) => {
 	if (event?.ctrlKey || event?.metaKey || event?.shiftKey) return;
 	event?.preventDefault();
 
@@ -209,7 +209,7 @@ const itemClickHandler = (/** @type {{ type: ItemType, storageType?: FileStorage
 };
 
 
-const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
+const displayFolder = async ({ id }: { id: string; }) => {
 
 	currentFile = null;
 
@@ -219,12 +219,12 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 	else setTitle(`${folderName} 📂`);
 
 	[folders, files] = await Promise.all([[folders, "folders"], [files, "files"]].map(
-		async ([items, store]) => await Promise.all(items.map(async ({ id }) => await database.get({ store, key: id })))
+		async ([items, store]) => await Promise.all(items.map(async ({ id }: { id: string; }) => await database.get({ store, key: id })))
 	));
 
 	if (currentFile) return;
 
-	const onDragStart = (/** @type {{ type: ItemType, id: string }} */ { type, id }) => async (/** @type {DragEvent} */ event) => {
+	const onDragStart = ({ type, id }: { type: ItemType, id: string; }) => async (event: DragEvent) => {
 		event.dataTransfer.effectAllowed = "move";
 		event.dataTransfer.setData("text/plain", JSON.stringify({ type, id }));
 		// event.dataTransfer.setDragImage(event.target, 0, 0);
@@ -233,16 +233,16 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 		// }, 1000);
 	};
 
-	const onDrop = (/** @type {{ folder: any }} */ { folder }) => async (/** @type {DragEvent} */ event) => {
+	const onDrop = ({ folder }: { folder: any; }) => async (event: DragEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
-		const data = (() => {
+		const data: { type: ItemType; id: string; } = (() => {
 			try {
 				return JSON.parse(event.dataTransfer.getData("text/plain") ?? null);
 			} catch { }
 		})();
 		if (!data) return;
-		const /** @type {string} */ droppedItemStore = {
+		const droppedItemStore: string = {
 			folder: "folders",
 			file: "files",
 		}[data.type];
@@ -252,7 +252,7 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 		await database.put({ store: "folders", data: folder });
 
 		const droppedItemParentfolder = await database.get({ store: "folders", key: droppedItem.parentFolder.id });
-		droppedItemParentfolder[droppedItemStore] = droppedItemParentfolder[droppedItemStore].filter(({ id }) => id !== droppedItem.id);
+		droppedItemParentfolder[droppedItemStore] = droppedItemParentfolder[droppedItemStore].filter(({ id }: { id: string; }) => id !== droppedItem.id);
 		await database.put({ store: "folders", data: droppedItemParentfolder });
 
 		droppedItem.parentFolder = { id: folder.id };
@@ -261,17 +261,17 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 		await displayFolder({ id: currentFolder.id });
 	};
 
-	for (const [items, UL, type, store] of /** @type {const} */ ([
+	for (const [items, UL, type, store] of [
 		[folders, elements.foldersUL, "folder", "folders"],
 		[files, elements.filesUL, "file", "files"],
-	])) {
+	] as const) {
 
 		for (const item of [...UL.children].filter(({ classList }) => classList.contains("item"))) item.remove();
 
 		const template = $(":scope > template", UL);
 
 		for (const item of items) {
-			const clone = /** @type {HTMLElement} */ (template.content.cloneNode(true).firstElementChild);
+			const clone = template.content.cloneNode(true).firstElementChild as HTMLTemplateElement;
 			$(".name", clone).textContent = item.name;
 			$("a", clone).href = $("a[data-action=permalink]", clone).href = `?${type}=${item.id}`;
 			$("a", clone).addEventListener("click", itemClickHandler({ type, id: item.id, storageType: "indexeddb" }));
@@ -303,11 +303,11 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 				clone.remove();
 				switch (type) {
 					case ("folder"): {
-						const recursiveDelete = async (/** @type {{ id: string }} */ { id: folderId }) => {
+						const recursiveDelete = async ({ id: folderId }: { id: string; }) => {
 							const { folders, files } = await database.get({ store: "folders", key: folderId });
 							await Promise.all([
-								folders.map(async ({ id }) => await recursiveDelete({ id })),
-								files.map(async ({ id }) => await database.delete({ store: "files", key: id })),
+								folders.map(async ({ id }: { id: string; }) => await recursiveDelete({ id })),
+								files.map(async ({ id }: { id: string; }) => await database.delete({ store: "files", key: id })),
 								database.delete({ store: "folders", key: folderId }),
 							]);
 						};
@@ -345,7 +345,7 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 		let folder = currentFolder;
 
 		do {
-			const clone = /** @type {HTMLElement} */ (template.content.cloneNode(true).firstElementChild);
+			const clone = (template.content.cloneNode(true).firstElementChild) as HTMLElement;
 			$(".name", clone).textContent = folder.name;
 			$("a", clone).setAttribute("href", `?folder=${folder.id}`);
 			const folderId = folder.id;
@@ -370,7 +370,7 @@ const displayFolder = async (/** @type {{ id: string }} */ { id }) => {
 		history.replaceState({ folderId: searchParams.get("folder") }, "", "./");
 	} else if (searchParams.get("file")) {
 		const fileId = searchParams.get("file");
-		let /** @type {FileStorageType} */ storageType;
+		let storageType: FileStorageType;
 		if (fileId.startsWith("b-")) storageType = "indexeddb";
 		else if (fileId.startsWith("f-")) storageType = "file-system";
 		else throw new Error("invalid file id");
@@ -388,7 +388,30 @@ elements.myFilesLink.addEventListener("click", async (event) => {
 	}
 });
 
-export let /** @type {(event: KeyboardEvent) => void} */ keyDown;
+export let keyDown: (event: KeyboardEvent) => void;
+
+const exportDialog = (
+	<dialog className="export">
+		<form method="dialog">
+			<div>
+				<button className="close icon:x" value="cancel" title="Close"></button>
+				<h2>Export</h2>
+			</div>
+
+			<ul>
+				<li>
+					<button value="download" className="icon:download">Download PAMM file</button>
+				</li>
+				<li>
+					<button value="print" className="icon:file-earmark-pdf">Print or save as PDF</button>
+				</li>
+				<li>
+					<button value="export-html" className="icon:code">Export as HTML</button>
+				</li>
+			</ul>
+		</form>
+	</dialog>
+) as any as HTMLDialogElement;
 
 const fileUtils = new class {
 	async saveFile() {
@@ -414,10 +437,10 @@ const fileUtils = new class {
 		}
 		document.documentElement.classList.remove("file-dirty");
 	};
-	downloadFile(/** @type {{ name?: string, content?: string }?} */ {
+	downloadFile({
 		name = currentFile.name + appMeta.fileExtension,
 		content = elements.textInput.textContent.normalize(),
-	} = {}) {
+	}: { name?: string, content?: string; } = {}) {
 		const anchor = document.createElement("a");
 		const fileContent = encodeFile({ text: content });
 		anchor.href = URL.createObjectURL(new Blob([fileContent], { type: appMeta.mimeType }));
@@ -453,7 +476,7 @@ const fileUtils = new class {
 		const name = file.name.replace(/\.[^.]+$/, "");
 		await this.newBrowserFile({ name, content: text });
 	};
-	async newFolder(/** @type {{ name: string }} */ { name }) {
+	async newFolder({ name }: { name: string; }) {
 		if (!name) return;
 		const { id } = await database.add({
 			store: "folders",
@@ -470,7 +493,7 @@ const fileUtils = new class {
 		history.pushState({ folderId: id }, "", "./");
 		await displayFolder({ id });
 	};
-	async newBrowserFile(/** @type {{ name: string, content?: string }} */ { name, content = "" }) {
+	async newBrowserFile({ name, content = "" }: { name: string, content?: string; }) {
 		if (!name) return;
 		const { id } = currentFile = {
 			storageType: "indexeddb",
@@ -509,12 +532,12 @@ const fileUtils = new class {
 			});
 		}
 	};
-	async showExportDialog(/** @type {{ name?: string, content?: string, renderFileArguments?: any }?} */ {
+	async showExportDialog({
 		name,
 		content,
 		renderFileArguments,
-	} = {}) {
-		const dialog = /** @type {HTMLDialogElement} */ ($("template#export-dialog").content.firstElementChild.cloneNode(true));
+	}: { name?: string, content?: string, renderFileArguments?: any; } = {}) {
+		const dialog = exportDialog;
 		document.body.append(dialog);
 		dialog.showModal();
 		dialog.addEventListener("click", ({ target }) => {
@@ -542,7 +565,7 @@ const fileUtils = new class {
 				}
 				case ("export-html"): {
 					const tempDiv = document.createElement("div");
-					const tree = parseDocument(content ?? elements.textInput.textContent.normalize())
+					const tree = parseDocument(content ?? elements.textInput.textContent.normalize());
 					for (const item of tree) {
 						tempDiv.append(renderDocument([item]));
 						tempDiv.append(document.createTextNode("\n"));
@@ -584,7 +607,7 @@ const fileUtils = new class {
 	// elements.downloadButton.addEventListener("click", () => fileUtils.downloadFile());
 	elements.saveButton.addEventListener("click", async () => await fileUtils.saveFile());
 	// elements.printButton.addEventListener("click", async () => await fileUtils.printFile());
-	elements.exportButton.addEventListener("click", async () => await fileUtils.showExportDialog())
+	elements.exportButton.addEventListener("click", async () => await fileUtils.showExportDialog());
 
 	elements.openButton.addEventListener("click", async () => await fileUtils.openFile());
 	elements.uploadButton.addEventListener("click", async () => await fileUtils.uploadFile());
@@ -592,7 +615,7 @@ const fileUtils = new class {
 	elements.recentlyOpenedButton.addEventListener("click", async () => {
 		const dialog = elements.recentlyOpenedDialog;
 		// const closeDialog = () => dialog.close();
-		const recentlyOpenedFiles = await Promise.all((await database.get({ store: "key-value", key: "recently-opened" })).value.map(async ({ id, storageType }) => {
+		const recentlyOpenedFiles = await Promise.all((await database.get({ store: "key-value", key: "recently-opened" })).value.map(async ({ id, storageType }: { id: string; storageType: FileStorageType; }) => {
 			const store = {
 				"indexeddb": "files",
 				"file-system": "file-handles",
@@ -611,7 +634,7 @@ const fileUtils = new class {
 			$("[data-storagetype]", clone).dataset.storagetype = storageType;
 			$(".name", clone).textContent = name + ((storageType === "file-system") ? appMeta.fileExtension : "");
 			$("a.link", clone).href = $("a.permalink", clone).href = `?file=${id}`;
-			for (const [selectorString, changeURL] of /** @type {const} */ ([["a.link", false], ["a.permalink", true]])) {
+			for (const [selectorString, changeURL] of ([["a.link", false], ["a.permalink", true]]) as const) {
 				if (storageType === "indexeddb") {
 					$(selectorString, clone).addEventListener("click", (event) => {
 						dialog.close();
@@ -651,7 +674,7 @@ const fileUtils = new class {
 		await fileUtils.newDiskFile();
 	});
 
-	keyDown = (/** @type {KeyboardEvent} */ event) => {
+	keyDown = (event: KeyboardEvent) => {
 		if (event.ctrlKey === !isApple && event.metaKey === isApple && !event.shiftKey && !event.altKey) {
 			if (event.key === "s") {
 				event.preventDefault();
@@ -705,7 +728,7 @@ window.addEventListener("beforeunload", (event) => {
 
 {
 	// printing:
-	let /** @type {string} */ previousTitle;
+	let previousTitle: string;
 	window.addEventListener("beforeprint", () => {
 		previousTitle = document.title;
 		if (!currentFile) return;
@@ -742,7 +765,7 @@ window.addEventListener("beforeunload", (event) => {
 
 {
 	const handleHistoryStateFile = async () => {
-		await new Promise(setTimeout);
+		await new Promise(resolve => setTimeout(resolve));
 		const { storageType, fileId: id } = history.state;
 		switch (storageType) {
 			case ("indexeddb"): {

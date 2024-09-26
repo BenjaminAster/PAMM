@@ -14,10 +14,11 @@ import { elements, $$, storage, transition } from "./app.tsx";
 {
 	// horizontal / vertical layout
 	const button = elements.toggleLayoutButton;
-	let /** @type {EditorLayout} */ currentLayout = storage.get("editor-layout") ?? "aside";
+	let currentLayout: EditorLayout = storage.get("editor-layout") ?? "aside";
 	// console.error("current layout:", currentLayout);
 	document.documentElement.dataset.editorLayout = currentLayout;
 	button.addEventListener("click", async () => {
+		console.log(button, "clicked");
 		currentLayout = currentLayout === "aside" ? "stacked" : "aside";
 		await transition(async () => {
 			document.documentElement.dataset.editorLayout = currentLayout;
@@ -29,16 +30,16 @@ import { elements, $$, storage, transition } from "./app.tsx";
 	const dragger = editor.querySelector(".dragger");
 
 	let dragging = false;
-	let /** @type {number} */ relativeDraggerCoordinate;
-	let /** @type {number} */ draggerSize;
-	let /** @type {number} */ containerCoordinate;
-	let /** @type {number} */ containerSize;
+	let relativeDraggerCoordinate: number;
+	let draggerSize: number;
+	let containerCoordinate: number;
+	let containerSize: number;
 
 	dragger.addEventListener("pointerdown", ({ clientX, clientY }) => {
 		editor.classList.add("dragging");
 		dragging = true;
 		const stacked = currentLayout === "stacked";
-		let /** @type {number} */ draggerCoordinate;
+		let draggerCoordinate: number;
 		({ [stacked ? "y" : "x"]: draggerCoordinate, [stacked ? "height" : "width"]: draggerSize } = dragger.getBoundingClientRect());
 		relativeDraggerCoordinate = (stacked ? clientY : clientX) - draggerCoordinate;
 		({ [stacked ? "y" : "x"]: containerCoordinate, [stacked ? "height" : "width"]: containerSize } = editor.getBoundingClientRect());

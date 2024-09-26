@@ -122,7 +122,7 @@ export const keywordList = [
 	...specialCharacterList.map((specialCharacter) => ({ ...specialCharacter, type: keywordTypes.specialCharacter })),
 ];
 
-const categorizeSymbols = (/** @type {string} */ symbolString) => {
+const categorizeSymbols = (symbolString: string) => {
 	const array = [];
 	let currentString = "";
 	symbolString += " ";
@@ -144,21 +144,21 @@ const categorizeSymbols = (/** @type {string} */ symbolString) => {
 	return array;
 };
 
-export default (/** @type {string} */ mathString) => {
+export default (mathString: string) => {
 	mathString += " ";
-	const /** @type {any[]} */ array = [];
+	const array: any[] = [];
 	let currentString = "";
-	let /** @type {keyof characterCategories} */ previousCharacterCategory;
+	let previousCharacterCategory: keyof typeof characterCategories;
 
 	for (const character of mathString) {
-		let characterCategory = /** @type {keyof characterCategories} */ ((() => {
+		let characterCategory = ((() => {
 			if (character.match(regularExpressions.number)) return characterCategories.number;
 			if (character.match(regularExpressions.letter)) return characterCategories.letters;
 			if (character.match(regularExpressions.anyOpeningBracket)) return characterCategories.anyOpeningBracket;
 			if (character.match(regularExpressions.anyClosingBracket)) return characterCategories.anyClosingBracket;
 			if (character.match(regularExpressions.whitespace)) return characterCategories.whitespace;
 			return characterCategories.symbols;
-		})());
+		})()) as keyof typeof characterCategories;
 
 		if (characterCategory !== previousCharacterCategory && previousCharacterCategory) {
 			if (previousCharacterCategory === characterCategories.anyOpeningBracket) {
@@ -263,8 +263,7 @@ export default (/** @type {string} */ mathString) => {
 			} else if (previousCharacterCategory === characterCategories.letters) {
 
 				const { keyword, type: keywordType, ...keywordProperties } = keywordList.find(({ keyword }) => currentString === keyword) ?? {};
-				// @ts-ignore
-				const /** @type {string} */ string = keywordType === keywordTypes.specialCharacter ? keywordProperties.character : currentString;
+				const string: string = keywordType === keywordTypes.specialCharacter ? (keywordProperties as any).character : currentString;
 
 				if (keywordType !== keywordTypes.normal) {
 					const whitespaceBefore = array.at(-1)?.category === categories.whitespace;

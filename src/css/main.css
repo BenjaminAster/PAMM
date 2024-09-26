@@ -34,7 +34,7 @@
 			background: none;
 		}
 
-		c-header, dialog {
+		.header, dialog {
 			display: none;
 		}
 	}
@@ -42,20 +42,6 @@
 	@page {
 		margin: 0px;
 	}
-}
-
-c-editor {
-	display: block;
-	block-size: 100%;
-	--split-proportion: 0.5;
-}
-
-c-header {
-	display: block;
-}
-
-c-files {
-	display: block;
 }
 
 @layer main {
@@ -428,7 +414,7 @@ c-files {
 		}
 
 		&[data-transition="toggling-layout"] {
-			& c-header {
+			& .header {
 				view-transition-name: header;
 			}
 
